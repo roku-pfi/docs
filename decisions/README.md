@@ -16,6 +16,7 @@ rather than editing history. This preserves the reasoning trail for the thesis.
 | [0005](0005-sentinel-user-exclusion.md) | Data cleaning: excluding non-human sentinel accounts | Accepted |
 | [0006](0006-ai-tooling-rules-skill-mcp.md) | AI-assisted development tooling (rules, skill, MCP) | Accepted |
 | [0007](0007-evaluation-protocol.md) | Evaluation protocol (label-covered window + chronological split) | Accepted |
+| [0008](0008-contracts-freeze.md) | Freeze feature / model / PDP / event / policy contracts | Accepted |
 
 ## Template
 

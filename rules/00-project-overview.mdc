@@ -12,6 +12,8 @@ deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
 
 - `rba-features` — shared feature library. The ONE implementation of every feature,
   imported by both offline training and (later) online scoring.
+- `rba-contracts` — versioned OpenAPI/AsyncAPI/JSON Schema + Pydantic contracts
+  (feature schema, model I/O, `/risk/evaluate`, outbox events, policy config).
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
 - `docs` — devlog, ADRs (`decisions/`), findings, and the plan (`plans/`).
 
@@ -20,11 +22,9 @@ deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
 **Single source of truth: `docs/plans/status.md`** (phase/step checklist + current
 focus). Phase rationale: `docs/plans/development_plan.md` §8.
 
-Phase 1 (data + model feasibility) is **complete**: Steps 1–6 done (env, subset
-builder, EDA, feature library, Freeman scorer + baselines, `is_attack_ip` leakage A/B)
-plus a Freeman calibration pass (β 10→5). **Next: Phase 2 — freeze the
-feature/model/scoring + `/risk/evaluate` contracts.** Infra (Docker/k8s/Helm/Argo) is
-later phases, not now.
+Phases 1–2 are **complete**: feasibility (Steps 1–6 + Freeman calibration β 10→5)
+and contracts freeze (`rba-contracts` v0.1.0, ADR-0008). **Next: Phase 3 — request
+path** (`rba-decision-service`). Infra (Docker/k8s/Helm/Argo) is later phases, not now.
 
 ## Stack (decided — see docs/decisions/)
 

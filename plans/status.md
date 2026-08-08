@@ -6,18 +6,19 @@
 > [`development_plan.md`](development_plan.md) §8; decisions in
 > [`../decisions/`](../decisions/); numbers in [`../findings/`](../findings/).
 
-**Current focus:** Phase 1 (feasibility) is complete. **Next: Phase 2 — freeze the
-feature/model/scoring + `/risk/evaluate` contracts** before building the request path.
+**Current focus:** Phase 2 (contracts) is complete. **Next: Phase 3 — request path**
+(`rba-decision-service`: Redis profile, `rba-features`, Freeman inline, policy from
+`rba-contracts`, explanation, decision+outbox; parity tests green).
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
-- [x] **Phase 1 — Data & model feasibility** ← just finished
-- [~] **Phase 2 — Freeze contracts** ← next (feature schema, model interface,
-      `/risk/evaluate`, event contract, score→level / level→action config)
-- [ ] **Phase 3 — Request path** (`rba-decision-service`: Redis profile read, features,
-      rules, model inline, policy, explanation, decision+outbox; parity tests green)
+- [x] **Phase 1 — Data & model feasibility**
+- [x] **Phase 2 — Freeze contracts** ← just finished (`rba-contracts` v0.1.0; ADR-0008)
+- [~] **Phase 3 — Request path** ← next (`rba-decision-service`: Redis profile read,
+      features, rules, model inline, policy, explanation, decision+outbox; parity
+      tests green)
 - [ ] **Phase 4 — Async services** (event-publisher/outbox → RabbitMQ; profile-service,
       audit-service consumers)
 - [ ] **Phase 5 — Observability & load/scenario testing** (Prometheus/Grafana; load
@@ -45,12 +46,12 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 **Regenerate the Phase-1 numbers:** from `rba-ml-training/` (venv active) —
 `python -m ml.train --model all`, `python -m ml.leakage`, `python -m ml.calibrate`.
 
-## Phase 2 — next up (not started)
+## Phase 2 — contracts (done)
 
-Lock, in `rba-contracts` (new repo, to be created):
-- [ ] Feature schema (the `rba-features` vector: names, types, order).
-- [ ] Model interface (`predict_proba` contract; artifact + metadata format).
-- [ ] `/risk/evaluate` request/response (the PDP API — input event, output
-      action + score + per-signal explanation).
-- [ ] Event contract for the decision→async bus (outbox payload / `event_id`).
-- [ ] Config format: score→level and level→action (per app-sensitivity).
+Locked in `rba-contracts` v0.1.0 (ADR-0008):
+
+- [x] Feature schema (`FeatureVectorV1` / `FEATURE_NAMES` order, schema 1.0.0).
+- [x] Model interface (`ModelPrediction` / `predict_proba` in [0,1] + artifact metadata).
+- [x] `/risk/evaluate` request/response (`openapi/risk-evaluate.yaml`).
+- [x] Event contract (`asyncapi/decision-events.yaml` — `rba.decision.made.v1` / `event_id`).
+- [x] Config format: score→level and level→action (`schemas/policy-config.schema.json`).

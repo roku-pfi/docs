@@ -4,6 +4,31 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-08 — Phase 2: freeze contracts (`rba-contracts` v0.1.0)
+
+Created the new polyrepo library `rba-contracts` and locked the five Phase-2
+artifacts (ADR-0008):
+
+| Contract | Where |
+|---|---|
+| Feature schema `FeatureVectorV1` (1.0.0) | `schemas/feature-vector.schema.json` + Pydantic |
+| Model I/O (`risk_score∈[0,1]`, contributions, artifact sidecar) | `schemas/model-*.schema.json` |
+| `POST /risk/evaluate` (PDP) | `openapi/risk-evaluate.yaml` |
+| Outbox/bus event `rba.decision.made.v1` | `asyncapi/decision-events.yaml` |
+| score→level / level→action policy config | `schemas/policy-config.schema.json` + example YAML |
+
+Key freezes vs the exploratory sketches: probability scale (not 0–100); actions
+`ALLOW|REQUIRE_MFA|REAUTHENTICATE|BLOCK`; structured reasons; `event_id` as the
+idempotency key end-to-end; Freeman maps `logrisk→[0,1]` via declared
+`proba_mapping` (default `logistic_logrisk`); `is_attack_ip` / RTT / absolute geo
+kept off the v1 API. `FEATURE_NAMES` here must match `rba-features` (parity test
+included). `pytest`: 8 passed.
+
+**Next:** Phase 3 — stand up `rba-decision-service` against these contracts
+(Redis profile → features → Freeman inline → policy → decision+outbox).
+
+---
+
 ## 2026-08-08 — Freeman calibration (smoothing tune; supervised weighting rejected)
 
 Tried to lift the primary Freeman scorer's weak strict-FPR recall (Step 5: 3/38 @ 1%
