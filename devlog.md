@@ -4,6 +4,25 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-08 — Step 4: feature library implemented & validated
+
+Implemented the Phase 1 feature set in `rba-features`: `profile.ProfileState`
+(per-user accumulator), `features.compute_features`/`update_profile` (10 features:
+`user_login_count`, `{ip,asn,country,device_type,os,browser,hour}_seen_before`,
+`seconds_since_last_login`, `failed_logins_last_24h`), and the `replay_user` driver.
+Missing values ("-"/NaN) never count as "seen". 5 tests pass, incl. offline↔online
+parity. RTT and absolute geo distance excluded (EDA: RTT ~94% missing, geo synthetic).
+
+Validated on the real subset (findings/2026-08-08-step4-feature-validation.md): the
+`*_seen_before` features strongly separate takeovers from normal logins
+(ip_seen_before 0.08 vs 0.45; country 0.18 vs 0.75) — confirms the RBA hypothesis
+and the Freeman-primary direction.
+
+**Next:** Step 5 — Freeman likelihood-ratio scorer + reference baselines on a
+chronological split.
+
+---
+
 ## 2026-08-08 — Phase 1 kickoff: environment, dataset, subset, EDA
 
 **Environment decision.** Consolidated all development onto the M2 Pro MacBook
