@@ -13,6 +13,7 @@ this repo holds the things that span services and feed the thesis report.
   Start at [`decisions/README.md`](decisions/README.md).
 - **[`findings/`](findings/)** — analysis / experiment write-ups (EDA, model
   results) with the concrete numbers the thesis will cite.
+- **[`plans/`](plans/)** — the roadmap / overall development plan.
 
 ## How we keep this updated
 
@@ -23,6 +24,6 @@ this repo holds the things that span services and feed the thesis report.
 
 ## Related
 
-- Roadmap / overall plan: `plans/development_plan.md` (in the workspace).
+- Roadmap / overall plan: [`plans/development_plan.md`](plans/development_plan.md).
 - Code repos: `rba-features`, `rba-ml-training`, and the service repos under
   `github.com/roku-pfi`.
