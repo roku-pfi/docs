@@ -4,6 +4,29 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-08 — Step 6: `is_attack_ip` leakage A/B (negative result)
+
+Ran the mandatory leakage experiment (`ml/leakage.py`): each supervised baseline trained
+twice on the same chronological split — Variant B (behavioural `rba_features` vectors
+only) vs Variant A (B + `is_attack_ip`) — with paired bootstrap CIs (findings
+2026-08-08-step6-leakage.md).
+
+**Result: no material leakage.** In this subset the flag is weak/noisy, not an oracle:
+`is_attack_ip`=1 on only **47% of takeovers but 8.45% of legit** logins, and the flag
+alone scores ROC-AUC 0.70 with **recall@1%FPR = 0**. Our best honest model (logreg)
+gains nothing from it — ΔROC-AUC +0.003 (CI [−0.02, 0.03]), Δrecall@1%FPR −0.053. So the
+Step 5 headline (logreg 0.88 ROC-AUC, 50% recall @ 1% FPR) is genuinely behavioural, not
+inflated by the attack-derived label. Decision (executing ADR-0004): keep `is_attack_ip`
+out of the trained model — now evidence-backed, not just precaution.
+
+Refactored `ml/train.py` to share a `build_models(ytr)` factory so Variant B reproduces
+Step 5 hyper-parameters exactly.
+
+**Next:** Phase 1 wrap-up — optionally Freeman calibration to lift low-FPR recall, then
+lock the feature/model/scoring contracts (Phase 2) before the request path.
+
+---
+
 ## 2026-08-08 — Dataset sufficiency note (for the report)
 
 Captured the reasoning on whether the Wiefling dataset is "good enough"
