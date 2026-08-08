@@ -14,6 +14,7 @@ rather than editing history. This preserves the reasoning trail for the thesis.
 | [0003](0003-dataset-selection-and-synthetic-data.md) | Dataset selection & use of synthesized data | Accepted |
 | [0004](0004-modelling-and-label-strategy.md) | Modelling approach & label strategy | Accepted |
 | [0005](0005-sentinel-user-exclusion.md) | Data cleaning: excluding non-human sentinel accounts | Accepted |
+| [0006](0006-ai-tooling-rules-skill-mcp.md) | AI-assisted development tooling (rules, skill, MCP) | Accepted |
 
 ## Template
 

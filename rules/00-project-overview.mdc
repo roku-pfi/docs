@@ -1,0 +1,31 @@
+---
+description: RBA project orientation — what this workspace is, its repos, phase, and stack
+alwaysApply: true
+---
+
+# Project: risk-based authentication (RBA) — PFI thesis
+
+Solo final project. Goal: a transparent, explainable login-risk scorer, ultimately
+deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
+
+## Workspace repos (each a separate git repo, cloned side-by-side)
+
+- `rba-features` — shared feature library. The ONE implementation of every feature,
+  imported by both offline training and (later) online scoring.
+- `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
+- `docs` — devlog, ADRs (`decisions/`), findings, and the plan (`plans/`).
+
+## Current status
+
+Phase 1 (data + model feasibility). Steps 1–4 done (env, subset builder, EDA,
+feature library). Next: Step 5 — Freeman likelihood-ratio scorer + reference
+baselines. Infra (Docker/k8s/Helm/Argo) is later phases, not now.
+
+## Stack (decided — see docs/decisions/)
+
+Python 3.12 + FastAPI backend; React/TS + Vite frontend; PostgreSQL + Redis +
+RabbitMQ; LightGBM/XGBoost/scikit-learn/SHAP + MLflow; Docker/Kubernetes/Helm/Argo;
+Prometheus + Grafana. Dev on an M2 Pro Mac; venv at `rba-ml-training/.venv`.
+
+Before non-trivial work, skim `docs/decisions/` (ADRs) and the latest `docs/devlog.md`
+entry for current context.

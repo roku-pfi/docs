@@ -1,0 +1,25 @@
+---
+description: Train/serve parity contract for RBA features — the project's #1 invariant
+alwaysApply: true
+---
+
+# Feature parity contract (do not break)
+
+Train/serve skew is the top failure mode this design avoids. Enforce it:
+
+- Every feature lives ONLY in `rba-features` as a pure function of
+  `(event, profile_state)` — never read global/current-time state, never re-implement
+  a feature in another repo/language.
+- `compute_features(event, profile)` reads only its two args. `update_profile(...)` is
+  called AFTER compute, so the current event never leaks into its own vector.
+- Offline (replay) and online (materialised profile) paths MUST produce identical
+  vectors. Any change to features/profile requires updating `tests/test_parity.py`
+  and keeping it green.
+- Missing values (`"-"`, NaN, empty) must NEVER count as "seen before" and must not be
+  added to a profile's seen-set.
+
+## Excluded on purpose (EDA-justified — don't silently re-add)
+
+- `rtt_deviation` — RTT is ~94% missing.
+- absolute geo distance / `impossible_travel` — geo is synthesised and region/city are
+  ~42% missing. Prefer `*_seen_before` signals.

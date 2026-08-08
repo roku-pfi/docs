@@ -1,0 +1,19 @@
+---
+description: Keep the docs repo current — devlog, ADRs, and findings after each step
+alwaysApply: true
+---
+
+# Documentation loop (thesis-critical)
+
+Everything we do must be tracked in the `docs` repo, continuously (not at the end).
+After each step, decision, or experiment, update the relevant artifact:
+
+- **`docs/devlog.md`** — a dated entry per work session/step (newest on top): what we
+  did, why, and findings. Link to the ADR/finding it relates to.
+- **`docs/decisions/NNNN-*.md`** — one ADR per real decision (context / decision /
+  consequences). ADRs are immutable once Accepted; to change course, add a new ADR that
+  supersedes the old one — never rewrite an accepted ADR.
+- **`docs/findings/YYYY-MM-DD-*.md`** — experiment/analysis write-ups with the concrete
+  numbers the thesis will cite (tables preferred).
+
+The `/log-progress` skill automates this loop — prefer it at the end of a step.

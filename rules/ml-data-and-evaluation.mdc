@@ -1,0 +1,33 @@
+---
+description: Data integrity, dataset framing, and evaluation discipline for the ML pipeline
+globs: rba-ml-training/**
+alwaysApply: false
+---
+
+# ML data & evaluation discipline
+
+## Data integrity
+
+- Splits are ALWAYS chronological (oldest 70% / 15% / newest 15%). Never a random split.
+- Label is `is_account_takeover` (ultra-rare: 141 positive rows total).
+- `is_attack_ip` is leakage-sensitive: reserved for the A/B leakage comparison only,
+  never the training target.
+- Exclude non-human sentinel accounts (`--max-user-logins`, the ~14M-login id).
+- Treat `"-"`/NaN as missing (RTT ~94% missing; region/city ~42% missing).
+
+## Modelling
+
+- Freeman likelihood-ratio model is the PRIMARY scorer (learns "normal", needs few
+  labels). LogReg/RF/LightGBM/XGBoost are reference baselines only.
+
+## Metrics (never headline plain accuracy)
+
+- Report PR-AUC, recall @ a fixed low FPR (≤1%), and challenge rate.
+- Always break metrics down BY history depth (40% of users have a single login and
+  can't be protected by behavioural RBA yet).
+
+## Dataset framing (for any write-up)
+
+Wiefling RBA dataset is a privacy-preserving synthesis of real data — cite Wiefling
+et al. (2022); rely on per-user consistency/imbalance/temporal signals; do NOT claim
+real-world geolocation or IP-reputation performance.

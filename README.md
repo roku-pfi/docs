@@ -14,6 +14,8 @@ this repo holds the things that span services and feed the thesis report.
 - **[`findings/`](findings/)** — analysis / experiment write-ups (EDA, model
   results) with the concrete numbers the thesis will cite.
 - **[`plans/`](plans/)** — the roadmap / overall development plan.
+- **[`rules/`](rules/)** — versioned mirror of the Cursor agent rules (active copies
+  live in `develop/.cursor/rules/`).
 
 ## How we keep this updated
 

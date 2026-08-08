@@ -1,0 +1,18 @@
+---
+description: Git and polyrepo conventions for the RBA repos
+alwaysApply: true
+---
+
+# Git & polyrepo conventions
+
+- Polyrepo: `rba-features`, `rba-ml-training`, `docs` are independent repos on
+  `github.com/roku-pfi`, cloned side-by-side. `rba-ml-training` installs
+  `rba-features` editable via `../rba-features`.
+- Commit messages: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, with an
+  optional scope like `feat(ml):`). Pass the body via a HEREDOC.
+- Only commit when asked. Push to `main` is a protected action — surface it for
+  approval, never force-push.
+- NEVER modify git config. NEVER commit data or secrets: datasets (`data/raw/`,
+  `data/subset/`, `*.csv`, `*.parquet`), venvs, artifacts/reports, and `.cursor/mcp.json`
+  contents stay out of version control.
+- Keep changes scoped to one repo per commit; a change spanning repos = one commit each.

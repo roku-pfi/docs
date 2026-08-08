@@ -4,6 +4,20 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-08 — AI-assisted development tooling (rules, skill, MCP)
+
+Set up persistent tooling so guardrails and documentation habits survive across sessions
+(ADR-0006). Added five Cursor rules in `develop/.cursor/rules/` (project overview,
+feature-parity contract, ML data/evaluation discipline, documentation loop, git/polyrepo
+conventions), mirrored to `docs/rules/`. Added the `/log-progress` skill to automate the
+devlog+ADR+findings loop. Wired the GitHub MCP in `develop/.cursor/mcp.json` (auth via a
+`GITHUB_PAT` env var). Other MCPs (Postgres/k8s/Grafana/MLflow) deferred to Phase 3+.
+
+**Next:** Step 5 — Freeman likelihood-ratio scorer + reference baselines on a
+chronological 70/15/15 split.
+
+---
+
 ## 2026-08-08 — Step 4: feature library implemented & validated
 
 Implemented the Phase 1 feature set in `rba-features`: `profile.ProfileState`
