@@ -4,6 +4,40 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-08 — Dataset sufficiency note (for the report)
+
+Captured the reasoning on whether the Wiefling dataset is "good enough"
+(findings/2026-08-08-dataset-sufficiency.md): it is valid (standard benchmark, faithful
+structure) but positive labels are structurally scarce — **141 takeovers is the global
+ceiling**, not a sampling artifact, and the scarcity is realistic. Sufficient for
+proving the mechanism + driving the system engineering; thin only for tuned detection
+metrics, which we handle via the label-free Freeman primary, `is_attack_ip` as a
+populous auxiliary signal, a later synthetic scenario generator (complement), and
+bootstrap CIs on metrics.
+
+---
+
+## 2026-08-08 — Step 5: Freeman scorer + baselines (feasibility numbers)
+
+Implemented the Freeman likelihood-ratio scorer (`ml/models/freeman.py`), the baseline
+trainer/evaluator (`ml/train.py`), RBA metrics (`ml/metrics.py`), and the shared
+feature-matrix builder (`ml/featurize.py`).
+
+Key data finding: **takeover labels only cover Feb–Nov 2020** (0 positives afterwards),
+so a calendar split gave a test set with 0 positives. Fixed by restricting to the
+label-covered window and splitting chronologically within it (ADR-0007). Test set:
+45,928 logins / 38 positives.
+
+Results (findings/2026-08-08-step5-baselines.md): the RBA approach works — ROC-AUC
+0.76–0.88. Simple **LogReg on `*_seen_before` features hits 50% recall @ 1% FPR**;
+Freeman ranks at AUC 0.76 label-free but over-flags new-IP legit logins at the strict
+operating point (calibration is the next improvement). Trees underperform LogReg.
+Detection concentrates in users with ≥1 prior login (history-depth story confirmed).
+
+**Next:** Step 6 — `is_attack_ip` leakage A/B comparison + finalise metrics/latency.
+
+---
+
 ## 2026-08-08 — AI-assisted development tooling (rules, skill, MCP)
 
 Set up persistent tooling so guardrails and documentation habits survive across sessions
