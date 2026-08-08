@@ -4,6 +4,27 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-08 — Freeman calibration (smoothing tune; supervised weighting rejected)
+
+Tried to lift the primary Freeman scorer's weak strict-FPR recall (Step 5: 3/38 @ 1%
+FPR) via `ml/calibrate.py` — three levers on the same split, with per-feature LLR
+contributions now exposed (`FreemanScorer.contributions_frame`, also future online
+explanations). Findings 2026-08-08-freeman-calibration.md.
+
+**Adopted:** lower the Dirichlet smoothing `beta` 10 → 5 (new `FreemanScorer` default).
+Label-free, principled (trust a user's short history sooner), improves both ROC-AUC
+(0.762 → 0.779) and recall@1%FPR (3/38 → 4/38). **Rejected:** dropping the near-unique
+IP (helps operating point but hurts AUC 0.762 → 0.711) and a supervised logistic
+per-feature weighting (overfits ~103 train positives → ROC 0.67, recall 0.026). Key
+structural note: every variant detects 0 positives in the 0- and 1-2-login buckets —
+Freeman's recall is capped by history depth, not feature weighting (logins-to-protection).
+Deltas are ±1 detection (38 positives), so the beta change is adopted on principle, not
+significance. Refines ADR-0004.
+
+**Next:** Phase 2 — freeze the feature/model/scoring + `/risk/evaluate` contracts.
+
+---
+
 ## 2026-08-08 — Step 6: `is_attack_ip` leakage A/B (negative result)
 
 Ran the mandatory leakage experiment (`ml/leakage.py`): each supervised baseline trained
