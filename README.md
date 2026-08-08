@@ -6,6 +6,10 @@ this repo holds the things that span services and feed the thesis report.
 
 ## Contents
 
+- **[`plans/status.md`](plans/status.md)** — **start here.** Single source of truth for
+  where the project is: phase/step checklist + current focus.
+- **[`AGENTS.md`](AGENTS.md)** — portable orientation for AI coding tools (this repo's
+  entry point; each sibling repo has its own).
 - **[`devlog.md`](devlog.md)** — chronological development log. What we did each
   session, why, and what we found. Newest entries at the top.
 - **[`decisions/`](decisions/)** — Architecture Decision Records (ADRs). One short,

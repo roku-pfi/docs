@@ -17,9 +17,14 @@ deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
 
 ## Current status
 
-Phase 1 (data + model feasibility). Steps 1–4 done (env, subset builder, EDA,
-feature library). Next: Step 5 — Freeman likelihood-ratio scorer + reference
-baselines. Infra (Docker/k8s/Helm/Argo) is later phases, not now.
+**Single source of truth: `docs/plans/status.md`** (phase/step checklist + current
+focus). Phase rationale: `docs/plans/development_plan.md` §8.
+
+Phase 1 (data + model feasibility) is **complete**: Steps 1–6 done (env, subset
+builder, EDA, feature library, Freeman scorer + baselines, `is_attack_ip` leakage A/B)
+plus a Freeman calibration pass (β 10→5). **Next: Phase 2 — freeze the
+feature/model/scoring + `/risk/evaluate` contracts.** Infra (Docker/k8s/Helm/Argo) is
+later phases, not now.
 
 ## Stack (decided — see docs/decisions/)
 
@@ -27,5 +32,5 @@ Python 3.12 + FastAPI backend; React/TS + Vite frontend; PostgreSQL + Redis +
 RabbitMQ; LightGBM/XGBoost/scikit-learn/SHAP + MLflow; Docker/Kubernetes/Helm/Argo;
 Prometheus + Grafana. Dev on an M2 Pro Mac; venv at `rba-ml-training/.venv`.
 
-Before non-trivial work, skim `docs/decisions/` (ADRs) and the latest `docs/devlog.md`
-entry for current context.
+Before non-trivial work, skim `docs/plans/status.md` (where we are), `docs/decisions/`
+(ADRs), and the latest `docs/devlog.md` entry for current context.
