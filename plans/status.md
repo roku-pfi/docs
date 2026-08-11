@@ -6,10 +6,10 @@
 > [`development_plan.md`](development_plan.md) §8; decisions in
 > [`../decisions/`](../decisions/); numbers in [`../findings/`](../findings/).
 
-**Current focus:** Phase 3 request path + light Phase 0. Thin slice PDP is up;
-shared Redis/Postgres now live in **`rba-infra`** (ADR-0010). **Remaining:**
-exercise decision-service against that stack; harden fallbacks; full k3d/Tilt later.
-**Next after Phase 3:** Phase 4 async (outbox → RabbitMQ, profile-service, audit).
+**Current focus:** Phase 4 async thin slice is up (ADR-0011): outbox → RabbitMQ →
+profile + audit. Decision path can use `PROFILE_WRITE_MODE=none`. **Remaining:**
+remotes/commits for new service repos, DLQ/metrics, k8s Deployments. Phase 3 PDP
+is effectively complete aside from local k8s.
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
@@ -17,19 +17,16 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
 - [x] **Phase 1 — Data & model feasibility**
 - [x] **Phase 2 — Freeze contracts** (`rba-contracts` v0.1.0; ADR-0008)
-- [~] **Phase 3 — Request path** ← in progress (`rba-decision-service` thin slice;
-      ADR-0009). Shared compose moved to `rba-infra` (ADR-0010).
-- [ ] **Phase 4 — Async services** (event-publisher/outbox → RabbitMQ; profile-service,
-      audit-service consumers)
-- [ ] **Phase 5 — Observability & load/scenario testing** (Prometheus/Grafana; load
-      tests that trigger the HPA — the scalability demo)
-- [ ] **Phase 6 — ML lifecycle + generator** (dataset-builder, ml-training Job, MLflow;
-      split model-inference to a sidecar; synthetic scenario generator)
-- [ ] **Phase 7 — k8s hardening + frontend + admin** (HPA, probes, limits, GitOps;
-      admin-api + demo frontend)
-- [ ] **Phase 8 — Report & defense** (ongoing; feed the thesis continuously)
-- [~] **Phase 0 — Infra foundations** — light bootstrap done (`rba-infra` compose);
-      k3d/Tilt/Helm/CI/Prometheus still ahead
+- [x] **Phase 3 — Request path** (`rba-decision-service`; ADR-0009/0010). Local k8s
+      still waits on fuller Phase 0 Helm.
+- [~] **Phase 4 — Async services** ← in progress (publisher + profile + audit thin
+      slice; ADR-0011). RabbitMQ in `rba-infra`.
+- [ ] **Phase 5 — Observability & load/scenario testing**
+- [ ] **Phase 6 — ML lifecycle + generator**
+- [ ] **Phase 7 — k8s hardening + frontend + admin**
+- [ ] **Phase 8 — Report & defense**
+- [~] **Phase 0 — Infra foundations** — compose (Redis/Postgres/RabbitMQ) done;
+      k3d/Tilt/Helm/CI still ahead
 
 ## Phase 1 — steps (done)
 
@@ -48,25 +45,25 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
 ## Phase 2 — contracts (done)
 
-Locked in `rba-contracts` v0.1.0 (ADR-0008):
+Locked in `rba-contracts` v0.1.0 (ADR-0008); additive `login` snapshot in **v0.1.1**:
 
-- [x] Feature schema (`FeatureVectorV1` / `FEATURE_NAMES` order, schema 1.0.0).
-- [x] Model interface (`ModelPrediction` / `predict_proba` in [0,1] + artifact metadata).
-- [x] `/risk/evaluate` request/response (`openapi/risk-evaluate.yaml`).
-- [x] Event contract (`asyncapi/decision-events.yaml` — `rba.decision.made.v1` / `event_id`).
-- [x] Config format: score→level and level→action (`schemas/policy-config.schema.json`).
+- [x] Feature schema / model I/O / `/risk/evaluate` / policy / `rba.decision.made.v1`
+- [x] `LoginEventSnapshot` on `DecisionMadeEvent` (profile-service input)
 
-## Phase 3 — request path (in progress)
+## Phase 3 — request path (done aside from k8s)
 
-`rba-decision-service` v0.1.0 (ADR-0009):
+- [x] FastAPI `POST /risk/evaluate` against `rba-contracts`
+- [x] Redis profile + Freeman inline + policy + decision/outbox
+- [x] Shared data plane via `rba-infra` (ADR-0010)
+- [x] Exercised against real Redis/Postgres
+- [ ] Local k8s deploy (Phase 0 Helm)
 
-- [x] FastAPI `POST /risk/evaluate` against `rba-contracts`.
-- [x] Profile read (Redis or in-memory) via serialised `ProfileState` (+ Freeman counts).
-- [x] Features via `rba-features.compute_features`.
-- [x] Freeman inline from JSON serving artifact (`logistic_logrisk`, β=5).
-- [x] Policy + structured reasons; fallback → `fallback_action`.
-- [x] Decision + outbox row in one DB transaction; idempotent on `event_id`.
-- [x] Parity / unit tests (6 passed; optional ml-training cross-check skipped without pandas).
-- [x] Shared Redis/Postgres via `rba-infra` compose (ADR-0010); service-local compose removed.
-- [ ] Exercise evaluate against real Redis/Postgres day-to-day.
-- [ ] Local k8s deploy (waits on fuller Phase 0 / Helm).
+## Phase 4 — async services (in progress)
+
+- [x] RabbitMQ in `rba-infra`
+- [x] `rba-event-publisher` drains outbox → `rba.events` / `rba.decision.made.v1`
+- [x] `rba-profile-service` updates Redis + `rba_profile` history (idempotent)
+- [x] `rba-audit-service` persists to `rba_audit` (idempotent)
+- [x] E2E smoke: evaluate (`PROFILE_WRITE_MODE=none`) → publish → profile + audit
+- [ ] GitHub remotes + CI for the three new repos
+- [ ] DLQ / metrics / k8s Deployments

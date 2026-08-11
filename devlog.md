@@ -4,6 +4,26 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-11 — Phase 4 thin slice: outbox → RabbitMQ → profile/audit
+
+Async plane stood up (ADR-0011):
+
+| Piece | Repo |
+|---|---|
+| RabbitMQ in shared compose | `rba-infra` |
+| Outbox drainer | `rba-event-publisher` |
+| Redis profile materialiser | `rba-profile-service` |
+| Audit store | `rba-audit-service` |
+| `login` on `DecisionMadeEvent` | `rba-contracts` 0.1.1 |
+
+E2E: evaluate with `PROFILE_WRITE_MODE=none` → publisher → Redis profile
+`login_count=1` + audit row. Old outbox rows without `login` are skipped by
+profile (audited still).
+
+**Next:** remotes/commits for the new repos; then Phase 5 observability or DLQ hardening.
+
+---
+
 ## 2026-08-11 — Phase 0 light: `rba-infra` shared Redis/Postgres compose
 
 Moved the local data plane out of `rba-decision-service` into a new `rba-infra`

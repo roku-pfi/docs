@@ -16,7 +16,8 @@ deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
   (feature schema, model I/O, `/risk/evaluate`, outbox events, policy config).
 - `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`).
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
-- `rba-infra` — shared local compose (Redis/Postgres); later Helm/GitOps/CI.
+- `rba-infra` — shared local compose (Redis/Postgres/RabbitMQ); later Helm/GitOps/CI.
+- `rba-event-publisher` / `rba-profile-service` / `rba-audit-service` — Phase 4 async.
 - `docs` — devlog, ADRs (`decisions/`), findings, and the plan (`plans/`).
 
 ## Current status
