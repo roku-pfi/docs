@@ -6,19 +6,22 @@
 > [`development_plan.md`](development_plan.md) §8; decisions in
 > [`../decisions/`](../decisions/); numbers in [`../findings/`](../findings/).
 
-**Current focus:** Phase 2 (contracts) is complete. **Next: Phase 3 — request path**
-(`rba-decision-service`: Redis profile, `rba-features`, Freeman inline, policy from
-`rba-contracts`, explanation, decision+outbox; parity tests green).
+**Current focus:** Phase 3 — request path (`rba-decision-service`). Thin slice is
+up: `/risk/evaluate`, Redis/in-memory profiles, Freeman inline (JSON artifact,
+β=5), policy, decision+outbox, parity tests. **Remaining in Phase 3:** wire real
+Redis/Postgres via compose in day-to-day use, harden fallbacks, containerise on
+local cluster when Phase 0 infra lands. **Next after Phase 3:** Phase 4 async
+(outbox → RabbitMQ, profile-service, audit-service).
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
 - [x] **Phase 1 — Data & model feasibility**
-- [x] **Phase 2 — Freeze contracts** ← just finished (`rba-contracts` v0.1.0; ADR-0008)
-- [~] **Phase 3 — Request path** ← next (`rba-decision-service`: Redis profile read,
-      features, rules, model inline, policy, explanation, decision+outbox; parity
-      tests green)
+- [x] **Phase 2 — Freeze contracts** (`rba-contracts` v0.1.0; ADR-0008)
+- [~] **Phase 3 — Request path** ← in progress (`rba-decision-service` thin slice;
+      ADR-0009). Parity tests green; Redis/Postgres compose available; k8s deploy
+      deferred with Phase 0.
 - [ ] **Phase 4 — Async services** (event-publisher/outbox → RabbitMQ; profile-service,
       audit-service consumers)
 - [ ] **Phase 5 — Observability & load/scenario testing** (Prometheus/Grafana; load
@@ -55,3 +58,17 @@ Locked in `rba-contracts` v0.1.0 (ADR-0008):
 - [x] `/risk/evaluate` request/response (`openapi/risk-evaluate.yaml`).
 - [x] Event contract (`asyncapi/decision-events.yaml` — `rba.decision.made.v1` / `event_id`).
 - [x] Config format: score→level and level→action (`schemas/policy-config.schema.json`).
+
+## Phase 3 — request path (in progress)
+
+`rba-decision-service` v0.1.0 (ADR-0009):
+
+- [x] FastAPI `POST /risk/evaluate` against `rba-contracts`.
+- [x] Profile read (Redis or in-memory) via serialised `ProfileState` (+ Freeman counts).
+- [x] Features via `rba-features.compute_features`.
+- [x] Freeman inline from JSON serving artifact (`logistic_logrisk`, β=5).
+- [x] Policy + structured reasons; fallback → `fallback_action`.
+- [x] Decision + outbox row in one DB transaction; idempotent on `event_id`.
+- [x] Parity / unit tests (6 passed; optional ml-training cross-check skipped without pandas).
+- [~] Docker Compose for Redis/Postgres; full image build from polyrepo root.
+- [ ] Local k8s deploy (waits on Phase 0 / `rba-infra`).

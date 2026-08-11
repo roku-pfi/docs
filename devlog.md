@@ -4,6 +4,25 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-11 — Phase 3 thin slice: `rba-decision-service`
+
+Stood up the request-path PDP against the Phase 2 contracts (ADR-0009):
+
+| Piece | Where |
+|---|---|
+| `POST /risk/evaluate` | `rba-decision-service` FastAPI |
+| ProfileState + Freeman counts + Redis JSON | `rba-features` 0.1.1 |
+| Freeman online (`score_event`, JSON export, β=5) | `rba-ml-training` + `artifacts/freeman-0.1.0.json` |
+| Policy / reasons / decision+outbox | evaluate service + SQLAlchemy |
+
+Cold-start users correctly get logrisk≈0 (Dirichlet prior = population). Sync
+profile writes (`PROFILE_WRITE_MODE=sync`) keep demos working until Phase 4
+profile-service. Tests: features 7 passed; decision-service 6 passed / 1 skipped.
+
+**Next:** exercise compose Redis/Postgres day-to-day; then Phase 4 outbox drain.
+
+---
+
 ## 2026-08-08 — Phase 2: freeze contracts (`rba-contracts` v0.1.0)
 
 Created the new polyrepo library `rba-contracts` and locked the five Phase-2

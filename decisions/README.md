@@ -17,6 +17,7 @@ rather than editing history. This preserves the reasoning trail for the thesis.
 | [0006](0006-ai-tooling-rules-skill-mcp.md) | AI-assisted development tooling (rules, skill, MCP) | Accepted |
 | [0007](0007-evaluation-protocol.md) | Evaluation protocol (label-covered window + chronological split) | Accepted |
 | [0008](0008-contracts-freeze.md) | Freeze feature / model / PDP / event / policy contracts | Accepted |
+| [0009](0009-online-profile-freeman-serving.md) | Online ProfileState counts + Freeman JSON serving | Accepted |
 
 ## Template
 
