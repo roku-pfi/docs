@@ -6,12 +6,10 @@
 > [`development_plan.md`](development_plan.md) §8; decisions in
 > [`../decisions/`](../decisions/); numbers in [`../findings/`](../findings/).
 
-**Current focus:** Phase 3 — request path (`rba-decision-service`). Thin slice is
-up: `/risk/evaluate`, Redis/in-memory profiles, Freeman inline (JSON artifact,
-β=5), policy, decision+outbox, parity tests. **Remaining in Phase 3:** wire real
-Redis/Postgres via compose in day-to-day use, harden fallbacks, containerise on
-local cluster when Phase 0 infra lands. **Next after Phase 3:** Phase 4 async
-(outbox → RabbitMQ, profile-service, audit-service).
+**Current focus:** Phase 3 request path + light Phase 0. Thin slice PDP is up;
+shared Redis/Postgres now live in **`rba-infra`** (ADR-0010). **Remaining:**
+exercise decision-service against that stack; harden fallbacks; full k3d/Tilt later.
+**Next after Phase 3:** Phase 4 async (outbox → RabbitMQ, profile-service, audit).
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
@@ -20,8 +18,7 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 - [x] **Phase 1 — Data & model feasibility**
 - [x] **Phase 2 — Freeze contracts** (`rba-contracts` v0.1.0; ADR-0008)
 - [~] **Phase 3 — Request path** ← in progress (`rba-decision-service` thin slice;
-      ADR-0009). Parity tests green; Redis/Postgres compose available; k8s deploy
-      deferred with Phase 0.
+      ADR-0009). Shared compose moved to `rba-infra` (ADR-0010).
 - [ ] **Phase 4 — Async services** (event-publisher/outbox → RabbitMQ; profile-service,
       audit-service consumers)
 - [ ] **Phase 5 — Observability & load/scenario testing** (Prometheus/Grafana; load
@@ -31,8 +28,8 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 - [ ] **Phase 7 — k8s hardening + frontend + admin** (HPA, probes, limits, GitOps;
       admin-api + demo frontend)
 - [ ] **Phase 8 — Report & defense** (ongoing; feed the thesis continuously)
-- [ ] **Phase 0 — Infra foundations** (rba-infra: k3d/Tilt, CI template, Prometheus/
-      Grafana) — deferred; stand up alongside Phase 3
+- [~] **Phase 0 — Infra foundations** — light bootstrap done (`rba-infra` compose);
+      k3d/Tilt/Helm/CI/Prometheus still ahead
 
 ## Phase 1 — steps (done)
 
@@ -70,5 +67,6 @@ Locked in `rba-contracts` v0.1.0 (ADR-0008):
 - [x] Policy + structured reasons; fallback → `fallback_action`.
 - [x] Decision + outbox row in one DB transaction; idempotent on `event_id`.
 - [x] Parity / unit tests (6 passed; optional ml-training cross-check skipped without pandas).
-- [~] Docker Compose for Redis/Postgres; full image build from polyrepo root.
-- [ ] Local k8s deploy (waits on Phase 0 / `rba-infra`).
+- [x] Shared Redis/Postgres via `rba-infra` compose (ADR-0010); service-local compose removed.
+- [ ] Exercise evaluate against real Redis/Postgres day-to-day.
+- [ ] Local k8s deploy (waits on fuller Phase 0 / Helm).

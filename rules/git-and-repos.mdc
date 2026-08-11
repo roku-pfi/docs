@@ -5,10 +5,11 @@ alwaysApply: true
 
 # Git & polyrepo conventions
 
-- Polyrepo: `rba-features`, `rba-contracts`, `rba-ml-training`, `docs` are
- independent repos on `github.com/roku-pfi`, cloned side-by-side.
- `rba-ml-training` installs `rba-features` editable via `../rba-features`;
- decision-service (Phase 3) will pin both `rba-features` and `rba-contracts`.
+- Polyrepo: `rba-features`, `rba-contracts`, `rba-decision-service`, `rba-ml-training`,
+ `rba-infra`, `docs` are independent repos on `github.com/roku-pfi`, cloned
+ side-by-side. `rba-ml-training` installs `rba-features` editable via `../rba-features`;
+ decision-service pins both `rba-features` and `rba-contracts`. Shared Redis/Postgres
+ compose lives in `rba-infra` (not in service repos).
 - Commit messages: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, with an
   optional scope like `feat(ml):`). Pass the body via a HEREDOC.
 - Only commit when asked. Push to `main` is a protected action — surface it for

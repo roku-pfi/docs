@@ -4,6 +4,17 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-11 — Phase 0 light: `rba-infra` shared Redis/Postgres compose
+
+Moved the local data plane out of `rba-decision-service` into a new `rba-infra`
+repo (ADR-0010): one Redis, one Postgres server, init DBs
+`rba_decision` / `rba_profile` / `rba_audit`. Service repos consume URLs only.
+Full k3d/Tilt/Helm still deferred.
+
+**Next:** run decision-service against this stack end-to-end; then Phase 4 async.
+
+---
+
 ## 2026-08-11 — Phase 3 thin slice: `rba-decision-service`
 
 Stood up the request-path PDP against the Phase 2 contracts (ADR-0009):
