@@ -4,6 +4,22 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — Polyrepo README pass
+
+Read every checkout in `develop/` and expanded documentation so each directory
+has an accurate README (layout, APIs, env, status). No behaviour change.
+
+- Workspace map: `develop/README.md` (polyrepo is not a single git repo).
+- Service READMEs: features, contracts, decision-service, IdP, event-publisher,
+  profile-service, audit-service, infra, ml-training (`data/README.md` added;
+  the old `data/README.md` link was broken).
+- Docs indexes: `docs/README.md`, `plans/`, `findings/`, `rules/`;
+  `material_sources/README.md` points at the proposal PDF vs the living plan.
+
+**Next:** IdP-5 — hosted login UI.
+
+---
+
 ## 2026-08-15 — IdP-4 session + mock MFA (`rba-idp`)
 
 Login now finishes the PEP loop: `ALLOW` mints an opaque bearer session;

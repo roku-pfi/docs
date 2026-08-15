@@ -5,6 +5,9 @@ the consequences. ADRs are immutable once **Accepted** — if we change our mind
 add a new ADR that **supersedes** the old one (and mark the old one accordingly),
 rather than editing history. This preserves the reasoning trail for the thesis.
 
+Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
+we chose this shape*. Numbering is chronological. Next unused number: **0016**.
+
 ## Index
 
 | # | Title | Status |
