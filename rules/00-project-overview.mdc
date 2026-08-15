@@ -5,15 +5,18 @@ alwaysApply: true
 
 # Project: risk-based authentication (RBA) — PFI thesis
 
-Solo final project. Goal: a transparent, explainable login-risk scorer, ultimately
-deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
+Solo final project. Goal: **risk-based authentication** (explainable login-risk
+PDP) delivered as a thesis-scale IdP platform (Authentik/Auth0 shape), deployed
+as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`. The IdP is
+the shell; RBA is the thesis (ADR-0015).
 
 ## Workspace repos (each a separate git repo, cloned side-by-side)
 
 - `rba-features` — shared feature library. The ONE implementation of every feature,
   imported by both offline training and (later) online scoring.
 - `rba-contracts` — versioned OpenAPI/AsyncAPI/JSON Schema + Pydantic contracts
-  (feature schema, model I/O, `/risk/evaluate`, outbox events, policy config).
+  (feature schema, model I/O, `/risk/evaluate`, IdP login API 0.2.0, outbox events,
+  policy config).
 - `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`).
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
 - `rba-infra` — shared local compose (Redis/Postgres/RabbitMQ); later Helm/GitOps/CI.
@@ -22,13 +25,15 @@ deployed as polyrepo microservices on Kubernetes. Org: `github.com/roku-pfi`.
 
 ## Current status
 
-**Single source of truth: `docs/plans/status.md`** (phase/step checklist + current
-focus). Phase rationale: `docs/plans/development_plan.md` §8.
+**Single source of truth: `docs/plans/status.md`**. Thesis core is **RBA**
+(ADR-0015); product shell is a thesis-scale IdP (ADR-0014). One IdP stage at a
+time — do not skip IdP-3 (PDP enforce). Phase rationale:
+`docs/plans/development_plan.md` §8.
 
-Phases 1–2 are **complete**: feasibility (Steps 1–6 + Freeman calibration β 10→5)
-and contracts freeze (`rba-contracts` v0.1.0, ADR-0008). **Phase 3 in progress** —
-`rba-decision-service` thin slice (ADR-0009). Infra (Docker/k8s/Helm/Argo) is later
-phases / Phase 0 alongside.
+Phases 1–3 are **complete** (model, contracts, PDP request path). Phase 4 async
+thin slice is up. **Phase 7 in progress:** IdP-1 contracts done (`rba-contracts`
+0.2.0); next is **IdP-2** (`rba-idp` identity store). k8s/Helm/observability
+remain later and are not the current path.
 
 ## Stack (decided — see docs/decisions/)
 

@@ -21,6 +21,9 @@ rather than editing history. This preserves the reasoning trail for the thesis.
 | [0010](0010-shared-local-data-plane.md) | Shared local data plane lives in `rba-infra` | Accepted |
 | [0011](0011-async-outbox-rabbitmq.md) | Phase 4 async plane — outbox → RabbitMQ → profile/audit | Accepted |
 | [0012](0012-thin-idp-end-product.md) | Thin IdP end product; PDP remains the risk core | Accepted |
+| [0013](0013-idp-staged-start.md) | Start thin IdP in stages; skip Horizon A demo kit | Accepted |
+| [0014](0014-thesis-scale-idp-platform.md) | Thesis-scale IdP platform (Authentik/Auth0-shaped, not enterprise) | Accepted |
+| [0015](0015-rba-is-the-thesis-core.md) | RBA is the thesis core; the IdP is how it is delivered | Accepted |
 
 ## Template
 

@@ -4,6 +4,46 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — RBA is the thesis core (ADR-0015)
+
+The Auth0/Authentik-shaped IdP is the **shell**. The thesis is still
+**risk-based authentication**: explainable score + action + reasons on a real
+login. An IdP that never calls the PDP (skipping IdP-3) would miss the claim.
+Admin must show decisions/reasons, not only users.
+
+**Next:** IdP-2 (identity store), then IdP-3 (wire RBA) without skipping.
+
+---
+
+## 2026-08-15 — IdP = thesis-scale Auth0/Authentik (ADR-0014)
+
+Clarified the product metaphor: not a JSON wrapper around the PDP, and not a
+carrier-grade IdP. **Like** Auth0/Authentik (users, registered apps, hosted
+login, session, MFA, admin). **Unlike** them (no full OIDC/SAML, SCIM, LDAP,
+social login). Differentiator remains explainable RBA via the existing PDP.
+
+IdP-2 now includes a seeded **application** (client). Stages otherwise unchanged.
+
+**Next:** IdP-2 — `rba-idp` users + application, password verify only.
+
+---
+
+## 2026-08-15 — IdP staged; IdP-1 contracts only (ADR-0013)
+
+Discarded the Horizon A demo kit. Phase 7 is split into IdP-1…7; this session is
+**only IdP-1**.
+
+- ADR-0013: skip demo-kit polish; start the thin IdP one stage at a time.
+- `rba-contracts` **0.2.0**: `LoginRequest` / `LoginResponse` / MFA / session.
+  PDP `/risk/evaluate` unchanged. Optional risk/session fields stay unset until
+  IdP-3/4.
+- `status.md` restated as **end product first**: each session advances one IdP
+  stage; leftover Phase 4/5/6/0 work is not the current path.
+
+**Next:** IdP-2 — `rba-idp` + `rba_idp` DB, password verify only.
+
+---
+
 ## 2026-08-12 — Product target: thin IdP (Oct) on PDP core (demo now)
 
 Locked dual horizon in the **canonical plan** + ADR-0012:

@@ -9,10 +9,13 @@
 > orchestration are treated as first-class, graded deliverables — a design that only
 > runs as a single un-scalable monolith is explicitly a non-goal.
 >
-> **Product shell (decided — ADR-0012):** end state is a **thin IdP** that owns
-> demo-client login (identity + session + MFA challenge) and calls the existing
-> **PDP** for risk. Near-term demos may show the PDP alone; that work is
-> **additive**, not a throwaway prototype.
+> **Thesis core (decided — ADR-0015):** **risk-based authentication** —
+> explainable, tunable login risk on a real path. That is the research claim.
+>
+> **Product shell (decided — ADR-0012 / 0014):** a **thesis-scale identity
+> platform** (Authentik/Auth0-shaped: users, apps, hosted login, session, MFA,
+> admin) that *calls* the PDP. Not a raw risk API and not a carrier-grade IdP.
+> Build the shell in stages (ADR-0013); never skip wiring it to RBA (IdP-3).
 >
 > The architecture will evolve; this plan is structured so that evolution and
 > service-splitting are cheap and well-bounded. **This document is the canonical
@@ -39,13 +42,12 @@
    skew and contract drift.
 4. **Start the model now.** Begin with the public **Wiefling RBA dataset** (33M
    logins). Its latency/size numbers drive how we size and split services.
-5. **Explainability is the product.** Transparent, per-signal-explained, tunable
-   scoring is your market gap (Okta/Entra/Auth0/Ping hide theirs). Build it in from
-   line one.
-6. **Two horizons (ADR-0012).** **Near-term demo:** PDP + async plane (what Phases
-   1–4 already deliver). **Late-October end product:** thin IdP + admin (users;
-   groups/permissions as stretch) wrapping that same PDP. Do not rewrite the risk
-   core to “become” an IdP.
+5. **Explainability is the thesis.** Transparent, per-signal-explained, tunable
+   scoring is the gap vs Okta/Entra/Auth0/Ping. The IdP exists to *deliver* RBA,
+   not to replace it (ADR-0015).
+6. **Product shell is a thesis-scale IdP (ADR-0012/0014).** Authentik/Auth0-shaped:
+   users, apps, hosted login, session, MFA, admin. Do not rewrite the risk core
+   into an IAM, and do not implement enterprise protocol suites.
 7. **Scope discipline.** Define all service boundaries now; stand up incrementally.
    Cut fancy IAM (federation, SCIM) before cutting k8s/HPA, parity, or leakage.
 
@@ -56,11 +58,12 @@
 - **Scalability & orchestration are deliverables, not afterthoughts.** Stateless
   services, horizontal replicas, HPA, health probes, resource requests/limits,
   rolling deploys. Show the system scale-out under load in Grafana.
-- **Explainability is the product.** Every decision emits a human-readable reason
-  trace with per-signal contributions.
+- **Explainability is the thesis.** Every decision emits a human-readable reason
+  trace with per-signal contributions. The IdP platform exists to deliver that,
+  not to hide it (ADR-0015).
 - **PDP/PEP split.** The risk system *decides* (`ALLOW / MFA / REAUTH / BLOCK`); the
   **PEP enforces**. Near-term the PEP may be curl, a demo script, or a mock app;
-  the **end-product PEP is the thin IdP** (ADR-0012). The PDP stays a vendor-neutral
+  the **end-product PEP is the thesis-scale IdP platform** (ADR-0012/0014). The PDP stays a vendor-neutral
   REST API either way — never bury identity inside `decision-service`.
 - **Additive migration.** Near-term PDP work must remain the October risk backend.
   Prefer new services (`rba-idp`, admin) over reshaping the scorer into an IAM.
@@ -84,8 +87,8 @@
 
 | Horizon | When | What “done” looks like |
 |---|---|---|
-| **A — PDP demo** | ~10 days | Compose + decision-service (+ optional publisher/profile/audit). Call `/risk/evaluate`; show action + reasons. No IdP required. |
-| **B — Thin IdP product** | late October | Users log in via RBA IdP UI; IdP verifies credentials, calls PDP, enforces MFA/block, issues session. Admin: users, decisions, policy; groups/permissions if time. |
+| **A — PDP core** | done (Phases 1–4 thin slice) | `/risk/evaluate` + async profile/audit. **No demo-kit polish** (ADR-0013). |
+| **B — IdP platform** | late October | Authentik/Auth0-shaped at thesis scale (ADR-0014): users, apps, hosted login, PDP enforce, session/MFA, admin. Staged IdP-1…7. |
 | **C — Thesis hardening** | → December | k8s/HPA/observability/report. Federation/SCIM still out. |
 
 **What near-term work must protect (reuse forever)**
@@ -100,11 +103,11 @@
 
 - Putting passwords, sessions, or user CRUD into `decision-service`
 - A polished “final” UI that assumes there will never be an IdP
-- OIDC/SAML/SCIM, org directories, or enterprise permission engines
+- OIDC/SAML/SCIM, org directories, or enterprise permission engines (ADR-0014)
 - Treating Horizon A’s demo PEP as the product architecture
 
-**Migration in one line:** Horizon A ships the brain; Horizon B adds the face
-(IdP + admin) that *calls* the brain — same contracts, new callers.
+**Migration in one line:** the PDP is the brain; the IdP platform is the Auth0-like
+face that *calls* the brain — same risk contracts, new product shell.
 
 ---
 
@@ -446,15 +449,23 @@ See §1.1 and ADR-0012 for migration rules.
 - `rba-dataset-builder` + `rba-ml-training` Job/CronJob + MLflow registry. Split
   `rba-model-inference` out as a **sidecar**. Build the synthetic generator.
 
-### Phase 7 — Thin IdP + admin + k8s hardening (≈3–4 weeks) ← **Horizon B**
-- **`rba-idp`:** local user store, login API/UI, call `/risk/evaluate`, enforce
-  ALLOW/MFA/REAUTH/BLOCK (mock OTP fine), session cookie. Add `rba_idp` DB to
-  `rba-infra` init.
-- **`rba-admin-api` + `rba-frontend`:** users, decision/audit browser, policy
-  thresholds / model activation. **Stretch:** groups + app-scoped permissions for
-  demo clients / admin roles.
-- Freeze IdP/admin contracts in `rba-contracts` before coding.
-- k8s: HPA, probes, resources, rolling deploys, secrets, NetworkPolicies, GitOps.
+### Phase 7 — IdP platform + admin + k8s hardening ← **Horizon B** (ADR-0012/0013/0014)
+
+One stage at a time. Do not start stage *n+1* until *n* is checked in `status.md`.
+Product shape: thesis-scale Authentik/Auth0, not a protocol IdP.
+
+| Stage | What ships | Explicitly not yet |
+|---|---|---|
+| **IdP-1** Contracts | `rba-contracts` 0.2.0: login / MFA / session / public user. PDP API unchanged. | No `rba-idp` repo |
+| **IdP-2** Identity store | New `rba-idp` + `rba_idp` DB: users, password verify, **seeded application** (registered client). | No PDP call, no session, no UI, no OIDC |
+| **IdP-3** PDP enforce | IdP calls `/risk/evaluate`; maps action → login outcome; returns reasons. | No cookie, no OTP |
+| **IdP-4** Session + mock MFA | Token/cookie on `ALLOW`; challenge + mock OTP for MFA/REAUTH; `BLOCK` rejected. | No HTML UI |
+| **IdP-5** Hosted login | Login page on the IdP (apps send users here). | No admin console |
+| **IdP-6** Admin console | Users, applications, decisions, policy. | No groups |
+| **IdP-7** Stretch | Groups / app-scoped permissions. | Federation / SCIM / full OIDC still out |
+
+k8s hardening (HPA, probes, secrets, GitOps) stays in this phase but is **not**
+gated on IdP-7 — it can proceed in parallel after IdP-3 if calendar slips.
 
 ### Phase 8 — Report & defense buffer (ongoing)
 - Feed the thesis continuously: EDA plots, metric tables, architecture + k8s
