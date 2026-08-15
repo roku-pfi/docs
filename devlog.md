@@ -4,6 +4,41 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — Decision browser reads the PDP table (ADR-0018)
+
+Admin Decisions was empty after a real login: it waited on outbox → RabbitMQ →
+audit consumer. The PDP already writes `decisions` (with reasons) on evaluate.
+
+- `GET /decisions` on `rba-decision-service` (same contract as audit).
+- IdP BFF default `AUDIT_BASE_URL=http://localhost:8000`.
+- Rebuild admin SPA empty-state copy.
+
+**Next:** IdP-7 stretch (groups), or k8s.
+
+---
+
+## 2026-08-15 — IdP-6 admin console (`rba-idp` + PDP policy + audit HTTP)
+
+Operators can browse **users, applications, decisions (with reasons), and
+policy** without a new `rba-admin-api` / `rba-frontend` repo
+([ADR-0017](decisions/0017-admin-console-colocated-on-idp.md)).
+
+- `rba-contracts` **0.3.0**: admin models + `openapi/idp-admin.yaml` /
+  `openapi/audit.yaml`; additive `GET`/`PUT /policy` on the PDP spec.
+- `rba-decision-service`: `GET`/`PUT /policy` hot-reloads in-process and
+  persists YAML. Evaluate path unchanged.
+- `rba-audit-service`: FastAPI read API on :8002 (`GET /decisions`). Consumer
+  loop unchanged (`rba-audit-service` vs `rba-audit-api`).
+- `rba-idp` BFF at `/admin/api/*` (admin Bearer session, `is_admin` flag).
+  React (Vite) SPA at `GET /admin`. Seeded operator
+  `admin@example.com` / `admin-password`, app `idp-admin-console`.
+- Tests: contracts 12 passed; decision-service 9 passed (1 skipped); audit 3
+  passed; `rba-idp` 45 passed.
+
+**Next:** IdP-7 stretch (groups) — skippable. k8s/observability are the other path.
+
+---
+
 ## 2026-08-15 — IdP-5 hosted login UI (`rba-idp`)
 
 Apps send users to the IdP origin instead of posting JSON themselves.

@@ -15,10 +15,10 @@ the shell; RBA is the thesis (ADR-0015).
 - `rba-features` — shared feature library. The ONE implementation of every feature,
   imported by both offline training and (later) online scoring.
 - `rba-contracts` — versioned OpenAPI/AsyncAPI/JSON Schema + Pydantic contracts
-  (feature schema, model I/O, `/risk/evaluate`, IdP login API 0.2.0, outbox events,
-  policy config).
-- `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`).
-- `rba-idp` — thesis-scale IdP (PEP): users, apps, hosted login, session, mock MFA.
+  (feature schema, model I/O, `/risk/evaluate`, IdP login 0.2.0, admin 0.3.0,
+  outbox events, policy config).
+- `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`, `GET`/`PUT /policy`).
+- `rba-idp` — thesis-scale IdP (PEP): users, apps, hosted login, session, mock MFA, admin.
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
 - `rba-infra` — shared local compose (Redis/Postgres/RabbitMQ); later Helm/GitOps/CI.
 - `rba-event-publisher` / `rba-profile-service` / `rba-audit-service` — Phase 4 async.
@@ -32,9 +32,9 @@ time — do not skip IdP-3 (PDP enforce). Phase rationale:
 `docs/plans/development_plan.md` §8.
 
 Phases 1–3 are **complete** (model, contracts, PDP request path). Phase 4 async
-thin slice is up. **Phase 7 in progress:** IdP-5 hosted login done; next is
-**IdP-6** (admin console). k8s/Helm/observability remain later and are not
-the current path.
+thin slice is up. **Phase 7 in progress:** IdP-6 admin console done; next is
+**IdP-7** stretch (groups) or k8s/observability. k8s/Helm/observability remain
+later and are not gated on IdP-7.
 
 ## Stack (decided — see docs/decisions/)
 
