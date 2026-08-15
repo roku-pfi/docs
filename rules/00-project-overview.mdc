@@ -32,9 +32,9 @@ time — do not skip IdP-3 (PDP enforce). Phase rationale:
 `docs/plans/development_plan.md` §8.
 
 Phases 1–3 are **complete** (model, contracts, PDP request path). Phase 4 async
-thin slice is up. **Phase 7 in progress:** IdP-2 identity store done (`rba-idp`);
-next is **IdP-3** (PDP enforce). k8s/Helm/observability remain later and are not
-the current path.
+thin slice is up. **Phase 7 in progress:** IdP-3 PDP enforce done (`rba-idp`
+calls `/risk/evaluate`); next is **IdP-4** (session + mock MFA). k8s/Helm/
+observability remain later and are not the current path.
 
 ## Stack (decided — see docs/decisions/)
 

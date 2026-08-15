@@ -4,6 +4,24 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — IdP-3 PDP enforce (`rba-idp` → `/risk/evaluate`)
+
+After a successful password verify, `rba-idp` calls `POST /risk/evaluate` and
+maps the PDP action onto the login outcome via `outcome_from_action`. Reasons
+travel back to the client. This is where RBA re-enters the login path
+(ADR-0015).
+
+- `ALLOW` → `AUTHENTICATED`; `REQUIRE_MFA` → `MFA_REQUIRED`;
+  `REAUTHENTICATE` → `REAUTH_REQUIRED`; `BLOCK` → `BLOCKED`.
+- Invalid credentials / unknown user still skip the PDP (password never leaves
+  the IdP). Unknown app remains HTTP 400.
+- PDP down or invalid body → HTTP 503 (fail closed; not a fabricated `BLOCK`).
+- No session cookie and no `challenge_id` yet — those are IdP-4.
+
+**Next:** IdP-4 — session on `ALLOW`; mock MFA/reauth challenge.
+
+---
+
 ## 2026-08-15 — IdP-2 identity store (`rba-idp`)
 
 New `rba-idp` service: local users + one registered application, `POST /login`
