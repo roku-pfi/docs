@@ -40,9 +40,10 @@ are not the current path unless they unblock an IdP stage.
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
 IdP login 0.2.0), `rba-decision-service`, async profile/audit, `rba-infra`.
+**Product shell started:** `rba-idp` (IdP-2: users + seeded app + password verify).
 
-**Current focus:** **IdP-2** — `rba-idp` + `rba_idp` DB: users, password
-verify, seeded application. No PDP yet (that is IdP-3).
+**Current focus:** **IdP-3** — `rba-idp` calls `POST /risk/evaluate` and maps
+action → login outcome + reasons. No session/OTP yet (that is IdP-4).
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -54,7 +55,7 @@ verify, seeded application. No PDP yet (that is IdP-3).
       ADR-0011). Remaining: DLQ/metrics/k8s Deployments.
 - [ ] **Phase 5 — Observability & load/scenario testing**
 - [ ] **Phase 6 — ML lifecycle + generator**
-- [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014; IdP-1 done)
+- [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014; IdP-2 done)
 - [ ] **Phase 8 — Report & defense**
 - [~] **Phase 0 — Infra foundations** — compose (Redis/Postgres/RabbitMQ) done;
       k3d/Tilt/Helm/CI still ahead
@@ -106,8 +107,8 @@ IdP login API in **v0.2.0** (IdP-1):
 Stages in order. Next unchecked box is the only IdP work to pick up.
 
 - [x] **IdP-1** Contracts (`rba-contracts` 0.2.0)
-- [ ] **IdP-2** Identity store (`rba-idp` + users + seeded application, password verify) ← next
-- [ ] **IdP-3** PDP enforce (call `/risk/evaluate`, map action → outcome)
+- [x] **IdP-2** Identity store (`rba-idp` + users + seeded application, password verify)
+- [ ] **IdP-3** PDP enforce (call `/risk/evaluate`, map action → outcome) ← next
 - [ ] **IdP-4** Session + mock MFA
 - [ ] **IdP-5** Hosted login UI (Auth0/Authentik-style login page)
 - [ ] **IdP-6** Admin console (users, apps, decisions, policy)

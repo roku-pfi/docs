@@ -19,9 +19,9 @@ users also get the always-on rules in `../.cursor/rules/`, mirrored under `rules
 
 Sibling git repos cloned side-by-side: **`rba-features`** (shared feature library),
 **`rba-contracts`** (OpenAPI/AsyncAPI/JSON Schema + Pydantic contracts),
-**`rba-decision-service`** (PDP / `/risk/evaluate`), **`rba-infra`** (shared compose /
-later Helm), **`rba-ml-training`** (offline data + modelling pipeline), and this
-**`docs`** repo.
+**`rba-decision-service`** (PDP / `/risk/evaluate`), **`rba-idp`** (IdP / PEP),
+**`rba-infra`** (shared compose / later Helm), **`rba-ml-training`** (offline data
++ modelling pipeline), and this **`docs`** repo.
 Code changes live in those repos; anything cross-cutting or thesis-facing lives here.
 
 ## The documentation loop (thesis-critical — keep it continuous)

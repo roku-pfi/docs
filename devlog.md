@@ -4,6 +4,22 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — IdP-2 identity store (`rba-idp`)
+
+New `rba-idp` service: local users + one registered application, `POST /login`
+password verify (bcrypt). No PDP call, no session, no MFA — those are IdP-3/4.
+
+- DB `rba_idp` added in `rba-infra` init (database-per-service).
+- Seed: application `demo-banking-app`, user `demo@example.com` / `demo-password`
+  (`usr_demo`) — matches `rba-contracts` login examples.
+- Valid credentials → `AUTHENTICATED` + `user_id`. Wrong password / unknown user
+  → `INVALID_CREDENTIALS` (HTTP 200). Unknown app → HTTP 400.
+- `/mfa/verify`, `/session`, `/logout` are not implemented yet (404).
+
+**Next:** IdP-3 — call `/risk/evaluate`, map action → outcome + reasons.
+
+---
+
 ## 2026-08-15 — RBA is the thesis core (ADR-0015)
 
 The Auth0/Authentik-shaped IdP is the **shell**. The thesis is still
