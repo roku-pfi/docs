@@ -20,6 +20,7 @@ rather than editing history. This preserves the reasoning trail for the thesis.
 | [0009](0009-online-profile-freeman-serving.md) | Online ProfileState counts + Freeman JSON serving | Accepted |
 | [0010](0010-shared-local-data-plane.md) | Shared local data plane lives in `rba-infra` | Accepted |
 | [0011](0011-async-outbox-rabbitmq.md) | Phase 4 async plane — outbox → RabbitMQ → profile/audit | Accepted |
+| [0012](0012-thin-idp-end-product.md) | Thin IdP end product; PDP remains the risk core | Accepted |
 
 ## Template
 

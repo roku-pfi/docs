@@ -9,8 +9,14 @@
 > orchestration are treated as first-class, graded deliverables — a design that only
 > runs as a single un-scalable monolith is explicitly a non-goal.
 >
+> **Product shell (decided — ADR-0012):** end state is a **thin IdP** that owns
+> demo-client login (identity + session + MFA challenge) and calls the existing
+> **PDP** for risk. Near-term demos may show the PDP alone; that work is
+> **additive**, not a throwaway prototype.
+>
 > The architecture will evolve; this plan is structured so that evolution and
-> service-splitting are cheap and well-bounded.
+> service-splitting are cheap and well-bounded. **This document is the canonical
+> roadmap** tools and humans should follow; `status.md` tracks checkbox progress.
 
 ---
 
@@ -20,12 +26,13 @@
    deployable services, each its own container/pod, orchestrated by Kubernetes, with
    the decision service running **2+ replicas behind an autoscaler**. This is the
    architecture story that earns points.
-2. **But protect the login latency budget.** The synchronous decision path stays a
+2. **But protect the login latency budget.** The synchronous **risk** path stays a
    **small number of services** (ideally one, `decision-service`, with model
    inference as an in-pod **sidecar** if we want a separate container). Everything
-   *off* the request path (audit, profile updates, analytics, training) is its own
+   *off* that path (audit, profile updates, analytics, training) is its own
    service. Fast login + many services is achieved by **horizontal scaling + async
-   off-loading**, not by chopping the request path into network hops.
+   off-loading**, not by chopping the PDP into network hops. The thin IdP sits
+   *in front* as PEP; it does not absorb the scorer.
 3. **Polyrepo — one repo per service** — plus **two library repos** (`rba-features`,
    `rba-contracts`) and one **`rba-infra`** repo (Helm/GitOps). The library repos
    exist specifically to defeat the two biggest polyrepo risks: train/serve feature
@@ -35,8 +42,12 @@
 5. **Explainability is the product.** Transparent, per-signal-explained, tunable
    scoring is your market gap (Okta/Entra/Auth0/Ping hide theirs). Build it in from
    line one.
-6. **Scope discipline for a solo December deadline.** Define all service boundaries
-   now, but *stand up* services incrementally; demo frontend is last.
+6. **Two horizons (ADR-0012).** **Near-term demo:** PDP + async plane (what Phases
+   1–4 already deliver). **Late-October end product:** thin IdP + admin (users;
+   groups/permissions as stretch) wrapping that same PDP. Do not rewrite the risk
+   core to “become” an IdP.
+7. **Scope discipline.** Define all service boundaries now; stand up incrementally.
+   Cut fancy IAM (federation, SCIM) before cutting k8s/HPA, parity, or leakage.
 
 ---
 
@@ -48,17 +59,52 @@
 - **Explainability is the product.** Every decision emits a human-readable reason
   trace with per-signal contributions.
 - **PDP/PEP split.** The risk system *decides* (`ALLOW / MFA / REAUTH / BLOCK`); the
-  caller *enforces*. Stays vendor-neutral, callable over REST.
-- **The login path is sacred.** Target p95 internal latency ~100–200 ms. Keep the
-  request path to the minimum number of in-pod hops; push everything else async.
+  **PEP enforces**. Near-term the PEP may be curl, a demo script, or a mock app;
+  the **end-product PEP is the thin IdP** (ADR-0012). The PDP stays a vendor-neutral
+  REST API either way — never bury identity inside `decision-service`.
+- **Additive migration.** Near-term PDP work must remain the October risk backend.
+  Prefer new services (`rba-idp`, admin) over reshaping the scorer into an IAM.
+- **The risk path is sacred.** Target p95 PDP latency ~100–200 ms. Keep the
+  evaluate path to the minimum number of in-pod hops; push everything else async.
+  IdP password verify + session are outside that budget but must stay simple.
 - **Database-per-service.** Each service owns its data; no shared-table coupling.
-  (Another architecture-grading win, and it makes the pods truly independent.)
+  IdP users/sessions live in an IdP DB — not in `rba_decision` / Redis profiles.
 - **Contracts are code.** API/event schemas live in `rba-contracts`, versioned,
   with generated clients. No service reaches into another's internals.
 - **Train/serve parity via a shared, versioned feature package** (`rba-features`).
 - **Config over code.** Rule weights, score→level thresholds, level→action maps are
   versioned config, hot-reloadable, auditable.
 - **Time-box ruthlessly.** Define broad, build a complete thin slice first.
+  Groups/permissions are a **valid product fit** but **stretch** (after login +
+  users + decision browser).
+
+---
+
+## 1.1 Product horizons & migration path (do not skip)
+
+| Horizon | When | What “done” looks like |
+|---|---|---|
+| **A — PDP demo** | ~10 days | Compose + decision-service (+ optional publisher/profile/audit). Call `/risk/evaluate`; show action + reasons. No IdP required. |
+| **B — Thin IdP product** | late October | Users log in via RBA IdP UI; IdP verifies credentials, calls PDP, enforces MFA/block, issues session. Admin: users, decisions, policy; groups/permissions if time. |
+| **C — Thesis hardening** | → December | k8s/HPA/observability/report. Federation/SCIM still out. |
+
+**What near-term work must protect (reuse forever)**
+
+- `rba-features` + parity tests; Freeman serving artifact + `proba_mapping`
+- `rba-contracts` `/risk/evaluate` + `rba.decision.made.v1` + policy config
+- `decision-service` as **stateless PDP** (Redis read, outbox write)
+- Async plane ownership: profile owns Redis writes; audit owns audit store
+- `rba-infra` shared data plane
+
+**What not to over-commit before Horizon B**
+
+- Putting passwords, sessions, or user CRUD into `decision-service`
+- A polished “final” UI that assumes there will never be an IdP
+- OIDC/SAML/SCIM, org directories, or enterprise permission engines
+- Treating Horizon A’s demo PEP as the product architecture
+
+**Migration in one line:** Horizon A ships the brain; Horizon B adds the face
+(IdP + admin) that *calls* the brain — same contracts, new callers.
 
 ---
 
@@ -68,12 +114,14 @@
 
 ```mermaid
 flowchart TB
-  CLIENT[Demo app / API tests / IdP plugin<br/>= PEP] -->|HTTPS| ING[Ingress / API Gateway<br/>Traefik or Kong]
+  CLIENT[Demo client app] -->|redirect / login| IDP
 
   subgraph K8S["Kubernetes cluster"]
-    ING --> FE[frontend<br/>demo app + admin console]
-    ING --> ADMIN[admin-api<br/>policies, thresholds, model activation]
-    ING -->|POST /risk/evaluate| DEC
+    ING[Ingress / API Gateway]
+    ING --> IDP[rba-idp<br/>thin IdP = PEP<br/>users · session · MFA challenge]
+    ING --> FE[frontend<br/>IdP pages + admin console]
+    ING --> ADMIN[admin-api<br/>users · policy · decisions<br/>groups/permissions stretch]
+    IDP -->|POST /risk/evaluate| DEC
 
     subgraph POD["decision-service Pod (2+ replicas, HPA)"]
       DEC["decision-service (PDP)<br/>feature assembly + rules + policy + explain<br/>STATELESS, latency-critical"]
@@ -83,6 +131,7 @@ flowchart TB
 
     DEC -->|read-only, O(1)| REDIS[(Redis<br/>online profiles)]
     DEC -->|decision + outbox<br/>one txn| PGDEC[(Postgres<br/>decision-service)]
+    IDP --> PGIDP[(Postgres<br/>idp users/sessions)]
 
     PUB[event-publisher<br/>drains outbox] --> BUS[(Event bus<br/>RabbitMQ → Kafka)]
     PGDEC --> PUB
@@ -106,6 +155,9 @@ flowchart TB
     OBS[Observability<br/>Prometheus + Grafana + logs]
   end
 ```
+
+Horizon A demos may call `DEC` directly (curl / script). Horizon B always goes
+`CLIENT → IDP → DEC`.
 
 ### 2.2 How we stay fast *and* microservice-y (the core trade-off you raised)
 
@@ -144,9 +196,10 @@ fast, minimal count) or **off it** (free to be fine-grained).
 
 | Service | Responsibility | Owns (data) | Scaling | Split rationale |
 |---|---|---|---|---|
-| `decision-service` (PDP) | Validate request, assemble features (via `rba-features`), run rules, combine scores, apply policy, produce explanation, write decision+outbox | decision DB (Postgres) | **HPA, 2+ replicas** | The hot path. Kept as one service on purpose. |
+| `decision-service` (PDP) | Validate request, assemble features (via `rba-features`), run rules, combine scores, apply policy, produce explanation, write decision+outbox | decision DB (Postgres) | **HPA, 2+ replicas** | The hot **risk** path. Kept as one service on purpose. **No identity store here.** |
 | `model-inference` (sidecar) | Load model from registry, `predict_proba` | model artifact (read-only) | Scales with its pod | Separate container for independent model deploys **without** a network hop. |
-| `admin-api` | CRUD policies, thresholds, rule weights; activate model versions; read decisions | config DB | 1–2 replicas | Not latency-critical, but must be separate from the PDP (control plane vs data plane). |
+| `rba-idp` (PEP, Horizon B) | Login UI/API, local user verify, call PDP, enforce MFA/block, issue session | IdP DB (users, sessions, MFA state) | 1–2 replicas | Product shell. Owns demo-client login; never inlines Freeman. |
+| `admin-api` | Users (proxy/CRUD toward IdP data or shared admin read models), policies, thresholds, model activation, decision browser; **groups/permissions stretch** | config DB (+ reads from audit/IdP as needed) | 1–2 replicas | Control plane vs data plane; not on PDP latency path. |
 
 > **Lean vs fine-grained call:** I recommend keeping feature-assembly, rules, and
 > policy **in-process** inside `decision-service`, and only breaking out **model
@@ -154,6 +207,10 @@ fast, minimal count) or **off it** (free to be fine-grained).
 > giving you multiple containers on the request path. If you later insist on a
 > standalone `feature-service` or `policy-service`, do it as a **sidecar** too (same
 > pod) so latency stays flat — never as a cross-node call.
+>
+> **IdP vs PDP:** password verify and session cookies may add wall-clock time to the
+> *user* login, but they must not be merged into the PDP process. The evaluate call
+> stays a tight RPC.
 
 ### 3.2 Off-path services (free to be as granular as you want)
 
@@ -173,18 +230,19 @@ fast, minimal count) or **off it** (free to be fine-grained).
 | Service | Responsibility |
 |---|---|
 | `ingress` / API gateway | TLS termination, routing, rate limiting, auth of callers (Traefik or Kong; config lives in `rba-infra`) |
-| `frontend` | Demo app (login → shows ALLOW/MFA/BLOCK, mock OTP) + admin console UI |
+| `rba-idp` + `frontend` | Horizon B: login / MFA / session UX; admin console (users, decisions, policy; groups/permissions stretch). Horizon A may skip UI. |
 | Observability | Prometheus, Grafana, structured JSON logs (Loki optional) |
 
 ### 3.4 Splitting sequence (define all now, stand up incrementally)
 
 1. `decision-service` (+ inline model first, sidecar later) → `event-publisher` +
-   `profile-service` + `audit-service` (in-process bus initially).
+   `profile-service` + `audit-service` (Phases 3–4 — **done / in progress**).
 2. Swap in-process bus → **RabbitMQ**, add `analytics-service`, `dataset-builder`,
    `ml-training` Job.
-3. Split out `model-inference` as a sidecar; add `admin-api`; add `frontend`.
-4. (Optional) `alerting-service`, migrate bus → **Kafka**, add a service mesh
-   (Linkerd/Istio) for mTLS + traffic metrics if you want extra architecture points.
+3. Split out `model-inference` as a sidecar; add **`rba-idp`** + `admin-api` +
+   `frontend` (Horizon B thin IdP).
+4. Stretch: groups/permissions in admin/IdP; (optional) `alerting-service`, Kafka,
+   service mesh.
 
 ---
 
@@ -199,7 +257,8 @@ repos are non-negotiable — they're what keep polyrepo from causing skew.
 # Running services (one repo each → one image → one Deployment/pod)
 rba-decision-service
 rba-model-inference
-rba-admin-api
+rba-idp                     # thin IdP (Horizon B) — PEP; local users/sessions/MFA
+rba-admin-api               # policy + decision browser + user admin; groups stretch
 rba-event-publisher
 rba-profile-service
 rba-audit-service
@@ -207,7 +266,7 @@ rba-analytics-service
 rba-alerting-service        # optional
 rba-dataset-builder
 rba-ml-training
-rba-frontend
+rba-frontend                # IdP pages + admin console (may start colocated with idp)
 
 # Shared libraries (published, versioned packages — NOT deployed)
 rba-features                # the feature library; imported by decision-service,
@@ -349,30 +408,32 @@ grows).
 
 ## 8. Development roadmap (phased, time-boxed to December)
 
-Model + contracts first; then the request path; then async services; then k8s
-hardening; frontend last.
+Model + contracts first; then the request path; then async services; then k8s /
+observability; **thin IdP + admin as the Horizon B product shell**; report last.
+See §1.1 and ADR-0012 for migration rules.
 
 ### Phase 0 — Foundations & repos (≈1–1.5 weeks)
 - Bootstrap `rba-infra` (local cluster via k3d/kind, Tilt/Skaffold, CI template,
   Prometheus/Grafana). Create `rba-contracts` + `rba-features` skeletons.
 - Stand up `rba-decision-service` repo with a stub `/risk/evaluate`.
+- *(Light compose Redis/Postgres/RabbitMQ already landed; full k3d/Helm still open.)*
 
-### Phase 1 — Data & model feasibility (≈2–3 weeks) ← **start now**
+### Phase 1 — Data & model feasibility (≈2–3 weeks) ← **done**
 - Wiefling subset + EDA. Implement `rba-features` + offline replay driver.
 - Baselines: Freeman, LogReg, RF, GBM. Run the leakage comparison.
 - Chronological split; record RBA metrics **and inference latency + model size**
   (these size the sidecar and the pods).
 
-### Phase 2 — Freeze contracts (≈1 week)
+### Phase 2 — Freeze contracts (≈1 week) ← **done**
 - Lock feature schema, model interface, `/risk/evaluate` contract, event contract in
   `rba-contracts`. Define score→level / level→action config format.
 
-### Phase 3 — Request path (≈3–4 weeks)
+### Phase 3 — Request path (≈3–4 weeks) ← **done** (local k8s deferred)
 - `rba-decision-service`: validation, Redis profile read, features, rules, model
   (inline first), policy, explanation, decision+outbox write. Parity tests green.
   Fallback behavior on model/service failure. Containerize; run on local cluster.
 
-### Phase 4 — Async services (≈2–3 weeks)
+### Phase 4 — Async services (≈2–3 weeks) ← **thin slice done**
 - `rba-event-publisher` (outbox drainer) → RabbitMQ. `rba-profile-service`,
   `rba-audit-service` consumers. Idempotency via `event_id`. Each its own pod.
 
@@ -385,18 +446,27 @@ hardening; frontend last.
 - `rba-dataset-builder` + `rba-ml-training` Job/CronJob + MLflow registry. Split
   `rba-model-inference` out as a **sidecar**. Build the synthetic generator.
 
-### Phase 7 — k8s hardening + frontend + admin (≈2 weeks)
-- HPA, liveness/readiness probes, resource requests/limits, rolling deploys,
-  secrets, network policies, GitOps sync. `rba-admin-api` + `rba-frontend` (minimal
-  PEP with mock OTP).
+### Phase 7 — Thin IdP + admin + k8s hardening (≈3–4 weeks) ← **Horizon B**
+- **`rba-idp`:** local user store, login API/UI, call `/risk/evaluate`, enforce
+  ALLOW/MFA/REAUTH/BLOCK (mock OTP fine), session cookie. Add `rba_idp` DB to
+  `rba-infra` init.
+- **`rba-admin-api` + `rba-frontend`:** users, decision/audit browser, policy
+  thresholds / model activation. **Stretch:** groups + app-scoped permissions for
+  demo clients / admin roles.
+- Freeze IdP/admin contracts in `rba-contracts` before coding.
+- k8s: HPA, probes, resources, rolling deploys, secrets, NetworkPolicies, GitOps.
 
 ### Phase 8 — Report & defense buffer (ongoing)
 - Feed the thesis continuously: EDA plots, metric tables, architecture + k8s
-  diagrams, leakage discussion, scale-out screenshots, threat model.
+  diagrams, leakage discussion, scale-out screenshots, threat model, IdP demo
+  walkthrough.
 
 > If time gets tight, cut in this order: service mesh → Kafka (RabbitMQ is enough) →
-> alerting-service → synthetic generator → fancy frontend. **Do not** cut: k8s +
-> HPA (that's the graded part), `rba-features` parity, the leakage experiment.
+> alerting-service → synthetic generator → **groups/permissions** → polished admin
+> chrome → IdP niceties. **Do not** cut: k8s + HPA, `rba-features` parity, leakage
+> experiment, PDP `/risk/evaluate`, or the IdP→PDP split (never merge identity into
+> decision-service). Horizon A demo may ship **without** IdP; Horizon B should not
+> ship without at least login + enforce + session.
 
 ---
 
@@ -453,7 +523,8 @@ dependency is down.
 | Label leakage via attack-IP | Mandatory A/B model comparison (§6, §7.1) |
 | "Black box" scoring (kills your USP) | Freeman explainable core + SHAP + reason traces (§6) |
 | Distributed debugging pain | Structured logs + correlation `event_id` + (optional) mesh tracing |
-| Scope creep on a solo deadline | Explicit cut order; frontend last (§8) |
+| Scope creep on a solo deadline | Explicit cut order; groups/permissions stretch; Horizon A before IdP (§1.1, §8) |
+| Near-term demo locks wrong shape | Additive migration: IdP wraps PDP; no identity in decision-service (ADR-0012) |
 
 ---
 

@@ -4,6 +4,24 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-12 — Product target: thin IdP (Oct) on PDP core (demo now)
+
+Locked dual horizon in the **canonical plan** + ADR-0012:
+
+- **Horizon A (~10-day demo):** existing PDP + async plane; no IdP yet.
+- **Horizon B (late Oct):** `rba-idp` as PEP (login/session/MFA) calling
+  `/risk/evaluate`; admin for users/decisions/policy; **groups/permissions as
+  stretch**.
+- **Migration rule:** near-term work stays additive — do not put identity in
+  `decision-service`; do not treat the demo PEP as the final product shell.
+
+Updated: `plans/development_plan.md` (§0, §1.1, topology, services, Phase 7,
+cut order), `plans/status.md`, `decisions/0012-thin-idp-end-product.md`.
+
+**Next:** polish Horizon A for the near demo; IdP only after that.
+
+---
+
 ## 2026-08-11 — Phase 4 thin slice: outbox → RabbitMQ → profile/audit
 
 Async plane stood up (ADR-0011):

@@ -3,13 +3,16 @@
 > The one place that says **where we are**. Update the checkboxes and the "Current
 > focus" pointer whenever a step/phase completes. Narrative detail goes in
 > [`../devlog.md`](../devlog.md) (newest on top); the phase rationale is in
-> [`development_plan.md`](development_plan.md) §8; decisions in
-> [`../decisions/`](../decisions/); numbers in [`../findings/`](../findings/).
+> [`development_plan.md`](development_plan.md) §8 (**canonical roadmap** — product
+> horizons in §1.1 / ADR-0012); decisions in [`../decisions/`](../decisions/);
+> numbers in [`../findings/`](../findings/).
 
-**Current focus:** Phase 4 async thin slice is up (ADR-0011): outbox → RabbitMQ →
-profile + audit. Decision path can use `PROFILE_WRITE_MODE=none`. **Remaining:**
-remotes/commits for new service repos, DLQ/metrics, k8s Deployments. Phase 3 PDP
-is effectively complete aside from local k8s.
+**Product target:** Horizon A (near-term) = PDP demo; Horizon B (late Oct) = thin
+IdP + admin wrapping the same PDP ([ADR-0012](../decisions/0012-thin-idp-end-product.md)).
+
+**Current focus:** Phase 4 async thin slice is up (ADR-0011). Next for the ~10-day
+demo: polish Horizon A (compose + evaluate + optional async), **without** starting
+`rba-idp`. After that demo: Phase 5/0 as needed, then Phase 7 thin IdP.
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 
@@ -19,11 +22,12 @@ Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
 - [x] **Phase 2 — Freeze contracts** (`rba-contracts` v0.1.0; ADR-0008)
 - [x] **Phase 3 — Request path** (`rba-decision-service`; ADR-0009/0010). Local k8s
       still waits on fuller Phase 0 Helm.
-- [~] **Phase 4 — Async services** ← in progress (publisher + profile + audit thin
-      slice; ADR-0011). RabbitMQ in `rba-infra`.
+- [~] **Phase 4 — Async services** ← thin slice done (publisher + profile + audit;
+      ADR-0011). Remaining: DLQ/metrics/k8s Deployments.
 - [ ] **Phase 5 — Observability & load/scenario testing**
 - [ ] **Phase 6 — ML lifecycle + generator**
-- [ ] **Phase 7 — k8s hardening + frontend + admin**
+- [ ] **Phase 7 — Thin IdP + admin + k8s hardening** (ADR-0012; groups/permissions
+      stretch)
 - [ ] **Phase 8 — Report & defense**
 - [~] **Phase 0 — Infra foundations** — compose (Redis/Postgres/RabbitMQ) done;
       k3d/Tilt/Helm/CI still ahead
@@ -67,3 +71,10 @@ Locked in `rba-contracts` v0.1.0 (ADR-0008); additive `login` snapshot in **v0.1
 - [x] E2E smoke: evaluate (`PROFILE_WRITE_MODE=none`) → publish → profile + audit
 - [ ] GitHub remotes + CI for the three new repos
 - [ ] DLQ / metrics / k8s Deployments
+
+## Phase 7 preview — thin IdP (not started; ADR-0012)
+
+- [ ] `rba-idp` + `rba_idp` DB in infra
+- [ ] Admin: users, decisions, policy
+- [ ] Stretch: groups / app-scoped permissions
+- [ ] IdP/admin contracts in `rba-contracts`
