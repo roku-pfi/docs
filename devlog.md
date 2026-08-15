@@ -4,6 +4,24 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — IdP-4 session + mock MFA (`rba-idp`)
+
+Login now finishes the PEP loop: `ALLOW` mints an opaque bearer session;
+`REQUIRE_MFA` / `REAUTHENTICATE` mint a `challenge_id`; `BLOCK` stays rejected
+with neither. Completing the mock OTP (`000000`) issues the same session
+without calling the PDP again.
+
+- `POST /mfa/verify`, `GET /session` (`Authorization: Bearer`), `POST /logout`
+  (204, idempotent).
+- Session tokens stored hashed; challenges expire (5m) and cannot be reused.
+- Wrong OTP → `INVALID_CREDENTIALS` (challenge stays open). Unknown/expired
+  challenge → HTTP 400. Missing/expired session → HTTP 401.
+- No hosted HTML — that is IdP-5.
+
+**Next:** IdP-5 — hosted login UI.
+
+---
+
 ## 2026-08-15 — IdP-3 PDP enforce (`rba-idp` → `/risk/evaluate`)
 
 After a successful password verify, `rba-idp` calls `POST /risk/evaluate` and
