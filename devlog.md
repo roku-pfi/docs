@@ -4,6 +4,26 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — IdP-5 hosted login UI (`rba-idp`)
+
+Apps send users to the IdP origin instead of posting JSON themselves.
+`GET /` and `GET /login` serve a Jinja page that calls the existing login API
+and renders PDP reasons on MFA / reauth / block / success.
+
+- Same origin as `POST /login` — no CORS, no OIDC, no `rba-frontend` yet
+  ([ADR-0016](decisions/0016-hosted-login-on-idp.md)).
+- `application_id` query param (default seeded `demo-banking-app`); unknown
+  clients get an HTML panel instead of a 400.
+- Boot payload injects client IP (`X-Forwarded-For` or peer) so the browser
+  does not have to guess `LoginRequest.ip_address`.
+- Session token stays Bearer in `sessionStorage`; JSON API unchanged.
+- `pytest -q`: 34 passed (including `tests/test_hosted_login.py`).
+- `rba-idp` `7ff7d21`.
+
+**Next:** IdP-6 — admin console (users, apps, decisions, policy).
+
+---
+
 ## 2026-08-15 — Polyrepo README pass
 
 Read every checkout in `develop/` and expanded documentation so each directory

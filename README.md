@@ -28,7 +28,7 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | `rba-features` | Shared feature library (train/serve parity) |
 | `rba-contracts` | OpenAPI / AsyncAPI / JSON Schema / Pydantic |
 | `rba-decision-service` | PDP (`POST /risk/evaluate`) |
-| `rba-idp` | IdP / PEP (users, apps, login, session, mock MFA) |
+| `rba-idp` | IdP / PEP (users, apps, hosted login, session, mock MFA) |
 | `rba-event-publisher` | Outbox → RabbitMQ |
 | `rba-profile-service` | Async Redis profile updates |
 | `rba-audit-service` | Async audit store |
