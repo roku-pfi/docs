@@ -4,6 +4,27 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — K8s-2 Prometheus/Grafana + HPA load (ADR-0021)
+
+Phase 5 thin slice: scrape the PDP, chart it, and prove the HPA moves.
+
+- `rba-decision-service`: `GET /metrics` (`prometheus-client`) —
+  `rba_decisions_total`, `rba_risk_score`, `http_request_duration_seconds`.
+  Tests: 12 passed, 1 skipped.
+- `rba-infra` Helm chart **0.2.0**: Prometheus, Grafana (`/grafana`),
+  namespace-scoped kube-state-metrics. Prometheus scrapes **each PDP pod**
+  (Endpoints SD). HPA scale-up stabilization 0s; Deployment omits
+  `spec.replicas` so Helm does not fight the scale subresource.
+- `scripts/load-hpa.sh` + `load/evaluate_load.py`: in-cluster Job, 24
+  workers, 180s. **HPA 2 → 5** in ~56s (CPU 9% → 850% of request). Job
+  **76177 ok / 0 err**, ~423 req/s. Finding:
+  [`findings/2026-08-16-k8s2-hpa-load.md`](findings/2026-08-16-k8s2-hpa-load.md).
+
+**Next:** K8s-3 — GitOps / reusable CI templates (Tilt optional). Event lag
+and DLQ stay later.
+
+---
+
 ## 2026-08-16 — K8s-1 local k3d + Helm (ADR-0020)
 
 The IdP shell is done; this session is the first graded Kubernetes slice.

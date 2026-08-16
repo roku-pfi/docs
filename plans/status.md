@@ -39,11 +39,11 @@ path unless they unblock a k8s stage.
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
 IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0), `rba-decision-service`, async
-profile/audit, `rba-infra` (compose + k3d/Helm).
+profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done).
 
-**Current focus:** Phase 5 — Prometheus / Grafana + a load test that moves the
-HPA. Federation / SCIM / OIDC remain out.
+**Current focus:** K8s-3 — GitOps / reusable CI templates (Tilt optional).
+Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -53,13 +53,14 @@ HPA. Federation / SCIM / OIDC remain out.
       via k3d/Helm (ADR-0020 / K8s-1).
 - [~] **Phase 4 — Async services** ← thin slice + k8s Deployments done
       (ADR-0011). Remaining: DLQ / worker metrics.
-- [ ] **Phase 5 — Observability & load/scenario testing**
+- [~] **Phase 5 — Observability & load/scenario testing** ← Prometheus/Grafana
+      + HPA load done (ADR-0021 / K8s-2). Remaining: event lag.
 - [ ] **Phase 6 — ML lifecycle + generator**
 - [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
-      IdP-7 + K8s-1 done)
+      IdP-7 + K8s-1 done; K8s-2 done)
 - [ ] **Phase 8 — Report & defense**
-- [~] **Phase 0 — Infra foundations** — compose + k3d/Helm done (ADR-0020);
-      Tilt / GitOps / CI templates still ahead
+- [~] **Phase 0 — Infra foundations** — compose + k3d/Helm + Prometheus/Grafana
+      done (ADR-0020/0021); Tilt / GitOps / CI templates still ahead
 
 ## Phase 1 — steps (done)
 
@@ -121,5 +122,7 @@ Stages in order. All IdP-1…7 boxes are done; leftover Phase 7 is k8s.
 - [x] **K8s-1** Local k3d cluster + Helm data plane + service Deployments
       ([ADR-0020](../decisions/0020-local-k8s-k3d-helm.md)). IdP Ingress on
       `:8080`; PDP 2 replicas + HPA; compose still valid without a cluster.
-- [ ] **K8s-2** Prometheus / Grafana + load test that moves the HPA (Phase 5)
+- [x] **K8s-2** Prometheus / Grafana + load test that moves the HPA (Phase 5)
+      ([ADR-0021](../decisions/0021-prometheus-grafana-in-chart.md);
+      finding [`2026-08-16-k8s2-hpa-load.md`](../findings/2026-08-16-k8s2-hpa-load.md)).
 - [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional)

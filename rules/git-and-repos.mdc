@@ -13,6 +13,9 @@ alwaysApply: true
  (not in service repos).
 - Commit messages: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, with an
   optional scope like `feat(ml):`). Pass the body via a HEREDOC.
+- Commits are **the user's only**. Never add `Co-authored-by: Cursor`, any other
+  AI/tool trailer, or mention of the assistant in the subject or body. Author
+  and committer stay the user's git identity.
 - Only commit when asked. Push to `main` is a protected action — surface it for
   approval, never force-push.
 - NEVER modify git config. NEVER commit data or secrets: datasets (`data/raw/`,

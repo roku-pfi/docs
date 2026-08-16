@@ -20,7 +20,7 @@ the shell; RBA is the thesis (ADR-0015).
 - `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`, `GET`/`PUT /policy`).
 - `rba-idp` — thesis-scale IdP (PEP): users, apps, groups, hosted login, session, mock MFA, admin.
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
-- `rba-infra` — shared compose (Redis/Postgres/RabbitMQ) + k3d/Helm (K8s-1); Tilt/GitOps/CI later.
+- `rba-infra` — shared compose (Redis/Postgres/RabbitMQ) + k3d/Helm + Prometheus/Grafana (K8s-1/2); Tilt/GitOps/CI later.
 - `rba-event-publisher` / `rba-profile-service` / `rba-audit-service` — Phase 4 async.
 - `docs` — devlog, ADRs (`decisions/`), findings, and the plan (`plans/`).
 
@@ -33,8 +33,9 @@ time — do not skip IdP-3 (PDP enforce). Phase rationale:
 
 Phases 1–3 are **complete** (model, contracts, PDP request path). Phase 4 async
 thin slice is up (k8s Deployments in K8s-1). **Phase 7:** IdP-1…7 + K8s-1 done.
-**Next is K8s-2** (Prometheus/Grafana + load/HPA, Phase 5). Federation / SCIM /
-OIDC remain out.
+**K8s-2 done** (Prometheus/Grafana + HPA load, ADR-0021). **Next is K8s-3**
+(GitOps / reusable CI templates; Tilt optional). Federation / SCIM / OIDC remain
+out.
 
 ## Stack (decided — see docs/decisions/)
 
