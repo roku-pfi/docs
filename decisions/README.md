@@ -6,7 +6,7 @@ add a new ADR that **supersedes** the old one (and mark the old one accordingly)
 rather than editing history. This preserves the reasoning trail for the thesis.
 
 Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
-we chose this shape*. Numbering is chronological. Next unused number: **0020**.
+we chose this shape*. Numbering is chronological. Next unused number: **0021**.
 
 ## Index
 
@@ -31,6 +31,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0020**.
 | [0017](0017-admin-console-colocated-on-idp.md) | Admin console colocated on `rba-idp`; control-plane reads stay with owners | Accepted |
 | [0018](0018-live-decision-browser-reads-pdp.md) | Live decision browser reads the PDP `decisions` table | Accepted |
 | [0019](0019-groups-grant-app-access.md) | Groups grant app access on the IdP; admin stays `is_admin` | Accepted |
+| [0020](0020-local-k8s-k3d-helm.md) | Local Kubernetes via k3d + Helm in `rba-infra` | Accepted |
 
 ## Template
 

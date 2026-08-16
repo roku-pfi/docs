@@ -25,12 +25,12 @@ Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md)
 
 | Phase | What | State |
 |---|---|---|
-| 0 | Infra (compose now; k3d/Helm later) | Compose done |
+| 0 | Infra (compose + k3d/Helm; Tilt/CI later) | K8s-1 done |
 | 1 | Data & model feasibility | Done |
 | 2 | Freeze contracts | Done |
-| 3 | Request path (PDP) | Done (k8s later) |
-| 4 | Async profile/audit | Thin slice done |
-| 5 | Observability & load tests | Not started |
+| 3 | Request path (PDP) | Done (k8s via K8s-1) |
+| 4 | Async profile/audit | Thin slice + k8s Deployments; DLQ later |
+| 5 | Observability & load tests | **Next** (K8s-2) |
 | 6 | ML lifecycle + generator | Not started |
-| 7 | Thin IdP platform | IdP-7 done; **k8s/observability next** |
+| 7 | Thin IdP platform | IdP-7 done; K8s-1 done |
 | 8 | Report & defense | Not started |

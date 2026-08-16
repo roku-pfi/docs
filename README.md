@@ -32,7 +32,7 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | `rba-event-publisher` | Outbox → RabbitMQ |
 | `rba-profile-service` | Async Redis profile updates |
 | `rba-audit-service` | Async audit store + HTTP decision read |
-| `rba-infra` | Shared compose (Redis / Postgres / RabbitMQ) |
+| `rba-infra` | Shared compose + k3d/Helm (Redis / Postgres / RabbitMQ) |
 | `rba-ml-training` | Offline data + modelling |
 
 ## How we keep this updated

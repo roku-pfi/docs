@@ -419,7 +419,8 @@ See §1.1 and ADR-0012 for migration rules.
 - Bootstrap `rba-infra` (local cluster via k3d/kind, Tilt/Skaffold, CI template,
   Prometheus/Grafana). Create `rba-contracts` + `rba-features` skeletons.
 - Stand up `rba-decision-service` repo with a stub `/risk/evaluate`.
-- *(Light compose Redis/Postgres/RabbitMQ already landed; full k3d/Helm still open.)*
+- *(Compose Redis/Postgres/RabbitMQ + k3d/Helm local stack landed, ADR-0020;
+  Tilt / GitOps / CI templates still open.)*
 
 ### Phase 1 — Data & model feasibility (≈2–3 weeks) ← **done**
 - Wiefling subset + EDA. Implement `rba-features` + offline replay driver.

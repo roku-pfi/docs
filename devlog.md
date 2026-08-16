@@ -4,6 +4,27 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — K8s-1 local k3d + Helm (ADR-0020)
+
+The IdP shell is done; this session is the first graded Kubernetes slice.
+Compose stays the no-cluster inner loop. A k3d cluster + one Helm chart in
+`rba-infra` runs the data plane and every application Deployment.
+
+- `rba-infra`: `helm/rba` (Redis/Postgres/RabbitMQ + apps), `k3d/cluster.yaml`
+  (host **8080→80**), `scripts/k3d-up.sh` / `k3d-down.sh`.
+- Dockerfiles in `rba-decision-service`, `rba-idp`, `rba-event-publisher`,
+  `rba-profile-service`, `rba-audit-service` (sibling libs copied at build;
+  audit image serves consumer + `rba-audit-api`).
+- IdP is the only Ingress; PDP is ClusterIP at 2 replicas with HPA (min 2 /
+  max 5, CPU 70%) and `/healthz` probes. `PROFILE_WRITE_MODE=none`.
+- Bring-up: Docker/OrbStack, `k3d`, `helm`, `kubectl`. Cluster **is up**: all
+  pods Running, IdP Ingress on `:8080`, HPA seeing CPU. Hosted login + admin
+  Decisions exercised (`demo@example.com` → PDP row visible).
+
+**Next:** K8s-2 — Prometheus/Grafana + a load test that moves the HPA (Phase 5).
+
+---
+
 ## 2026-08-15 — IdP-7 groups / app-scoped access (ADR-0019)
 
 Login is no longer “any user, any app”. After password verify the IdP requires

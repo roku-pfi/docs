@@ -32,34 +32,34 @@ not let the shell replace the core.
 | Users, apps, hosted login, session, MFA | Full OIDC/SAML, SCIM, LDAP, social login | Per-signal reasons, tunable policy, train/serve parity |
 | Admin to operate the platform | Multi-tenant HA, billing, authz engines | Decision browser tied to the PDP |
 
-**Working rule:** each session moves **one IdP stage**
-([ADR-0013](../decisions/0013-idp-staged-start.md)), but **IdP-3 (PDP enforce)
-is not skippable** — that is where RBA re-enters the login. No throwaway PEP
-scripts, no identity inside `decision-service`. Leftover Phase 4/5/6/0 items
-are not the current path unless they unblock an IdP stage.
+**Working rule:** IdP stages are done. Each session now moves **one k8s/ops
+stage** (below). Do not skip back into IdP niceties or federation. No identity
+inside `decision-service`. Leftover Phase 4 items (DLQ) are not the current
+path unless they unblock a k8s stage.
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
 IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0), `rba-decision-service`, async
-profile/audit, `rba-infra`.
-**Product shell started:** `rba-idp` (IdP-5 hosted login + IdP-6 admin + IdP-7 groups).
+profile/audit, `rba-infra` (compose + k3d/Helm).
+**Product shell:** `rba-idp` (IdP-1…7 done).
 
-**Current focus:** k8s/Helm/observability (Phase 0 remainder / Phase 5). IdP
-stages IdP-1…7 are done. Federation / SCIM / OIDC remain out.
+**Current focus:** Phase 5 — Prometheus / Grafana + a load test that moves the
+HPA. Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
 - [x] **Phase 1 — Data & model feasibility**
 - [x] **Phase 2 — Freeze contracts** (`rba-contracts` v0.1.0; ADR-0008)
 - [x] **Phase 3 — Request path** (`rba-decision-service`; ADR-0009/0010). Local k8s
-      still waits on fuller Phase 0 Helm.
-- [~] **Phase 4 — Async services** ← thin slice done (publisher + profile + audit;
-      ADR-0011). Remaining: DLQ/metrics/k8s Deployments.
+      via k3d/Helm (ADR-0020 / K8s-1).
+- [~] **Phase 4 — Async services** ← thin slice + k8s Deployments done
+      (ADR-0011). Remaining: DLQ / worker metrics.
 - [ ] **Phase 5 — Observability & load/scenario testing**
 - [ ] **Phase 6 — ML lifecycle + generator**
-- [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019; IdP-7 done)
+- [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
+      IdP-7 + K8s-1 done)
 - [ ] **Phase 8 — Report & defense**
-- [~] **Phase 0 — Infra foundations** — compose (Redis/Postgres/RabbitMQ) done;
-      k3d/Tilt/Helm/CI still ahead
+- [~] **Phase 0 — Infra foundations** — compose + k3d/Helm done (ADR-0020);
+      Tilt / GitOps / CI templates still ahead
 
 ## Phase 1 — steps (done)
 
@@ -91,7 +91,7 @@ IdP login API in **v0.2.0** (IdP-1):
 - [x] Redis profile + Freeman inline + policy + decision/outbox
 - [x] Shared data plane via `rba-infra` (ADR-0010)
 - [x] Exercised against real Redis/Postgres
-- [ ] Local k8s deploy (Phase 0 Helm)
+- [x] Local k8s deploy (k3d + Helm, ADR-0020 / K8s-1)
 
 ## Phase 4 — async services (in progress)
 
@@ -100,8 +100,9 @@ IdP login API in **v0.2.0** (IdP-1):
 - [x] `rba-profile-service` updates Redis + `rba_profile` history (idempotent)
 - [x] `rba-audit-service` persists to `rba_audit` (idempotent)
 - [x] E2E smoke: evaluate (`PROFILE_WRITE_MODE=none`) → publish → profile + audit
+- [x] k8s Deployments (Helm chart in `rba-infra`, ADR-0020)
 - [ ] GitHub remotes + CI for the three new repos
-- [ ] DLQ / metrics / k8s Deployments
+- [ ] DLQ / worker metrics
 
 ## Phase 7 — thin IdP (this is the product path)
 
@@ -114,3 +115,11 @@ Stages in order. All IdP-1…7 boxes are done; leftover Phase 7 is k8s.
 - [x] **IdP-5** Hosted login UI (Auth0/Authentik-style login page)
 - [x] **IdP-6** Admin console (users, applications, decisions, policy)
 - [x] **IdP-7** Stretch: groups / app-scoped permissions (still no OIDC/SAML/SCIM)
+
+## k8s stages (Phase 0 remainder / Phase 5 / Phase 7 leftover)
+
+- [x] **K8s-1** Local k3d cluster + Helm data plane + service Deployments
+      ([ADR-0020](../decisions/0020-local-k8s-k3d-helm.md)). IdP Ingress on
+      `:8080`; PDP 2 replicas + HPA; compose still valid without a cluster.
+- [ ] **K8s-2** Prometheus / Grafana + load test that moves the HPA (Phase 5)
+- [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional)
