@@ -6,7 +6,7 @@ add a new ADR that **supersedes** the old one (and mark the old one accordingly)
 rather than editing history. This preserves the reasoning trail for the thesis.
 
 Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
-we chose this shape*. Numbering is chronological. Next unused number: **0019**.
+we chose this shape*. Numbering is chronological. Next unused number: **0020**.
 
 ## Index
 
@@ -28,7 +28,9 @@ we chose this shape*. Numbering is chronological. Next unused number: **0019**.
 | [0014](0014-thesis-scale-idp-platform.md) | Thesis-scale IdP platform (Authentik/Auth0-shaped, not enterprise) | Accepted |
 | [0015](0015-rba-is-the-thesis-core.md) | RBA is the thesis core; the IdP is how it is delivered | Accepted |
 | [0016](0016-hosted-login-on-idp.md) | Hosted login is served by `rba-idp` (same origin as the PEP API) | Accepted |
+| [0017](0017-admin-console-colocated-on-idp.md) | Admin console colocated on `rba-idp`; control-plane reads stay with owners | Accepted |
 | [0018](0018-live-decision-browser-reads-pdp.md) | Live decision browser reads the PDP `decisions` table | Accepted |
+| [0019](0019-groups-grant-app-access.md) | Groups grant app access on the IdP; admin stays `is_admin` | Accepted |
 
 ## Template
 

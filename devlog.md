@@ -4,6 +4,25 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-15 — IdP-7 groups / app-scoped access (ADR-0019)
+
+Login is no longer “any user, any app”. After password verify the IdP requires
+a group grant (`permission=access`) for the requested application, then calls
+the PDP. Missing grant → `ACCESS_DENIED` (HTTP 200, no score) — not a risk
+`BLOCK`. Admin console still uses `is_admin`.
+
+- `rba-contracts` **0.4.0**: `LoginOutcome.ACCESS_DENIED`; group CRUD models;
+  `openapi/idp-admin.yaml` `/admin/api/groups*`.
+- `rba-idp`: `groups` / `group_memberships` / `group_app_grants`; seeded
+  `grp_banking` and `grp_operators`; Groups tab in admin; hosted “no access”
+  panel.
+- Tests: contracts + IdP login/admin/groups.
+- Commits: `rba-contracts` `dedbc4d`, `rba-idp` `e8b15ab`.
+
+**Next:** k8s/Helm/observability (Phase 0 remainder / Phase 5). No OIDC/SAML/SCIM.
+
+---
+
 ## 2026-08-15 — Decision browser reads the PDP table (ADR-0018)
 
 Admin Decisions was empty after a real login: it waited on outbox → RabbitMQ →

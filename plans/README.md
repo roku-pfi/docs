@@ -32,5 +32,5 @@ Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md)
 | 4 | Async profile/audit | Thin slice done |
 | 5 | Observability & load tests | Not started |
 | 6 | ML lifecycle + generator | Not started |
-| 7 | Thin IdP platform | IdP-6 done; **IdP-7 stretch next** |
+| 7 | Thin IdP platform | IdP-7 done; **k8s/observability next** |
 | 8 | Report & defense | Not started |

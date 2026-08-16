@@ -39,11 +39,12 @@ scripts, no identity inside `decision-service`. Leftover Phase 4/5/6/0 items
 are not the current path unless they unblock an IdP stage.
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
-IdP login 0.2.0 + admin 0.3.0), `rba-decision-service`, async profile/audit, `rba-infra`.
-**Product shell started:** `rba-idp` (IdP-5 hosted login + IdP-6 admin console).
+IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0), `rba-decision-service`, async
+profile/audit, `rba-infra`.
+**Product shell started:** `rba-idp` (IdP-5 hosted login + IdP-6 admin + IdP-7 groups).
 
-**Current focus:** **IdP-7** stretch — groups / app-scoped permissions (skippable).
-k8s/Helm/observability remain later and are not gated on IdP-7.
+**Current focus:** k8s/Helm/observability (Phase 0 remainder / Phase 5). IdP
+stages IdP-1…7 are done. Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -55,7 +56,7 @@ k8s/Helm/observability remain later and are not gated on IdP-7.
       ADR-0011). Remaining: DLQ/metrics/k8s Deployments.
 - [ ] **Phase 5 — Observability & load/scenario testing**
 - [ ] **Phase 6 — ML lifecycle + generator**
-- [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017; IdP-6 done)
+- [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019; IdP-7 done)
 - [ ] **Phase 8 — Report & defense**
 - [~] **Phase 0 — Infra foundations** — compose (Redis/Postgres/RabbitMQ) done;
       k3d/Tilt/Helm/CI still ahead
@@ -104,12 +105,12 @@ IdP login API in **v0.2.0** (IdP-1):
 
 ## Phase 7 — thin IdP (this is the product path)
 
-Stages in order. Next unchecked box is the only IdP work to pick up.
+Stages in order. All IdP-1…7 boxes are done; leftover Phase 7 is k8s.
 
 - [x] **IdP-1** Contracts (`rba-contracts` 0.2.0)
 - [x] **IdP-2** Identity store (`rba-idp` + users + seeded application, password verify)
 - [x] **IdP-3** PDP enforce (call `/risk/evaluate`, map action → outcome)
 - [x] **IdP-4** Session + mock MFA
 - [x] **IdP-5** Hosted login UI (Auth0/Authentik-style login page)
-- [x] **IdP-6** Admin console (users, apps, decisions, policy)
-- [ ] **IdP-7** Stretch: groups / app-scoped permissions (still no OIDC/SAML/SCIM)
+- [x] **IdP-6** Admin console (users, applications, decisions, policy)
+- [x] **IdP-7** Stretch: groups / app-scoped permissions (still no OIDC/SAML/SCIM)
