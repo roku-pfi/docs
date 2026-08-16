@@ -21,5 +21,12 @@ Train/serve skew is the top failure mode this design avoids. Enforce it:
 ## Excluded on purpose (EDA-justified — don't silently re-add)
 
 - `rtt_deviation` — RTT is ~94% missing.
-- absolute geo distance / `impossible_travel` — geo is synthesised and region/city are
-  ~42% missing. Prefer `*_seen_before` signals.
+- absolute km / city-level geo / GPS as Freeman inputs — geo is synthesised
+  and region/city are ~42% missing. Prefer `*_seen_before` signals.
+
+## Allowed as a PDP rule, not a Freeman feature (ADR-0022)
+
+- Country-centroid `impossible_travel` may live in `rba-features` as
+  `f(event, profile)` and **escalate** the policy action. Same centroid table
+  offline and online; missing country never fires; VPN/hosting ASNs skip
+  teleport. Do not implement GPS or city GeoIP as a model input.

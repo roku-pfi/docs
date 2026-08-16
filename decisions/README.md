@@ -6,7 +6,7 @@ add a new ADR that **supersedes** the old one (and mark the old one accordingly)
 rather than editing history. This preserves the reasoning trail for the thesis.
 
 Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
-we chose this shape*. Numbering is chronological. Next unused number: **0022**.
+we chose this shape*. Numbering is chronological. Next unused number: **0024**.
 
 ## Index
 
@@ -25,14 +25,16 @@ we chose this shape*. Numbering is chronological. Next unused number: **0022**.
 | [0011](0011-async-outbox-rabbitmq.md) | Phase 4 async plane — outbox → RabbitMQ → profile/audit | Accepted |
 | [0012](0012-thin-idp-end-product.md) | Thin IdP end product; PDP remains the risk core | Accepted |
 | [0013](0013-idp-staged-start.md) | Start thin IdP in stages; skip Horizon A demo kit | Accepted |
-| [0014](0014-thesis-scale-idp-platform.md) | Thesis-scale IdP platform (Authentik/Auth0-shaped, not enterprise) | Accepted |
+| [0014](0014-thesis-scale-idp-platform.md) | Thesis-scale IdP platform (Authentik/Auth0-shaped, not enterprise) | Accepted (MFA cut line amended by 0022) |
 | [0015](0015-rba-is-the-thesis-core.md) | RBA is the thesis core; the IdP is how it is delivered | Accepted |
-| [0016](0016-hosted-login-on-idp.md) | Hosted login is served by `rba-idp` (same origin as the PEP API) | Accepted |
+| [0016](0016-hosted-login-on-idp.md) | Hosted login is served by `rba-idp` (same origin as the PEP API) | Accepted (end-user reasons amended by 0023) |
 | [0017](0017-admin-console-colocated-on-idp.md) | Admin console colocated on `rba-idp`; control-plane reads stay with owners | Accepted |
 | [0018](0018-live-decision-browser-reads-pdp.md) | Live decision browser reads the PDP `decisions` table | Accepted |
 | [0019](0019-groups-grant-app-access.md) | Groups grant app access on the IdP; admin stays `is_admin` | Accepted |
 | [0020](0020-local-k8s-k3d-helm.md) | Local Kubernetes via k3d + Helm in `rba-infra` | Accepted |
 | [0021](0021-prometheus-grafana-in-chart.md) | Prometheus + Grafana in the `rba` Helm chart | Accepted |
+| [0022](0022-product-demo-over-gitops.md) | Product demo over further GitOps; real step-up + travel rule | Accepted (Demo-3 UX amended by 0023) |
+| [0023](0023-end-user-login-is-opaque.md) | End-user surfaces stay opaque; explainability lives in admin | Accepted |
 
 ## Template
 

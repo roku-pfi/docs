@@ -17,7 +17,7 @@ Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md)
 
 1. Read `status.md` “Current focus” before starting work.
 2. If the step is unclear, read the matching section of `development_plan.md`
-   (§8 for phase list; IdP stages under Phase 7).
+   (§8 for phase list; IdP stages under Phase 7; Demo-1…4 under Horizon D).
 3. When the step finishes: tick `status.md`, prepend `devlog.md`, ADR/finding
    if needed.
 
@@ -25,7 +25,7 @@ Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md)
 
 | Phase | What | State |
 |---|---|---|
-| 0 | Infra (compose + k3d/Helm + Prometheus/Grafana; Tilt/CI later) | K8s-1 + K8s-2 done |
+| 0 | Infra (compose + k3d/Helm + Prometheus/Grafana; GitOps deferred) | K8s-1 + K8s-2 done |
 | 1 | Data & model feasibility | Done |
 | 2 | Freeze contracts | Done |
 | 3 | Request path (PDP) | Done (k8s via K8s-1) |
@@ -33,4 +33,5 @@ Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md)
 | 5 | Observability & load tests | **K8s-2 done** (event lag later) |
 | 6 | ML lifecycle + generator | Not started |
 | 7 | Thin IdP platform | IdP-7 done; K8s-1/2 done |
+| D | Product demo (ADR-0022) | **Current:** Demo-1…4 |
 | 8 | Report & defense | Not started |

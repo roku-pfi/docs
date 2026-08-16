@@ -4,6 +4,37 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — End-user login is opaque (ADR-0023)
+
+The banking home must not show the PDP decision. Explainability is for the
+operator (admin Decisions), not the account holder.
+
+- [ADR-0023](decisions/0023-end-user-login-is-opaque.md) amends Demo-3 in
+  ADR-0022 and the end-user reading of ADR-0016.
+- `/app` is a normal app. Hosted `ALLOW` redirects with no reason panel;
+  MFA/BLOCK use generic copy. Walkthrough keeps admin in a second window.
+
+**Next:** Demo-1 (unchanged) — country on the login path + travel rule.
+
+---
+
+## 2026-08-16 — Horizon D: product demo over GitOps (ADR-0022)
+
+Architecture (k3d/Helm/HPA/Grafana) is enough for the ops story. Current focus
+moves from K8s-3 to a thin **product demo** so a defense shows what RBA *is*.
+
+- [ADR-0022](decisions/0022-product-demo-over-gitops.md): Demo-1…4; Freeman +
+  policy still decide; the app never calls the scorer. Country-centroid
+  impossible travel as a PDP escalate (VPN/hosting skip). WebAuthn for step-up.
+  Banking UI colocated on `rba-idp` `/app` — no new service.
+- `plans/status.md` / `development_plan.md` §1.1 Horizon D + §8 stages.
+- Feature-parity rule: GPS/city still out; centroid travel rule allowed.
+
+**Next:** Demo-1 — country on the login path + `impossible_travel` in
+`rba-features` + PDP escalate + parity tests.
+
+---
+
 ## 2026-08-16 — K8s-2 Prometheus/Grafana + HPA load (ADR-0021)
 
 Phase 5 thin slice: scrape the PDP, chart it, and prove the HPA moves.
@@ -21,7 +52,7 @@ Phase 5 thin slice: scrape the PDP, chart it, and prove the HPA moves.
   [`findings/2026-08-16-k8s2-hpa-load.md`](findings/2026-08-16-k8s2-hpa-load.md).
 
 **Next:** K8s-3 — GitOps / reusable CI templates (Tilt optional). Event lag
-and DLQ stay later.
+and DLQ stay later. *(Superseded the same day: ADR-0022, Demo-1…4 first.)*
 
 ---
 

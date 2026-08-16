@@ -18,24 +18,24 @@ the shell; RBA is the thesis (ADR-0015).
   (feature schema, model I/O, `/risk/evaluate`, IdP login 0.2.0, admin 0.3.0,
   groups 0.4.0, outbox events, policy config).
 - `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`, `GET`/`PUT /policy`).
-- `rba-idp` — thesis-scale IdP (PEP): users, apps, groups, hosted login, session, mock MFA, admin.
+- `rba-idp` — thesis-scale IdP (PEP): users, apps, groups, hosted login, session, MFA, admin; Demo-3 client app colocated.
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
-- `rba-infra` — shared compose (Redis/Postgres/RabbitMQ) + k3d/Helm + Prometheus/Grafana (K8s-1/2); Tilt/GitOps/CI later.
+- `rba-infra` — shared compose (Redis/Postgres/RabbitMQ) + k3d/Helm + Prometheus/Grafana (K8s-1/2); GitOps/CI deferred (K8s-3).
 - `rba-event-publisher` / `rba-profile-service` / `rba-audit-service` — Phase 4 async.
 - `docs` — devlog, ADRs (`decisions/`), findings, and the plan (`plans/`).
 
 ## Current status
 
 **Single source of truth: `docs/plans/status.md`**. Thesis core is **RBA**
-(ADR-0015); product shell is a thesis-scale IdP (ADR-0014). One IdP stage at a
-time — do not skip IdP-3 (PDP enforce). Phase rationale:
+(ADR-0015); product shell is a thesis-scale IdP (ADR-0014). One **Demo** stage
+at a time (ADR-0022) — do not skip Demo-1. Phase rationale:
 `docs/plans/development_plan.md` §8.
 
 Phases 1–3 are **complete** (model, contracts, PDP request path). Phase 4 async
 thin slice is up (k8s Deployments in K8s-1). **Phase 7:** IdP-1…7 + K8s-1 done.
-**K8s-2 done** (Prometheus/Grafana + HPA load, ADR-0021). **Next is K8s-3**
-(GitOps / reusable CI templates; Tilt optional). Federation / SCIM / OIDC remain
-out.
+**K8s-2 done** (Prometheus/Grafana + HPA load, ADR-0021). **Current focus is
+Demo-1…4** (product demo, ADR-0022), not K8s-3. Federation / SCIM / OIDC remain
+out. The demo app never calls Freeman — the IdP asks the PDP.
 
 ## Stack (decided — see docs/decisions/)
 

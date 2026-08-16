@@ -4,7 +4,7 @@
 > focus" pointer whenever a step/phase completes. Narrative detail goes in
 > [`../devlog.md`](../devlog.md) (newest on top); the phase rationale is in
 > [`development_plan.md`](development_plan.md) §8 (**canonical roadmap** — product
-> horizons in §1.1 / ADR-0012–0015); decisions in [`../decisions/`](../decisions/);
+> horizons in §1.1 / ADR-0012–0015, **0022**); decisions in [`../decisions/`](../decisions/);
 > numbers in [`../findings/`](../findings/).
 
 Legend: `[x]` done · `[~]` in progress · `[ ]` not started.
@@ -32,18 +32,21 @@ not let the shell replace the core.
 | Users, apps, hosted login, session, MFA | Full OIDC/SAML, SCIM, LDAP, social login | Per-signal reasons, tunable policy, train/serve parity |
 | Admin to operate the platform | Multi-tenant HA, billing, authz engines | Decision browser tied to the PDP |
 
-**Working rule:** IdP stages are done. Each session now moves **one k8s/ops
-stage** (below). Do not skip back into IdP niceties or federation. No identity
-inside `decision-service`. Leftover Phase 4 items (DLQ) are not the current
-path unless they unblock a k8s stage.
+**Working rule:** IdP-1…7 and K8s-1/2 are done. Each session now moves **one
+Demo stage** (below). Do not skip Demo-1 (signals + travel rule) to chase
+passkeys or a prettier app. The demo **app never calls Freeman** — the IdP asks
+the PDP; Freeman + policy decide `ALLOW` / `MFA` / `REAUTH` / `BLOCK`. No
+identity inside `decision-service`. No OIDC/SAML/SCIM. K8s-3 (GitOps/CI) and
+Phase 4 leftovers (DLQ) wait unless they unblock a Demo stage.
+([ADR-0022](../decisions/0022-product-demo-over-gitops.md))
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
 IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0), `rba-decision-service`, async
 profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
-**Product shell:** `rba-idp` (IdP-1…7 done).
+**Product shell:** `rba-idp` (IdP-1…7 done). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus:** K8s-3 — GitOps / reusable CI templates (Tilt optional).
-Federation / SCIM / OIDC remain out.
+**Current focus:** Demo-1 — login signals + country-centroid impossible-travel
+rule (VPN/hosting skip). Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -57,10 +60,11 @@ Federation / SCIM / OIDC remain out.
       + HPA load done (ADR-0021 / K8s-2). Remaining: event lag.
 - [ ] **Phase 6 — ML lifecycle + generator**
 - [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
-      IdP-7 + K8s-1 done; K8s-2 done)
+      IdP-7 + K8s-1 done; K8s-2 done). **Demo-1…4** is the leftover product path
+      ([ADR-0022](../decisions/0022-product-demo-over-gitops.md)).
 - [ ] **Phase 8 — Report & defense**
 - [~] **Phase 0 — Infra foundations** — compose + k3d/Helm + Prometheus/Grafana
-      done (ADR-0020/0021); Tilt / GitOps / CI templates still ahead
+      done (ADR-0020/0021); Tilt / GitOps / CI templates deferred (K8s-3)
 
 ## Phase 1 — steps (done)
 
@@ -102,12 +106,13 @@ IdP login API in **v0.2.0** (IdP-1):
 - [x] `rba-audit-service` persists to `rba_audit` (idempotent)
 - [x] E2E smoke: evaluate (`PROFILE_WRITE_MODE=none`) → publish → profile + audit
 - [x] k8s Deployments (Helm chart in `rba-infra`, ADR-0020)
-- [ ] GitHub remotes + CI for the three new repos
+- [x] GitHub remotes for the three worker repos (`roku-pfi/rba-{event-publisher,profile-service,audit-service}`)
+- [ ] CI for those repos (bundled with K8s-3, deferred)
 - [ ] DLQ / worker metrics
 
-## Phase 7 — thin IdP (this is the product path)
+## Phase 7 — thin IdP (shell done)
 
-Stages in order. All IdP-1…7 boxes are done; leftover Phase 7 is k8s.
+Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-1…4**.
 
 - [x] **IdP-1** Contracts (`rba-contracts` 0.2.0)
 - [x] **IdP-2** Identity store (`rba-idp` + users + seeded application, password verify)
@@ -125,4 +130,28 @@ Stages in order. All IdP-1…7 boxes are done; leftover Phase 7 is k8s.
 - [x] **K8s-2** Prometheus / Grafana + load test that moves the HPA (Phase 5)
       ([ADR-0021](../decisions/0021-prometheus-grafana-in-chart.md);
       finding [`2026-08-16-k8s2-hpa-load.md`](../findings/2026-08-16-k8s2-hpa-load.md)).
-- [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional)
+- [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional) — **deferred**
+      until Demo-1…4 exist (ADR-0022)
+
+## Demo stages (current product path — ADR-0022)
+
+Show the product: a person logs into an app; Freeman + policy decide; step-up
+is real; reasons are visible **in admin**, not to the account holder (ADR-0023).
+One stage at a time.
+
+- [ ] **Demo-1** Country on the login path; country-centroid `impossible_travel`
+      in `rba-features`; PDP escalates ALLOW → MFA; VPN/hosting ASN skips teleport.
+      Parity tests green.
+- [ ] **Demo-2** Seed usual home profile for `demo@example.com`; scenario control
+      for the next login (home / new country / impossible travel / VPN).
+- [ ] **Demo-3** Banking UI colocated on `rba-idp` (`/app`). Redirect to hosted
+      login; after `AUTHENTICATED`, land in a normal app home (**no** score or
+      reasons — [ADR-0023](../decisions/0023-end-user-login-is-opaque.md)).
+      Optional: same user on `demo-forum-app` (looser policy).
+- [ ] **Demo-4** WebAuthn passkey for `REQUIRE_MFA` (generic “confirm it’s you”
+      copy — ADR-0023). Mock OTP remains for tests. Completing MFA does not re-score.
+
+**Walkthrough (definition of done):** (1) home → ALLOW → app (no risk UI);
+(2) new country → generic MFA from Freeman+policy; (3) teleport → generic MFA
+from the travel rule; (4) VPN → generic MFA as untrusted network, not teleport;
+(5) **admin Decisions** (second window) shows the reasons.

@@ -88,8 +88,9 @@
 | Horizon | When | What “done” looks like |
 |---|---|---|
 | **A — PDP core** | done (Phases 1–4 thin slice) | `/risk/evaluate` + async profile/audit. **No demo-kit polish** (ADR-0013). |
-| **B — IdP platform** | late October | Authentik/Auth0-shaped at thesis scale (ADR-0014): users, apps, hosted login, PDP enforce, session/MFA, admin. Staged IdP-1…7. |
-| **C — Thesis hardening** | → December | k8s/HPA/observability/report. Federation/SCIM still out. |
+| **B — IdP platform** | done (IdP-1…7) | Authentik/Auth0-shaped at thesis scale (ADR-0014): users, apps, hosted login, PDP enforce, session/MFA, admin. |
+| **C — Thesis hardening** | K8s-1/2 done | k8s/HPA/observability. K8s-3 (GitOps/CI) **deferred**. Federation/SCIM still out. |
+| **D — Product demo** | **now** (ADR-0022) | Client app + scenario control + WebAuthn step-up + country-centroid travel rule. Freeman still decides the score. |
 
 **What near-term work must protect (reuse forever)**
 
@@ -355,12 +356,16 @@ Three layers, combined by the policy engine inside `decision-service`:
    gives per-decision explanations (a recent PLOS One RBA paper uses GBM/XGBoost +
    SHAP on this same dataset — good related work). Keep RF since your proposal names
    it; report both.
-3. **Deterministic rules for hard overrides** (disabled user → BLOCK; critical app +
-   unknown device → force MFA). Rules produce evidence/adjustments, not the final
-   action.
+3. **Deterministic rules for hard overrides** (ADR-0022): country-centroid
+   **impossible travel** may **escalate** the policy action (default ALLOW →
+   `REQUIRE_MFA`, not BLOCK). VPN/hosting ASNs skip the physics check and emit
+   `vpn_or_hosting` instead. Rules do not replace Freeman’s `risk_score`; they
+   can raise the action when physics (or a hard policy) says the score is not
+   enough. GPS / city GeoIP / Freeman-categorical travel stay out.
 
 Model outputs a probability; **policy engine → action** (score→level and
-level→action per app-sensitivity are versioned config).
+level→action per app-sensitivity are versioned config). The demo app never
+calls Freeman — the IdP asks the PDP (ADR-0022).
 
 **Mandatory leakage experiment:** train Variant A (with `is_attack_ip`) and Variant B
 (behavioral/context only). If A ≫ B, the model is memorizing bad IPs, not learning
@@ -394,6 +399,9 @@ inspiration only — don't burn time hunting for a second real login dataset.
 
 ### 7.3 Synthetic generator — after EDA, to *complement* not replace
 
+**Not the same as Demo-2.** The live demo uses a **scenario control** (next-login
+context + a seeded home profile). The Phase 6 generator remains optional later.
+
 Build it once EDA shows what's underrepresented, to inject attacks the public set
 lacks and the `application_sensitivity` dimension it doesn't have:
 
@@ -412,7 +420,8 @@ grows).
 ## 8. Development roadmap (phased, time-boxed to December)
 
 Model + contracts first; then the request path; then async services; then k8s /
-observability; **thin IdP + admin as the Horizon B product shell**; report last.
+observability; **thin IdP + admin as the Horizon B product shell**; **Horizon D
+product demo** (ADR-0022) before more GitOps; report last.
 See §1.1 and ADR-0012 for migration rules.
 
 ### Phase 0 — Foundations & repos (≈1–1.5 weeks)
@@ -466,19 +475,35 @@ Product shape: thesis-scale Authentik/Auth0, not a protocol IdP.
 | **IdP-7** Stretch | Groups / app-scoped permissions. | Federation / SCIM / full OIDC still out |
 
 k8s hardening (HPA, probes, secrets, GitOps) stays in this phase but is **not**
-gated on IdP-7 — it can proceed in parallel after IdP-3 if calendar slips.
+gated on IdP-7. **K8s-1 and K8s-2 are done.** K8s-3 (GitOps/CI/Tilt) is
+**deferred** until Horizon D exists (ADR-0022).
+
+### Horizon D — Product demo (ADR-0022) ← **current**
+
+One stage at a time. Canonical checkboxes: `status.md`. Do not skip Demo-1.
+
+| Stage | What ships | Explicitly not |
+|---|---|---|
+| **Demo-1** Signals + travel rule | Country on the login path; `impossible_travel` in `rba-features` (country centroids); PDP escalates ALLOW → MFA; VPN/hosting skip. Parity green. | GPS, city GeoIP, Freeman travel categorical |
+| **Demo-2** Scenarios + seed | Seeded usual profile; next-login context picker (home / new country / teleport / VPN). | Phase 6 generator, extra worker |
+| **Demo-3** Client app | Banking UI on `rba-idp` `/app` (colocated). After `AUTHENTICATED`, a normal app home — **no** score/reasons (ADR-0023). Optional forum app (existing looser policy). | New repo/service, OIDC |
+| **Demo-4** Real step-up | WebAuthn passkey for `REQUIRE_MFA` (opaque copy, ADR-0023). Mock OTP for tests. No re-score after MFA. | TOTP/SMS/push unless WebAuthn is blocked |
+
+Walkthrough: home ALLOW → app (opaque); novel country → generic MFA
+(Freeman+policy); teleport → generic MFA (rule); VPN → generic MFA as untrusted
+network; **admin Decisions** shows why.
 
 ### Phase 8 — Report & defense buffer (ongoing)
 - Feed the thesis continuously: EDA plots, metric tables, architecture + k8s
-  diagrams, leakage discussion, scale-out screenshots, threat model, IdP demo
-  walkthrough.
+  diagrams, leakage discussion, scale-out screenshots, threat model, **product
+  demo walkthrough** (Horizon D).
 
 > If time gets tight, cut in this order: service mesh → Kafka (RabbitMQ is enough) →
-> alerting-service → synthetic generator → **groups/permissions** → polished admin
-> chrome → IdP niceties. **Do not** cut: k8s + HPA, `rba-features` parity, leakage
-> experiment, PDP `/risk/evaluate`, or the IdP→PDP split (never merge identity into
-> decision-service). Horizon A demo may ship **without** IdP; Horizon B should not
-> ship without at least login + enforce + session.
+> alerting-service → synthetic generator → K8s-3 GitOps/CI → TOTP/extra factors →
+> polished admin chrome. **Do not** cut: k8s + HPA (already shipped),
+> `rba-features` parity, leakage experiment, PDP `/risk/evaluate`, the IdP→PDP
+> split, or Horizon D Demo-1…3 (a scored login into an app with visible reasons).
+> Groups/permissions already shipped (IdP-7).
 
 ---
 
@@ -535,25 +560,21 @@ dependency is down.
 | Label leakage via attack-IP | Mandatory A/B model comparison (§6, §7.1) |
 | "Black box" scoring (kills your USP) | Freeman explainable core + SHAP + reason traces (§6) |
 | Distributed debugging pain | Structured logs + correlation `event_id` + (optional) mesh tracing |
-| Scope creep on a solo deadline | Explicit cut order; groups/permissions stretch; Horizon A before IdP (§1.1, §8) |
+| Scope creep on a solo deadline | Explicit cut order; Horizon D stays thin (ADR-0022); no extra factor products |
 | Near-term demo locks wrong shape | Additive migration: IdP wraps PDP; no identity in decision-service (ADR-0012) |
 
 ---
 
 ## 12. What I'd do *this week*
 
-1. Bootstrap `rba-infra` with a local k3d/kind cluster + Tilt, and create the
-   `rba-decision-service`, `rba-features`, `rba-contracts` repos (empty but wired to
-   CI).
-2. Pull a stratified Wiefling subset; run EDA (imbalance, logins/user, missingness,
-   time span).
-3. Implement 3–4 features in `rba-features` + the offline replay driver; train a
-   **Freeman baseline** and a **GBM** with a chronological split.
-4. Run the with/without-`is_attack_ip` comparison; record recall@1%FPR, PR-AUC,
-   challenge rate, and **inference latency** (this sizes the sidecar/pod).
+Horizon D, starting at **Demo-1** (ADR-0022) — not GitOps, not a new microservice:
 
-This answers "should I train now?" (yes) and produces the numbers that let us lock
-service boundaries and pod sizing with evidence.
+1. Put `country` on the hosted-login path (from a local GeoIP/centroid lookup or
+   an explicit override). Keep missing country from firing travel.
+2. Add country-centroid `impossible_travel` in `rba-features` + PDP escalate
+   (ALLOW → MFA). Skip the rule for VPN/hosting ASNs. Update `tests/test_parity.py`.
+3. Only then Demo-2 (seed + scenario picker) so the walkthrough is not “every
+   user looks new.”
 
 ---
 
