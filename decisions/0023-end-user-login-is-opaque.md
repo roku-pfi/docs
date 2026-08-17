@@ -8,6 +8,8 @@
   hosted login). Admin / operator surfaces are unchanged
   ([ADR-0015](0015-rba-is-the-thesis-core.md),
   [ADR-0018](0018-live-decision-browser-reads-pdp.md)).
+  App *location* amended by [ADR-0024](0024-separate-demo-app.md) (separate
+  `rba-demo-banking` origin; opacity still applies there).
 
 ## Context
 

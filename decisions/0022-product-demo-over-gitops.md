@@ -1,6 +1,8 @@
 # ADR-0022: Product demo over further GitOps; real step-up + travel rule
 
-- Status: Accepted
+- Status: Accepted (Demo-3 colocated `/app` superseded by
+  [ADR-0024](0024-separate-demo-app.md); Demo-3 UX amended by
+  [ADR-0023](0023-end-user-login-is-opaque.md))
 - Date: 2026-08-16
 - Amends sequencing in [ADR-0013](0013-idp-staged-start.md) / [ADR-0020](0020-local-k8s-k3d-helm.md)
   follow-ups (K8s-3 deferred). Amends [ADR-0014](0014-thesis-scale-idp-platform.md)

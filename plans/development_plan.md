@@ -90,7 +90,7 @@
 | **A — PDP core** | done (Phases 1–4 thin slice) | `/risk/evaluate` + async profile/audit. **No demo-kit polish** (ADR-0013). |
 | **B — IdP platform** | done (IdP-1…7) | Authentik/Auth0-shaped at thesis scale (ADR-0014): users, apps, hosted login, PDP enforce, session/MFA, admin. |
 | **C — Thesis hardening** | K8s-1/2 done | k8s/HPA/observability. K8s-3 (GitOps/CI) **deferred**. Federation/SCIM still out. |
-| **D — Product demo** | **now** (ADR-0022) | Client app + scenario control + WebAuthn step-up + country-centroid travel rule. Freeman still decides the score. |
+| **D — Product demo** | **now** (ADR-0022 / **0026**) | Tenant app in ns `demo` + seed + walkthrough controls + WebAuthn + travel rule. Freeman still decides the score. |
 
 **What near-term work must protect (reuse forever)**
 
@@ -118,7 +118,7 @@ face that *calls* the brain — same risk contracts, new product shell.
 
 ```mermaid
 flowchart TB
-  CLIENT[Demo client app] -->|redirect / login| IDP
+  CLIENT[rba-demo-banking] -->|redirect / login| IDP
 
   subgraph K8S["Kubernetes cluster"]
     ING[Ingress / API Gateway]
@@ -262,6 +262,7 @@ repos are non-negotiable — they're what keep polyrepo from causing skew.
 rba-decision-service
 rba-model-inference
 rba-idp                     # thin IdP (Horizon B) — PEP; local users/sessions/MFA
+rba-demo-banking            # Demo-3 relying party in ns `demo` (uses IdP; never calls PDP)
 rba-admin-api               # policy + decision browser + user admin; groups stretch
 rba-event-publisher
 rba-profile-service
@@ -478,15 +479,16 @@ k8s hardening (HPA, probes, secrets, GitOps) stays in this phase but is **not**
 gated on IdP-7. **K8s-1 and K8s-2 are done.** K8s-3 (GitOps/CI/Tilt) is
 **deferred** until Horizon D exists (ADR-0022).
 
-### Horizon D — Product demo (ADR-0022) ← **current**
+### Horizon D — Product demo (ADR-0022 / 0026) ← **current**
 
-One stage at a time. Canonical checkboxes: `status.md`. Do not skip Demo-1.
+One stage at a time. Canonical checkboxes: `status.md`. Do not skip Demo-2
+(tenant app + seed) to chase passkeys.
 
 | Stage | What ships | Explicitly not |
 |---|---|---|
-| **Demo-1** Signals + travel rule | Country on the login path; `impossible_travel` in `rba-features` (country centroids); PDP escalates ALLOW → MFA; VPN/hosting skip. Parity green. | GPS, city GeoIP, Freeman travel categorical |
-| **Demo-2** Scenarios + seed | Seeded usual profile; next-login context picker (home / new country / teleport / VPN). | Phase 6 generator, extra worker |
-| **Demo-3** Client app | Banking UI on `rba-idp` `/app` (colocated). After `AUTHENTICATED`, a normal app home — **no** score/reasons (ADR-0023). Optional forum app (existing looser policy). | New repo/service, OIDC |
+| **Demo-1** Platform RBA (done) | Country on the login path; `impossible_travel` in `rba-features`; PDP escalates ALLOW → MFA; VPN/hosting skip. | GPS, city GeoIP, Freeman travel categorical |
+| **Demo-2** Tenant app + seed | `rba-demo-banking` in ns `demo`; browser → IdP; opaque home; seed usual profile so home can ALLOW. | App calling Freeman, colocated `/app`, OIDC suite |
+| **Demo-3** Walkthrough controls | Presenter next-login context (home / new country / teleport / VPN) via the relying party. Optional forum policy. | Scenario dropdown on the customer home |
 | **Demo-4** Real step-up | WebAuthn passkey for `REQUIRE_MFA` (opaque copy, ADR-0023). Mock OTP for tests. No re-score after MFA. | TOTP/SMS/push unless WebAuthn is blocked |
 
 Walkthrough: home ALLOW → app (opaque); novel country → generic MFA
@@ -567,13 +569,14 @@ dependency is down.
 
 ## 12. What I'd do *this week*
 
-Horizon D, starting at **Demo-2** (ADR-0022) — seed + scenario picker so the
-walkthrough is not “every user looks new”:
+Horizon D, starting at **Demo-2** (ADR-0026) — a tenant app that authenticates
+through the platform, plus a seeded home profile:
 
-1. Seed `demo@example.com` with a usual home profile (AR / residential ASN).
-2. Demo-only control to pick the next login context (home / new country /
-   impossible travel / VPN). Presenter-only, not customer chrome (ADR-0023).
-3. Only then Demo-3 (banking `/app`) and Demo-4 (WebAuthn).
+1. `rba-demo-banking` in namespace `demo` (platform stays `rba`). Redirect to
+   the IdP; opaque bank home; thin `redirect_uri` (not OIDC).
+2. Seed `demo@example.com` with a usual home profile (AR / residential ASN) so
+   that login can ALLOW.
+3. Only then Demo-3 (presenter scenario control) and Demo-4 (WebAuthn).
 
 ---
 

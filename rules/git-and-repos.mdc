@@ -6,7 +6,8 @@ alwaysApply: true
 # Git & polyrepo conventions
 
 - Polyrepo: `rba-features`, `rba-contracts`, `rba-decision-service`, `rba-idp`,
- `rba-ml-training`, `rba-infra`, `docs` are independent repos on `github.com/roku-pfi`,
+ `rba-demo-banking` (Demo-3), `rba-ml-training`, `rba-infra`,
+ `docs` are independent repos on `github.com/roku-pfi`,
  cloned side-by-side. `rba-ml-training` installs `rba-features` editable via
  `../rba-features`; decision-service pins both `rba-features` and `rba-contracts`;
  `rba-idp` pins `rba-contracts`. Shared Redis/Postgres compose lives in `rba-infra`

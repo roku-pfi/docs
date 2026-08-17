@@ -4,6 +4,50 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — Restage Demo-1…4 around the tenant app (ADR-0026)
+
+Old Demo-2 (scenario picker) sat *before* any client app because the walkthrough
+lived on hosted login. The product is a bank in ns `demo` that authenticates
+through the IdP.
+
+- [ADR-0026](decisions/0026-restage-demo-around-tenant-app.md): Demo-1 stays
+  **platform RBA** (done). Demo-2 is **tenant app + seed**. Demo-3 is
+  **walkthrough controls**. Demo-4 unchanged (WebAuthn).
+- Current focus: Demo-2.
+
+**Next:** `rba-demo-banking` in `demo` + seed `demo@example.com` home profile.
+
+---
+
+## 2026-08-16 — Demo app in another namespace (ADR-0025)
+
+The tenant app should not share the platform namespace. `rba-demo-banking`
+deploys in **`demo`**; IdP/PDP stay in **`rba`**. The bank uses RBA by
+**redirecting the browser to the IdP**, not by calling the PDP in-cluster.
+
+- [ADR-0025](decisions/0025-demo-app-separate-namespace.md) amends 0024/0020.
+- Demo-3 checkbox / catalog updated. Demo-2 still first.
+
+**Next:** Demo-2 — seed + scenario control.
+
+---
+
+## 2026-08-16 — Demo client is a separate app (ADR-0024)
+
+The walkthrough should be a bank that **uses** the RBA platform, not a mocked
+`/app` route on the IdP. Colocation (ADR-0022 Demo-3) hid the product split.
+
+- [ADR-0024](decisions/0024-separate-demo-app.md): Demo-3 is `rba-demo-banking`
+  (own repo/origin). Redirect to hosted login; IdP asks the PDP; thin
+  `redirect_uri` return — not OIDC, not the app calling Freeman. Opacity
+  (ADR-0023) still applies on that origin.
+- `plans/status.md` / `development_plan.md` §4.1 catalog + Horizon D Demo-3.
+
+**Next:** Demo-2 (seed + scenario control) still first; do not skip it to
+scaffold the banking UI.
+
+---
+
 ## 2026-08-16 — Demo-1: country on the login path + travel rule
 
 Hosted login was scoring without `country`, so the walkthrough could not show a

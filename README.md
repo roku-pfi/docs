@@ -13,7 +13,7 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | Path | What it is |
 |---|---|
 | [`plans/status.md`](plans/status.md) | **Single source of truth** for phase/step checklist + current focus |
-| [`plans/development_plan.md`](plans/development_plan.md) | Canonical roadmap (§8 = phases). Product horizons in §1.1 / ADR-0012–0015, **0022** |
+| [`plans/development_plan.md`](plans/development_plan.md) | Canonical roadmap (§8 = phases). Product horizons in §1.1 / ADR-0012–0015, **0022**, **0024** |
 | [`plans/README.md`](plans/README.md) | How to read the plan vs status |
 | [`devlog.md`](devlog.md) | Chronological development log (newest on top) |
 | [`decisions/`](decisions/) | Architecture Decision Records (immutable once Accepted) |
@@ -28,7 +28,8 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | `rba-features` | Shared feature library (train/serve parity) |
 | `rba-contracts` | OpenAPI / AsyncAPI / JSON Schema / Pydantic |
 | `rba-decision-service` | PDP (`POST /risk/evaluate`) |
-| `rba-idp` | IdP / PEP (users, apps, groups, hosted login, session, MFA, admin; Demo-3 app) |
+| `rba-idp` | IdP / PEP (users, apps, groups, hosted login, session, MFA, admin) |
+| `rba-demo-banking` | Demo-3 relying party in ns `demo` (authenticates via the IdP; never calls the PDP) |
 | `rba-event-publisher` | Outbox → RabbitMQ |
 | `rba-profile-service` | Async Redis profile updates |
 | `rba-audit-service` | Async audit store + HTTP decision read |

@@ -33,20 +33,21 @@ not let the shell replace the core.
 | Admin to operate the platform | Multi-tenant HA, billing, authz engines | Decision browser tied to the PDP |
 
 **Working rule:** IdP-1…7 and K8s-1/2 are done. Each session now moves **one
-Demo stage** (below). Do not skip Demo-2 (seed + scenarios) to chase
-passkeys or a prettier app. The demo **app never calls Freeman** — the IdP asks
-the PDP; Freeman + policy decide `ALLOW` / `MFA` / `REAUTH` / `BLOCK`. No
-identity inside `decision-service`. No OIDC/SAML/SCIM. K8s-3 (GitOps/CI) and
-Phase 4 leftovers (DLQ) wait unless they unblock a Demo stage.
-([ADR-0022](../decisions/0022-product-demo-over-gitops.md))
+Demo stage** (below). Do not skip Demo-2 (tenant app + seed) to chase
+passkeys. The demo **app never calls Freeman** — it authenticates through the
+IdP; the IdP asks the PDP. No identity inside `decision-service`. No
+OIDC/SAML/SCIM. K8s-3 (GitOps/CI) and Phase 4 leftovers (DLQ) wait unless they
+unblock a Demo stage.
+([ADR-0022](../decisions/0022-product-demo-over-gitops.md),
+[ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md))
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
 IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0), `rba-decision-service`, async
 profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus:** Demo-2 — seed usual home profile for `demo@example.com` +
-scenario control for the next login. Federation / SCIM / OIDC remain out.
+**Current focus:** Demo-2 — `rba-demo-banking` in namespace `demo` + seed a
+usual home profile so a normal login can ALLOW. Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -61,7 +62,9 @@ scenario control for the next login. Federation / SCIM / OIDC remain out.
 - [ ] **Phase 6 — ML lifecycle + generator**
 - [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
       IdP-7 + K8s-1 done; K8s-2 done). **Demo-2…4** is the leftover product path
-      ([ADR-0022](../decisions/0022-product-demo-over-gitops.md)).
+      ([ADR-0022](../decisions/0022-product-demo-over-gitops.md),
+      [ADR-0024](../decisions/0024-separate-demo-app.md),
+      [ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md)).
 - [ ] **Phase 8 — Report & defense**
 - [~] **Phase 0 — Infra foundations** — compose + k3d/Helm + Prometheus/Grafana
       done (ADR-0020/0021); Tilt / GitOps / CI templates deferred (K8s-3)
@@ -133,21 +136,26 @@ Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-2
 - [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional) — **deferred**
       until Demo-2…4 exist (ADR-0022)
 
-## Demo stages (current product path — ADR-0022)
+## Demo stages (current product path — ADR-0022 / 0026)
 
-Show the product: a person logs into an app; Freeman + policy decide; step-up
-is real; reasons are visible **in admin**, not to the account holder (ADR-0023).
-One stage at a time.
+Show the product: a tenant app in another namespace authenticates through the
+IdP; Freeman + policy decide; step-up is real; reasons are visible **in admin**,
+not to the account holder (ADR-0023). One stage at a time.
 
-- [x] **Demo-1** Country on the login path; country-centroid `impossible_travel`
-      in `rba-features`; PDP escalates ALLOW → MFA; VPN/hosting ASN skips teleport.
-      Parity tests green.
-- [ ] **Demo-2** Seed usual home profile for `demo@example.com`; scenario control
-      for the next login (home / new country / impossible travel / VPN).
-- [ ] **Demo-3** Banking UI colocated on `rba-idp` (`/app`). Redirect to hosted
-      login; after `AUTHENTICATED`, land in a normal app home (**no** score or
-      reasons — [ADR-0023](../decisions/0023-end-user-login-is-opaque.md)).
-      Optional: same user on `demo-forum-app` (looser policy).
+- [x] **Demo-1** Platform RBA: country on the login path; country-centroid
+      `impossible_travel`; PDP escalates ALLOW → MFA; VPN/hosting skip. Parity
+      green. (Not a tenant UI — this is why teleport MFA will work.)
+- [ ] **Demo-2** Tenant app + seed: `rba-demo-banking` in namespace **`demo`**
+      (platform stays `rba`); browser → IdP; opaque home; seed
+      `demo@example.com` home profile so a usual login can ALLOW
+      ([ADR-0024](../decisions/0024-separate-demo-app.md),
+      [ADR-0025](../decisions/0025-demo-app-separate-namespace.md),
+      [ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md)). App never
+      calls the PDP.
+- [ ] **Demo-3** Walkthrough controls: presenter picks the next login context
+      (home / new country / teleport / VPN) via the relying party → IdP, not
+      customer chrome (ADR-0023). Optional: same user on `demo-forum-app`
+      (looser policy).
 - [ ] **Demo-4** WebAuthn passkey for `REQUIRE_MFA` (generic “confirm it’s you”
       copy — ADR-0023). Mock OTP remains for tests. Completing MFA does not re-score.
 
