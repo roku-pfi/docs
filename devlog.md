@@ -4,6 +4,31 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — Demo-1: country on the login path + travel rule
+
+Hosted login was scoring without `country`, so the walkthrough could not show a
+physics check. Demo-1 puts country/ASN on the PEP path and a country-centroid
+travel **escalate** on the PDP — not a Freeman input (ADR-0022).
+
+- `rba-features` **0.1.2**: `compute_travel(event, profile)` with a static ISO
+  centroid table (~1000 km/h). Missing country never fires. VPN/hosting ASNs
+  skip teleport, emit `vpn_or_hosting`, and do not move
+  `last_login_country` / `last_success_login_ts` (successful residential logins
+  only). `FEATURE_NAMES` unchanged. Tests: 17 passed (parity + travel).
+- `rba-decision-service`: after `apply_policy`, ALLOW → `REQUIRE_MFA` when
+  travel or VPN fires; reason prepended. Score/level stay Freeman's. Tests:
+  15 passed, 1 skipped.
+- `rba-idp`: boot payload + `POST /login` fill country/ASN from RFC 5737
+  TEST-NET prefixes (`203.0.113.0/24` → AR, `192.0.2.0/24` → JP,
+  `198.51.100.0/24` → DE) or `?country=&asn=` override. Tests: 57 passed.
+
+No new ADR (implements 0022). No MaxMind / city GPS.
+
+**Next:** Demo-2 — seed `demo@example.com` home profile + next-login scenario
+control (home / new country / teleport / VPN).
+
+---
+
 ## 2026-08-16 — End-user login is opaque (ADR-0023)
 
 The banking home must not show the PDP decision. Explainability is for the

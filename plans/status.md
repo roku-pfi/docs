@@ -33,7 +33,7 @@ not let the shell replace the core.
 | Admin to operate the platform | Multi-tenant HA, billing, authz engines | Decision browser tied to the PDP |
 
 **Working rule:** IdP-1…7 and K8s-1/2 are done. Each session now moves **one
-Demo stage** (below). Do not skip Demo-1 (signals + travel rule) to chase
+Demo stage** (below). Do not skip Demo-2 (seed + scenarios) to chase
 passkeys or a prettier app. The demo **app never calls Freeman** — the IdP asks
 the PDP; Freeman + policy decide `ALLOW` / `MFA` / `REAUTH` / `BLOCK`. No
 identity inside `decision-service`. No OIDC/SAML/SCIM. K8s-3 (GitOps/CI) and
@@ -45,8 +45,8 @@ IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0), `rba-decision-service`, async
 profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus:** Demo-1 — login signals + country-centroid impossible-travel
-rule (VPN/hosting skip). Federation / SCIM / OIDC remain out.
+**Current focus:** Demo-2 — seed usual home profile for `demo@example.com` +
+scenario control for the next login. Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -60,7 +60,7 @@ rule (VPN/hosting skip). Federation / SCIM / OIDC remain out.
       + HPA load done (ADR-0021 / K8s-2). Remaining: event lag.
 - [ ] **Phase 6 — ML lifecycle + generator**
 - [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
-      IdP-7 + K8s-1 done; K8s-2 done). **Demo-1…4** is the leftover product path
+      IdP-7 + K8s-1 done; K8s-2 done). **Demo-2…4** is the leftover product path
       ([ADR-0022](../decisions/0022-product-demo-over-gitops.md)).
 - [ ] **Phase 8 — Report & defense**
 - [~] **Phase 0 — Infra foundations** — compose + k3d/Helm + Prometheus/Grafana
@@ -112,7 +112,7 @@ IdP login API in **v0.2.0** (IdP-1):
 
 ## Phase 7 — thin IdP (shell done)
 
-Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-1…4**.
+Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-2…4**.
 
 - [x] **IdP-1** Contracts (`rba-contracts` 0.2.0)
 - [x] **IdP-2** Identity store (`rba-idp` + users + seeded application, password verify)
@@ -131,7 +131,7 @@ Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-1
       ([ADR-0021](../decisions/0021-prometheus-grafana-in-chart.md);
       finding [`2026-08-16-k8s2-hpa-load.md`](../findings/2026-08-16-k8s2-hpa-load.md)).
 - [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional) — **deferred**
-      until Demo-1…4 exist (ADR-0022)
+      until Demo-2…4 exist (ADR-0022)
 
 ## Demo stages (current product path — ADR-0022)
 
@@ -139,7 +139,7 @@ Show the product: a person logs into an app; Freeman + policy decide; step-up
 is real; reasons are visible **in admin**, not to the account holder (ADR-0023).
 One stage at a time.
 
-- [ ] **Demo-1** Country on the login path; country-centroid `impossible_travel`
+- [x] **Demo-1** Country on the login path; country-centroid `impossible_travel`
       in `rba-features`; PDP escalates ALLOW → MFA; VPN/hosting ASN skips teleport.
       Parity tests green.
 - [ ] **Demo-2** Seed usual home profile for `demo@example.com`; scenario control

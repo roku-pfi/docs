@@ -567,14 +567,13 @@ dependency is down.
 
 ## 12. What I'd do *this week*
 
-Horizon D, starting at **Demo-1** (ADR-0022) — not GitOps, not a new microservice:
+Horizon D, starting at **Demo-2** (ADR-0022) — seed + scenario picker so the
+walkthrough is not “every user looks new”:
 
-1. Put `country` on the hosted-login path (from a local GeoIP/centroid lookup or
-   an explicit override). Keep missing country from firing travel.
-2. Add country-centroid `impossible_travel` in `rba-features` + PDP escalate
-   (ALLOW → MFA). Skip the rule for VPN/hosting ASNs. Update `tests/test_parity.py`.
-3. Only then Demo-2 (seed + scenario picker) so the walkthrough is not “every
-   user looks new.”
+1. Seed `demo@example.com` with a usual home profile (AR / residential ASN).
+2. Demo-only control to pick the next login context (home / new country /
+   impossible travel / VPN). Presenter-only, not customer chrome (ADR-0023).
+3. Only then Demo-3 (banking `/app`) and Demo-4 (WebAuthn).
 
 ---
 
