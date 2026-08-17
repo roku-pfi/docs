@@ -262,7 +262,7 @@ repos are non-negotiable — they're what keep polyrepo from causing skew.
 rba-decision-service
 rba-model-inference
 rba-idp                     # thin IdP (Horizon B) — PEP; local users/sessions/MFA
-rba-demo-banking            # Demo-3 relying party in ns `demo` (uses IdP; never calls PDP)
+rba-demo-banking            # Demo-2 relying party in ns `demo` (uses IdP; never calls PDP)
 rba-admin-api               # policy + decision browser + user admin; groups stretch
 rba-event-publisher
 rba-profile-service
@@ -481,8 +481,8 @@ gated on IdP-7. **K8s-1 and K8s-2 are done.** K8s-3 (GitOps/CI/Tilt) is
 
 ### Horizon D — Product demo (ADR-0022 / 0026) ← **current**
 
-One stage at a time. Canonical checkboxes: `status.md`. Do not skip Demo-2
-(tenant app + seed) to chase passkeys.
+One stage at a time. Canonical checkboxes: `status.md`. Do not skip Demo-3
+(walkthrough controls) to chase passkeys.
 
 | Stage | What ships | Explicitly not |
 |---|---|---|
@@ -569,14 +569,13 @@ dependency is down.
 
 ## 12. What I'd do *this week*
 
-Horizon D, starting at **Demo-2** (ADR-0026) — a tenant app that authenticates
-through the platform, plus a seeded home profile:
+Horizon D, starting at **Demo-3** (ADR-0026) — presenter walkthrough controls
+on the tenant app that already authenticates through the platform:
 
-1. `rba-demo-banking` in namespace `demo` (platform stays `rba`). Redirect to
-   the IdP; opaque bank home; thin `redirect_uri` (not OIDC).
-2. Seed `demo@example.com` with a usual home profile (AR / residential ASN) so
-   that login can ALLOW.
-3. Only then Demo-3 (presenter scenario control) and Demo-4 (WebAuthn).
+1. Next-login context (home / new country / teleport / VPN) via the relying
+   party, not a dropdown on the customer home (ADR-0023).
+2. Optional: same user on `demo-forum-app` (looser policy).
+3. Only then Demo-4 (WebAuthn).
 
 ---
 

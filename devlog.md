@@ -4,6 +4,29 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — Demo-2: tenant bank in ns `demo` + home-profile seed
+
+A defense needs a client app that *uses* the platform, and a usual home
+profile so Freeman can ALLOW. Scenario chrome waits for Demo-3.
+
+- `rba-contracts` **0.5.0**: application `redirect_uri`; `LoginResponse.redirect_to`;
+  `POST /callback/token` (one-time code → session). Not OIDC.
+- `rba-idp`: seed `demo-banking-app` callback; private/RFC1918 peers score as
+  home TEST-NET `203.0.113.10` (RFC 5737 prefixes are *not* rewritten — Python
+  `is_private` includes them). Hosted login redirects on `AUTHENTICATED`.
+  End-user panels stay opaque (ADR-0023). Tests: 66 passed.
+- `rba-profile-service`: `SET NX` home `ProfileState` for `usr_demo` (AR / ASN
+  7303 / 14 days of usual devices) via `update_profile`.
+- `rba-demo-banking`: opaque Roku Bank home; browser → IdP; server-side code
+  exchange; never calls the PDP. Tests: 5 passed.
+- `rba-infra`: Helm chart `demo` in namespace `demo`, Ingress `demo.localhost`;
+  platform chart **0.3.0** seeds `SEED_APPLICATION_REDIRECT_URI`.
+
+**Next:** Demo-3 — presenter next-login context (home / new country / teleport / VPN)
+via the relying party.
+
+---
+
 ## 2026-08-16 — Restage Demo-1…4 around the tenant app (ADR-0026)
 
 Old Demo-2 (scenario picker) sat *before* any client app because the walkthrough

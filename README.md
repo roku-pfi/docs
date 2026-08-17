@@ -29,7 +29,7 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | `rba-contracts` | OpenAPI / AsyncAPI / JSON Schema / Pydantic |
 | `rba-decision-service` | PDP (`POST /risk/evaluate`) |
 | `rba-idp` | IdP / PEP (users, apps, groups, hosted login, session, MFA, admin) |
-| `rba-demo-banking` | Demo-3 relying party in ns `demo` (authenticates via the IdP; never calls the PDP) |
+| `rba-demo-banking` | Demo-2 relying party in ns `demo` (authenticates via the IdP; never calls the PDP) |
 | `rba-event-publisher` | Outbox → RabbitMQ |
 | `rba-profile-service` | Async Redis profile updates |
 | `rba-audit-service` | Async audit store + HTTP decision read |
