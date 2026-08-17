@@ -90,7 +90,7 @@
 | **A — PDP core** | done (Phases 1–4 thin slice) | `/risk/evaluate` + async profile/audit. **No demo-kit polish** (ADR-0013). |
 | **B — IdP platform** | done (IdP-1…7) | Authentik/Auth0-shaped at thesis scale (ADR-0014): users, apps, hosted login, PDP enforce, session/MFA, admin. |
 | **C — Thesis hardening** | K8s-1/2 done | k8s/HPA/observability. K8s-3 (GitOps/CI) **deferred**. Federation/SCIM still out. |
-| **D — Product demo** | **now** (ADR-0022 / **0026**) | Tenant app in ns `demo` + seed + walkthrough controls + WebAuthn + travel rule. Freeman still decides the score. |
+| **D — Product demo** | **done** (ADR-0022 / **0026**) | Tenant app in ns `demo` + seed + walkthrough controls + WebAuthn + travel rule. Freeman still decides the score. |
 
 **What near-term work must protect (reuse forever)**
 
@@ -479,17 +479,16 @@ k8s hardening (HPA, probes, secrets, GitOps) stays in this phase but is **not**
 gated on IdP-7. **K8s-1 and K8s-2 are done.** K8s-3 (GitOps/CI/Tilt) is
 **deferred** until Horizon D exists (ADR-0022).
 
-### Horizon D — Product demo (ADR-0022 / 0026) ← **current**
+### Horizon D — Product demo (ADR-0022 / 0026) ← **done**
 
-One stage at a time. Canonical checkboxes: `status.md`. Demo-3 (walkthrough)
-is done; leftover is Demo-4 (WebAuthn).
+One stage at a time. Canonical checkboxes: `status.md`. Demo-1…4 are done.
 
 | Stage | What ships | Explicitly not |
 |---|---|---|
 | **Demo-1** Platform RBA (done) | Country on the login path; `impossible_travel` in `rba-features`; PDP escalates ALLOW → MFA; VPN/hosting skip. | GPS, city GeoIP, Freeman travel categorical |
 | **Demo-2** Tenant app + seed | `rba-demo-banking` in ns `demo`; browser → IdP; opaque home; seed usual profile so home can ALLOW. | App calling Freeman, colocated `/app`, OIDC suite |
 | **Demo-3** Walkthrough controls (done) | Presenter next-login context (home / new country / teleport / VPN) via `rba-demo-banking` `/walkthrough`. Forum UI skipped. | Scenario dropdown on the customer home |
-| **Demo-4** Real step-up | WebAuthn passkey for `REQUIRE_MFA` (opaque copy, ADR-0023). Mock OTP for tests. No re-score after MFA. | TOTP/SMS/push unless WebAuthn is blocked |
+| **Demo-4** Real step-up (done) | WebAuthn passkey for `REQUIRE_MFA` (opaque copy, ADR-0023). Mock OTP for tests. No re-score after MFA. | TOTP/SMS/push unless WebAuthn is blocked |
 
 Walkthrough: home ALLOW → app (opaque); novel country → generic MFA
 (Freeman+policy); teleport → generic MFA (rule); VPN → generic MFA as untrusted
@@ -504,7 +503,7 @@ network; **admin Decisions** shows why.
 > alerting-service → synthetic generator → K8s-3 GitOps/CI → TOTP/extra factors →
 > polished admin chrome. **Do not** cut: k8s + HPA (already shipped),
 > `rba-features` parity, leakage experiment, PDP `/risk/evaluate`, the IdP→PDP
-> split, or Horizon D Demo-1…3 (a scored login into an app with visible reasons).
+> split, or Horizon D Demo-1…4 (a scored login into an app with visible reasons).
 > Groups/permissions already shipped (IdP-7).
 
 ---
@@ -569,11 +568,10 @@ dependency is down.
 
 ## 12. What I'd do *this week*
 
-Horizon D leftover is **Demo-4** (ADR-0022 / 0023 / 0026):
-
-1. WebAuthn passkey for `REQUIRE_MFA` (generic “confirm it’s you” copy).
-2. Mock OTP stays for tests. Completing MFA does not re-score.
-3. Do not add TOTP/SMS unless WebAuthn is blocked on the defense machine.
+Horizon D (Demo-1…4) is done. **Phase 8** is the leftover: thesis write-up and
+defense walkthrough (admin Decisions beside the bank). Optional later: DLQ,
+event lag, Phase 6 generator/MLflow, K8s-3 GitOps. Do not add TOTP/SMS or
+federation.
 
 ---
 

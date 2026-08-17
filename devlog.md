@@ -4,6 +4,27 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-17 — Demo-4: WebAuthn passkey for REQUIRE_MFA
+
+The walkthrough still used mock OTP `000000` on hosted login. ADR-0022 wants a
+real platform authenticator; ADR-0023 wants opaque “confirm it’s you” copy.
+
+- `rba-contracts` **0.6.0**: additive `POST /mfa/webauthn/options` +
+  `POST /mfa/webauthn/verify`. `POST /mfa/verify` mock OTP unchanged.
+- `rba-idp` **0.4.0**: first MFA **creates** a platform passkey; later MFA
+  **gets**. Completing MFA does not re-score. Hosted login drops the OTP field.
+  Tests: software ES256 authenticator + existing OTP tests.
+- `rba-infra`: Helm sets `WEBAUTHN_RP_ID=localhost` and
+  `WEBAUTHN_ORIGIN=http://localhost:8080` (chart 0.3.1).
+
+No new ADR (implements 0022/0023). rpId is `localhost` (compose `:8001` and
+k3d `:8080`). First MFA on a machine will prompt to create a passkey.
+
+**Next:** Phase 8 — report & defense. Optional later: DLQ, event lag, Phase 6,
+K8s-3.
+
+---
+
 ## 2026-08-16 — Demo-3: presenter walkthrough on the bank
 
 The defense needs four scripted logins without putting a scenario dropdown on
