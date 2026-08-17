@@ -481,14 +481,14 @@ gated on IdP-7. **K8s-1 and K8s-2 are done.** K8s-3 (GitOps/CI/Tilt) is
 
 ### Horizon D — Product demo (ADR-0022 / 0026) ← **current**
 
-One stage at a time. Canonical checkboxes: `status.md`. Do not skip Demo-3
-(walkthrough controls) to chase passkeys.
+One stage at a time. Canonical checkboxes: `status.md`. Demo-3 (walkthrough)
+is done; leftover is Demo-4 (WebAuthn).
 
 | Stage | What ships | Explicitly not |
 |---|---|---|
 | **Demo-1** Platform RBA (done) | Country on the login path; `impossible_travel` in `rba-features`; PDP escalates ALLOW → MFA; VPN/hosting skip. | GPS, city GeoIP, Freeman travel categorical |
 | **Demo-2** Tenant app + seed | `rba-demo-banking` in ns `demo`; browser → IdP; opaque home; seed usual profile so home can ALLOW. | App calling Freeman, colocated `/app`, OIDC suite |
-| **Demo-3** Walkthrough controls | Presenter next-login context (home / new country / teleport / VPN) via the relying party. Optional forum policy. | Scenario dropdown on the customer home |
+| **Demo-3** Walkthrough controls (done) | Presenter next-login context (home / new country / teleport / VPN) via `rba-demo-banking` `/walkthrough`. Forum UI skipped. | Scenario dropdown on the customer home |
 | **Demo-4** Real step-up | WebAuthn passkey for `REQUIRE_MFA` (opaque copy, ADR-0023). Mock OTP for tests. No re-score after MFA. | TOTP/SMS/push unless WebAuthn is blocked |
 
 Walkthrough: home ALLOW → app (opaque); novel country → generic MFA
@@ -569,13 +569,11 @@ dependency is down.
 
 ## 12. What I'd do *this week*
 
-Horizon D, starting at **Demo-3** (ADR-0026) — presenter walkthrough controls
-on the tenant app that already authenticates through the platform:
+Horizon D leftover is **Demo-4** (ADR-0022 / 0023 / 0026):
 
-1. Next-login context (home / new country / teleport / VPN) via the relying
-   party, not a dropdown on the customer home (ADR-0023).
-2. Optional: same user on `demo-forum-app` (looser policy).
-3. Only then Demo-4 (WebAuthn).
+1. WebAuthn passkey for `REQUIRE_MFA` (generic “confirm it’s you” copy).
+2. Mock OTP stays for tests. Completing MFA does not re-score.
+3. Do not add TOTP/SMS unless WebAuthn is blocked on the defense machine.
 
 ---
 

@@ -33,11 +33,11 @@ not let the shell replace the core.
 | Admin to operate the platform | Multi-tenant HA, billing, authz engines | Decision browser tied to the PDP |
 
 **Working rule:** IdP-1…7 and K8s-1/2 are done. Each session now moves **one
-Demo stage** (below). Do not skip Demo-3 (walkthrough controls) to chase
-passkeys. The demo **app never calls Freeman** — it authenticates through the
-IdP; the IdP asks the PDP. No identity inside `decision-service`. No
-OIDC/SAML/SCIM. K8s-3 (GitOps/CI) and Phase 4 leftovers (DLQ) wait unless they
-unblock a Demo stage.
+Demo stage** (below). Demo-3 (walkthrough) is done; current leftover is
+**Demo-4** (WebAuthn). The demo **app never calls Freeman** — it authenticates
+through the IdP; the IdP asks the PDP. No identity inside `decision-service`.
+No OIDC/SAML/SCIM. K8s-3 (GitOps/CI) and Phase 4 leftovers (DLQ) wait unless
+they unblock a Demo stage.
 ([ADR-0022](../decisions/0022-product-demo-over-gitops.md),
 [ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md))
 
@@ -45,10 +45,10 @@ unblock a Demo stage.
 IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0 + callback 0.5.0), `rba-decision-service`, async
 profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done). **Tenant demo:** `rba-demo-banking`
-(Demo-2). **Ops story:** K8s-1 + K8s-2 done.
+(Demo-2 + Demo-3 walkthrough). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus:** Demo-3 — presenter walkthrough controls on the relying
-party (home / new country / teleport / VPN). Federation / SCIM / OIDC remain out.
+**Current focus:** Demo-4 — WebAuthn passkey for `REQUIRE_MFA` (opaque copy,
+ADR-0023). Federation / SCIM / OIDC remain out.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -62,7 +62,7 @@ party (home / new country / teleport / VPN). Federation / SCIM / OIDC remain out
       + HPA load done (ADR-0021 / K8s-2). Remaining: event lag.
 - [ ] **Phase 6 — ML lifecycle + generator**
 - [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
-      IdP-7 + K8s-1 done; K8s-2 done). **Demo-3…4** is the leftover product path
+      IdP-7 + K8s-1 done; K8s-2 done). **Demo-4** is the leftover product path
       ([ADR-0022](../decisions/0022-product-demo-over-gitops.md),
       [ADR-0024](../decisions/0024-separate-demo-app.md),
       [ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md)).
@@ -116,7 +116,7 @@ IdP login API in **v0.2.0** (IdP-1):
 
 ## Phase 7 — thin IdP (shell done)
 
-Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-2…4**.
+Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-4**.
 
 - [x] **IdP-1** Contracts (`rba-contracts` 0.2.0)
 - [x] **IdP-2** Identity store (`rba-idp` + users + seeded application, password verify)
@@ -135,7 +135,7 @@ Stages in order. All IdP-1…7 boxes are done. Leftover product path is **Demo-2
       ([ADR-0021](../decisions/0021-prometheus-grafana-in-chart.md);
       finding [`2026-08-16-k8s2-hpa-load.md`](../findings/2026-08-16-k8s2-hpa-load.md)).
 - [ ] **K8s-3** GitOps / reusable CI templates (Tilt optional) — **deferred**
-      until Demo-2…4 exist (ADR-0022)
+      until Demo-4 exists (ADR-0022)
 
 ## Demo stages (current product path — ADR-0022 / 0026)
 
@@ -153,14 +153,16 @@ not to the account holder (ADR-0023). One stage at a time.
       [ADR-0025](../decisions/0025-demo-app-separate-namespace.md),
       [ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md)). App never
       calls the PDP.
-- [ ] **Demo-3** Walkthrough controls: presenter picks the next login context
-      (home / new country / teleport / VPN) via the relying party → IdP, not
-      customer chrome (ADR-0023). Optional: same user on `demo-forum-app`
-      (looser policy).
+- [x] **Demo-3** Walkthrough controls: presenter picks the next login context
+      (home / new country / teleport / VPN) via `rba-demo-banking` `/walkthrough`
+      → IdP, not customer chrome (ADR-0023). Forum UI skipped (policy already
+      exists).
 - [ ] **Demo-4** WebAuthn passkey for `REQUIRE_MFA` (generic “confirm it’s you”
       copy — ADR-0023). Mock OTP remains for tests. Completing MFA does not re-score.
 
-**Walkthrough (definition of done):** (1) home → ALLOW → app (no risk UI);
+**Walkthrough (definition of done):** presenter kit is `/walkthrough` (not
+linked from `/`). Live script: new country first (cold seed) → home ALLOW →
+teleport immediately → VPN. (1) home → ALLOW → app (no risk UI);
 (2) new country → generic MFA from Freeman+policy; (3) teleport → generic MFA
 from the travel rule; (4) VPN → generic MFA as untrusted network, not teleport;
 (5) **admin Decisions** (second window) shows the reasons.

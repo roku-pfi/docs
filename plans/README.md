@@ -33,5 +33,5 @@ Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md)
 | 5 | Observability & load tests | **K8s-2 done** (event lag later) |
 | 6 | ML lifecycle + generator | Not started |
 | 7 | Thin IdP platform | IdP-7 done; K8s-1/2 done |
-| D | Product demo (ADR-0022) | **Current:** Demo-3…4 (Demo-1/2 done) |
+| D | Product demo (ADR-0022) | **Current:** Demo-4 (Demo-1…3 done) |
 | 8 | Report & defense | Not started |

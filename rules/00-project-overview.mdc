@@ -19,7 +19,7 @@ the shell; RBA is the thesis (ADR-0015).
   groups 0.4.0, outbox events, policy config).
 - `rba-decision-service` — synchronous PDP (`POST /risk/evaluate`, `GET`/`PUT /policy`).
 - `rba-idp` — thesis-scale IdP (PEP): users, apps, groups, hosted login, session, MFA, admin.
-- `rba-demo-banking` — Demo-2 relying party in namespace `demo` (authenticates via the IdP; never calls the PDP).
+- `rba-demo-banking` — Demo-3 relying party in namespace `demo` (authenticates via the IdP; never calls the PDP).
 - `rba-ml-training` — offline data + modelling pipeline (ingest, EDA, train, evaluate).
 - `rba-infra` — shared compose (Redis/Postgres/RabbitMQ) + k3d/Helm + Prometheus/Grafana (K8s-1/2); GitOps/CI deferred (K8s-3).
 - `rba-event-publisher` / `rba-profile-service` / `rba-audit-service` — Phase 4 async.
@@ -34,8 +34,8 @@ at a time (ADR-0022) — do not skip Demo-3. Phase rationale:
 
 Phases 1–3 are **complete** (model, contracts, PDP request path). Phase 4 async
 thin slice is up (k8s Deployments in K8s-1). **Phase 7:** IdP-1…7 + K8s-1 done.
-**K8s-2 done** (Prometheus/Grafana + HPA load, ADR-0021). **Demo-1 and Demo-2 done.**
-**Current focus is Demo-3…4** (walkthrough controls, then WebAuthn, ADR-0026), not K8s-3. Federation / SCIM / OIDC remain
+**K8s-2 done** (Prometheus/Grafana + HPA load, ADR-0021). **Demo-1…3 done.**
+**Current focus is Demo-4** (WebAuthn, ADR-0022/0023), not K8s-3. Federation / SCIM / OIDC remain
 out. The demo app never calls Freeman — it authenticates through the IdP.
 
 ## Stack (decided — see docs/decisions/)

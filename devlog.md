@@ -4,6 +4,27 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-16 — Demo-3: presenter walkthrough on the bank
+
+The defense needs four scripted logins without putting a scenario dropdown on
+the customer home (ADR-0023 / 0026).
+
+- `rba-demo-banking` **0.2.0** (`791a405`): `/walkthrough` (unlinked) +
+  `/walkthrough/start?scenario=` clears the session and redirects to the IdP
+  with country/ASN — home AR/7303, new country DE/3320, teleport JP/2516, VPN
+  US/13335. Customer `/` stays balances-only. Tests: 10 passed.
+- `rba-infra` (`ce78d7c`): Helm `demo` NOTES point at `/walkthrough`.
+- `rba-idp` (`9c1f010`): README/AGENTS point next at Demo-4.
+- Forum UI skipped (looser `demo-forum-app` policy already exists).
+
+Live script: new country first (cold seed → Freeman, travel quiet) → home
+ALLOW → teleport immediately → VPN. Admin Decisions in a second window.
+
+**Next:** Demo-4 — WebAuthn for `REQUIRE_MFA` (opaque copy). Mock OTP stays
+for tests.
+
+---
+
 ## 2026-08-16 — Demo-2: tenant bank in ns `demo` + home-profile seed
 
 A defense needs a client app that *uses* the platform, and a usual home
