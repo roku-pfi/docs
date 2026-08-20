@@ -41,12 +41,25 @@ IdP asks the PDP. No identity inside `decision-service`. No OIDC/SAML/SCIM.
 [ADR-0026](../decisions/0026-restage-demo-around-tenant-app.md))
 
 **Already the RBA core:** `rba-features`, `rba-contracts` (`/risk/evaluate` +
-IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0 + callback 0.5.0 + WebAuthn 0.6.0), `rba-decision-service`, async
+IdP login 0.2.0 + admin 0.3.0 + groups 0.4.0 + callback 0.5.0 + WebAuthn 0.6.0
++ monitor mode 0.7.0), `rba-decision-service`, async
 profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done). **Tenant demo:** `rba-demo-banking`
 (Demo-2 + Demo-3 walkthrough). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus:** Phase 8 — report & defense. Product demo (Demo-1…4) is done.
+**Current focus:** Phase 8 — report & defense, now driven by the **requirements
+audit** against E50 §3.2: 29 requirements, 11 built / 12 partial / 4 not started
+/ 2 conflicting with a shipped ADR. Document-side corrections are collected in
+[`e50-document-corrections.md`](e50-document-corrections.md) (not code work).
+RF-09 / RF-10 / RNF-03 / RNF-08 closed in code by
+[ADR-0028](../decisions/0028-degrade-to-step-up-and-monitor-mode.md).
+
+**Known requirement gaps (code, not text):** roles & permissions (RF-13/RF-21 —
+`permission` is pinned to `"access"`), alarms (RF-17), IdP metrics + MFA outcome
+(RF-11/RF-20/RNF-04), always-MFA (RF-08), stable device identifier (RF-02),
+progressive delay (RF-07), LDAP (RF-19 — recommend demoting to optional).
+**Rubric gaps (document):** diagrams, data model, mockups/screens, demo captures,
+and a Tecnologías section. Four of eight graded concepts have no home in E50 yet.
 
 ## Phase roadmap (see `development_plan.md` §8)
 
@@ -157,10 +170,32 @@ not to the account holder (ADR-0023). One stage at a time.
       exists).
 - [x] **Demo-4** WebAuthn passkey for `REQUIRE_MFA` (generic “confirm it’s you”
       copy — ADR-0023). Mock OTP remains for tests. Completing MFA does not re-score.
+- [x] **Demo-5** Credential stuffing: failed logins reach the PDP; bands escalate
+      to `REAUTHENTICATE` (≥3) and `BLOCK` (≥10); supervised second opinion on the
+      request path; only successful logins establish familiarity
+      ([ADR-0027](../decisions/0027-supervised-second-opinion-and-failed-logins.md),
+      finding [`2026-08-19`](../findings/2026-08-19-supervised-escalation-and-failed-logins.md)).
+      All four PDP actions now appear in one walkthrough run.
+- [x] **Demo-6** Degrade + monitor: stopping the PDP mid-walkthrough still logs
+      the user in through a passkey (`pdp_unavailable`, no 503); flipping
+      `monitor_only` keeps `BLOCK` in admin Decisions while the user sails
+      through ([ADR-0028](../decisions/0028-degrade-to-step-up-and-monitor-mode.md)).
 
 **Walkthrough (definition of done):** presenter kit is `/walkthrough` (not
 linked from `/`). Live script: new country first (cold seed) → home ALLOW →
-teleport immediately → VPN. (1) home → ALLOW → app (no risk UI);
+teleport immediately → VPN → stuffing burst → stuffing lockout.
+(1) home → ALLOW → app (no risk UI);
 (2) new country → generic MFA from Freeman+policy; (3) teleport → generic MFA
 from the travel rule; (4) VPN → generic MFA as untrusted network, not teleport;
-(5) **admin Decisions** (second window) shows the reasons.
+(5) stuffing burst → REAUTHENTICATE; (6) stuffing lockout → BLOCK, no challenge
+offered; (7) **admin Decisions** (second window) shows the reasons.
+Keep the stuffing steps **last** — they leave failures inside the 24h window
+that keep escalating later logins.
+
+Optional closers (ADR-0028), both of which need a second window on admin:
+(8) **stop the PDP**, log in again → passkey step-up with a single
+`pdp_unavailable` reason and no 503 — a risk-engine outage is not an
+authentication outage (RF-10 / RNF-03);
+(9) **`PUT /policy` with `monitor_only: true`**, re-run the stuffing lockout →
+the user is let straight in while admin Decisions still records `BLOCK`
+(RF-09 / RNF-08). Turn it back off before any further step.

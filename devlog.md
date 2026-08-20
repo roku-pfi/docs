@@ -4,6 +4,148 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-20 — requirements audit, then the two gaps worth closing
+
+Read the E50 scope document against the code. 29 requirements (21 RF + 8 RNF):
+11 built, 12 partial, 4 not started, 2 in direct conflict with a shipped ADR.
+The RBA core is the strong part — RF-03, RNF-05, RNF-06, RNF-07 are done and
+demonstrable. What is thin is the IAM shell: no roles (RF-13/RF-21 —
+`GroupAppGrant.permission` is pinned to the constant `"access"`), no LDAP, no
+alarms, no IdP metrics, no always-MFA switch, no stable device identifier.
+
+Wrote up the document-side corrections separately in
+[`plans/e50-document-corrections.md`](plans/e50-document-corrections.md): four
+requirements where the implementation is the better answer and the text should
+move to meet it (RF-06 passkeys over TOTP, RF-18 opaque copy over a disclosed
+reason, RF-03 four risk levels, RF-04 `REAUTHENTICATE` over "limitar la tasa"),
+plus three inconsistencies the document has with itself (LDAP is optional in the
+alcance and mandatory in RF-19; three levels vs four; rate-limiting listed twice
+and implemented nowhere).
+
+Then built the two gaps that were both cheap and interview-sourced
+([ADR-0028](decisions/0028-degrade-to-step-up-and-monitor-mode.md)):
+
+**RF-10 / RNF-03 — the PEP degrades instead of 503-ing.** This was the one that
+mattered. `rba-idp` raised HTTP 503 when the PDP was unreachable, which is the
+`bloqueo masivo` the requirement explicitly forbids — a risk-engine outage became
+an authentication outage for every legitimate user. It now synthesises a decision
+locally: `REQUIRE_MFA`, `fallback=true`, one `pdp_unavailable` reason, and the
+same passkey ceremony as any other step-up. `PDP_UNAVAILABLE_ACTION` is typed
+`Literal["REQUIRE_MFA", "REAUTHENTICATE"]`, so `ALLOW` and `BLOCK` are
+unrepresentable — the requirement is enforced by the type, not by a comment. A
+wrong password is still `INVALID_CREDENTIALS`; admin read proxies still 503. The
+workspace README's "Fail closed" invariant said the opposite and has been
+rewritten in all three places it appeared.
+
+**RF-09 / RNF-08 — monitor-only mode.** `PolicyBundle.monitor_only`, per
+application, hot-editable through `PUT /policy` (so RNF-05 still holds). The PDP
+runs the whole pipeline and returns `ALLOW` with the verdict in
+`RiskEvaluateResponse.monitored_action` and a `monitor_only` reason. The stored
+row and the published event carry the **engine's** action, not the ALLOW —
+RF-09 asks to record the decision, not the non-enforcement — and the reason is
+what `_row_to_response` reads back so an idempotent replay allows exactly like
+the live call did. `rba_decisions_total` gains an `enforced` label. Monitor mode
+deliberately also suppresses `fallback_action`: a scorer outage is not a reason
+to start acting on a monitored tenant, and RNF-03's guarantee is kept at the PEP
+where the PDP's silence makes monitor mode unknowable anyway.
+
+`rba-contracts` 0.7.0 — additive on both counts (`monitor_only` defaults false,
+`monitored_action` defaults None). 7 new monitor tests, 4 new degrade tests; all
+suites green (contracts 13, PDP 36, IdP 76, features 17, bank 16, publisher 11,
+audit 3, profile 1).
+
+Commits: `rba-features` `00a7d8c`, `rba-contracts` `a347475`,
+`rba-ml-training` `cb93c68`, `rba-decision-service` `a06019b`, `rba-idp`
+`046af17`, `rba-demo-banking` `4531397`, `rba-event-publisher` `bc3ff9e`,
+`rba-infra` `6648876`.
+
+**Also corrected a stale citation.** The 2026-08-08 Step 5 finding and the
+docstring in `scoring/logreg.py` both quoted logreg recall@1%FPR **0.500**, while
+the deployed `logreg-0.1.0.json` carries **0.3947**. Two different training runs,
+the older one being cited in the thesis. Full regenerated table in
+[`findings/2026-08-20-step5-rerun.md`](findings/2026-08-20-step5-rerun.md),
+including why the freeman and logreg depth tables count `n` differently — they
+are two code paths (`train.py:136` uses `cumcount()`, `:167` uses the
+`user_login_count` feature, which after ADR-0027 counts successes only). Do not
+merge those tables.
+
+---
+
+## 2026-08-19 — k3d rehearsal: the stuffing demo proved nothing
+
+First end-to-end rehearsal of the Demo-1…5 walkthrough on the k3d cluster
+rather than compose. Two artifacts confirmed loading inside the container
+(`freeman-0.2.0.json`, `logreg-0.1.0.json`, threshold 0.9028) — the Dockerfile
+ENV path that compose never exercises — and the ADR-0027 success-only
+familiarity rule confirmed through the **async** path: after four wrong
+passwords the profile still read `login_count 98`, `countries ['AR']`,
+`asns ['7303']`.
+
+Then the rehearsal earned its keep. Both credential-stuffing scenarios ran from
+RU / 12389, a context Freeman already scores 0.8920 → CRITICAL → `BLOCK` with
+**zero** failed logins. The failed-login bands were never reached, so the demo
+never showed `REAUTHENTICATE` and the walkthrough page contradicted its own
+"all four PDP actions appear once" line. Moved both scenarios to the user's own
+`AR / 7303` with a novel IP; the action now walks
+`ALLOW → REAUTHENTICATE → BLOCK` on the failure count alone with `risk_score`
+pinned at 0.0000 — a strictly better demonstration of why ADR-0027 exists.
+A test pins the context so it cannot be made "vivid" again.
+
+Also found, not yet fixed: `rba-event-publisher` never reconnects to RabbitMQ,
+so one broker restart silently wedges all profile updates while still logging
+`published N outbox row(s)`. And 12 fired attempts consistently record 11.
+Numbers, repro and the reset procedure:
+[`findings/2026-08-19-supervised-escalation-and-failed-logins.md`](findings/2026-08-19-supervised-escalation-and-failed-logins.md).
+
+---
+
+## 2026-08-19 — Supervised second opinion + failed-login bands (ADR-0027)
+
+Two gaps found while reviewing the project against the proposal PDF: we served
+the *weakest* model at the operating point (Freeman recall@1%FPR 0.105 vs
+LogReg 0.500), and `failed_logins_last_24h` was structurally always 0 because
+the IdP never told the PDP about a wrong password — so credential stuffing, the
+threat the proposal leads with, could not influence a decision, and the demo
+only ever showed `ALLOW` and `REQUIRE_MFA`.
+
+- `rba-decision-service` **0.2.0**: `scoring/logreg.py` loads a 1.5 KB JSON
+  artifact (mean/scale/coef/intercept + baked 1%-FPR threshold) and scores the
+  same feature vector with a dot product — no sklearn, no pickle, no hop. Above
+  threshold it escalates to `REQUIRE_MFA` and emits `supervised_second_opinion`.
+  `services/escalate.py` is the one action ladder
+  (`ALLOW < REQUIRE_MFA < REAUTHENTICATE < BLOCK`); travel/VPN, failed-login
+  bands and the supervised opinion all name a floor and can only raise.
+  `risk_score` stays Freeman's number — ADR-0004 intact.
+- `rba-idp` **0.5.0**: a wrong password is reported to the PDP with
+  `login_successful=false`, then answered exactly as before. Best effort — a PDP
+  outage must not turn a bad password into a 503. Failed-login bands: ≥3 →
+  `REAUTHENTICATE`, ≥10 → `BLOCK`.
+- `rba-features` **0.2.0** (the important one): reporting failures naively
+  created a **profile-poisoning vector** — four wrong passwords flipped five of
+  six novelty signals to "seen before", so failing repeatedly *lowered* risk.
+  `update_profile` now lets only a **successful** login establish familiarity
+  (same rule the travel anchors already used). Both artifacts refit;
+  Freeman is now `freeman-0.2.0.json`.
+- `rba-demo-banking` **0.3.0**: `stuffing_burst` (4 failures) and
+  `stuffing_lockout` (12) walkthrough scenarios. The kit plays the attacker;
+  the presenter still does the real login by hand. All four PDP actions now
+  appear in one run.
+
+Cost, stated plainly: the poisoning fix drops LogReg recall@1%FPR 0.500 → 0.395
+(Freeman unmoved). Worth it — 4 detections out of 38, all inside the noise band,
+against a vector anyone can trigger by typing a wrong password five times.
+Deployed detection is still 3.7× Freeman alone.
+
+Finding: [`2026-08-19-supervised-escalation-and-failed-logins.md`](findings/2026-08-19-supervised-escalation-and-failed-logins.md)
+— includes why `failed_logins_last_24h` gets a *negative* coefficient when
+fitted (most failures are legitimate typos), which is the argument for keeping
+the stuffing response a deterministic rule rather than a model input.
+
+**Next:** Phase 8 — report & defense. Still open: adaptive-vs-static comparison
+(specific objective 4), signal trust boundary + IdP rate limiting, user research.
+
+---
+
 ## 2026-08-17 — Demo-4: WebAuthn passkey for REQUIRE_MFA
 
 The walkthrough still used mock OTP `000000` on hosted login. ADR-0022 wants a

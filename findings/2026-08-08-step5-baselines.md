@@ -1,5 +1,13 @@
 # Step 5 — Freeman scorer + reference baselines
 
+> **The results table below is superseded.** These are the numbers from the
+> 2026-08-08 training run. The artifacts actually deployed on the request path
+> were retrained after ADR-0027 (success-only familiarity) and score differently
+> — logreg recall@1%FPR **0.3947**, not 0.500; freeman **0.1053**, not 0.079.
+> **Cite [`2026-08-20-step5-rerun.md`](2026-08-20-step5-rerun.md).** The
+> evaluation *design* recorded here — label window, chronological split,
+> ADR-0007 — is unchanged and still current.
+
 - Date: 2026-08-08
 - Source: `rba-ml-training` — `python -m ml.train --model all`
   (Freeman: `ml/models/freeman.py`; baselines + eval: `ml/train.py`, `ml/metrics.py`).

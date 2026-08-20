@@ -6,7 +6,7 @@ add a new ADR that **supersedes** the old one (and mark the old one accordingly)
 rather than editing history. This preserves the reasoning trail for the thesis.
 
 Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
-we chose this shape*. Numbering is chronological. Next unused number: **0027**.
+we chose this shape*. Numbering is chronological. Next unused number: **0029**.
 
 ## Index
 
@@ -38,6 +38,8 @@ we chose this shape*. Numbering is chronological. Next unused number: **0027**.
 | [0024](0024-separate-demo-app.md) | Demo client is a separate app that uses the RBA platform | Accepted (namespace 0025; stage order 0026) |
 | [0025](0025-demo-app-separate-namespace.md) | Demo app lives in another namespace and authenticates via the IdP | Accepted |
 | [0026](0026-restage-demo-around-tenant-app.md) | Restage Demo-1…4 around a tenant app in another namespace | Accepted |
+| [0027](0027-supervised-second-opinion-and-failed-logins.md) | Supervised second opinion, failed-login bands, success-only familiarity | Accepted (refines 0004; generalises the 0022 escalate) |
+| [0028](0028-degrade-to-step-up-and-monitor-mode.md) | PEP degrades to a step-up when the PDP is silent; monitor-only mode in the policy bundle | Accepted (RF-09/RF-10/RNF-03/RNF-08; supersedes the "fail closed → 503" invariant) |
 
 ## Template
 
