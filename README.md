@@ -15,8 +15,11 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | [`plans/status.md`](plans/status.md) | **Single source of truth** for phase/step checklist + current focus |
 | [`plans/development_plan.md`](plans/development_plan.md) | Canonical roadmap (§8 = phases). Product horizons in §1.1 / ADR-0012–0015, **0022**, **0024** |
 | [`plans/README.md`](plans/README.md) | How to read the plan vs status |
+| [`tech-stack.md`](tech-stack.md) | Platform technologies, the reasoning behind each, and the network architecture (feeds the *Tecnologías* rubric row) |
 | [`devlog.md`](devlog.md) | Chronological development log (newest on top) |
 | [`decisions/`](decisions/) | Architecture Decision Records (immutable once Accepted) |
+| [`diagrams/`](diagrams/) | Login-flow sequence + architecture figures (SVG/PNG, generated) |
+| [`mockups/`](mockups/) | Twelve UI screens for the report (PNG/HTML, generated) |
 | [`findings/`](findings/) | Experiment write-ups with the numbers the thesis will cite |
 | [`rules/`](rules/) | Versioned mirror of Cursor agent rules (active copies in `../.cursor/rules/`) |
 | [`AGENTS.md`](AGENTS.md) | Portable orientation for AI coding tools |

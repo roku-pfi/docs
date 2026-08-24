@@ -1,0 +1,96 @@
+@startuml 03-architecture
+' Figura 2 — arquitectura desplegada.
+'
+' Equivalente PlantUML de `docs/diagrams/svg/03-architecture.svg`. Puertos,
+' bases de datos, colas y routing keys salen de `rba-infra/helm/rba` y del
+' `config.py` de cada servicio, no de la memoria.
+'
+' Sólo se dibuja lo que corre. Las bibliotecas compartidas (rba-contracts,
+' rba-features) y el trabajo offline (rba-ml-training) no aparecen: no son
+' procesos desplegados, se compilan dentro de las imágenes de arriba.
+
+!include _style_comp.puml
+
+title Arquitectura desplegada
+
+header
+Todo lo que se dibuja está efectivamente desplegado: puertos, bases de datos,
+colas y routing keys son los del clúster, no los del diseño.
+endheader
+
+actor "Browser" as BROWSER <<fuera del clúster>>
+
+node "clúster k3d · un solo nodo" as K3D {
+
+  rectangle "**Ingress Traefik**\n//host port 8080 → :80//\n\nlocalhost  →  rba-idp:8001\ndemo.localhost  →  rba-demo-banking:8002" as TRAEFIK
+
+  rectangle "namespace demo" as NSDEMO #FFFFFF00 {
+    rectangle "**rba-demo-banking**\n//relying party · :8002//\n\n• login alojado; nunca llama al PDP\n• renderiza según el conjunto de permisos\n• revalida en el camino de escritura" as BANK
+  }
+
+  rectangle "namespace rba" as NSRBA #FFFFFF00 {
+
+    rectangle "**rba-idp**\n//IdP + PEP + admin BFF · :8001//\n\n• login alojado, segundo factor WebAuthn, sesiones\n• aplica la acción del PDP — ALLOW / MFA / BLOCK\n• usuarios, grupos, roles y permisos\n• sirve la consola de administración" as IDP #line:4C5FE0;line.bold
+
+    rectangle "**rba-decision-service**\n//PDP · :8000 · HPA 2–5 réplicas//\n\n• POST /risk/evaluate — score, acción, razones\n• Freeman + segunda opinión supervisada\n• política recargable en caliente, modo sólo monitoreo\n• GET /decisions — modelo de lectura de la consola" as PDP #line:4C5FE0;line.bold
+
+    ' -- plano de datos compartido --
+    database "**PostgreSQL 16**\n//una instancia, cuatro bases//\n\n• rba_idp — usuarios, grupos, roles, sesiones\n• rba_decision — decisiones + outbox\n• rba_audit — archivo asincrónico\n• rba_profile — historial de perfil + deduplicación" as PG
+    database "**Redis 7**\n//perfiles de comportamiento//\n\n• rba:profile:{user_id}\n• cantidad de logins, dispositivos\n• último país y cuándo" as REDIS
+    database "**Prometheus**\n//en el chart · 6 h//\n\n• recolecta del PDP\n• + kube-state" as PROM
+    database "**Grafana**\n//dashboard RBA PDP//\n\n• tasa, p95 / p99\n• mezcla de decisiones\n• réplicas del HPA" as GRAFANA
+
+    ' -- distribución asincrónica --
+    rectangle "**rba-event-publisher**\n//relay del outbox//\n\n• consulta el outbox\n• publica decision.made.v1" as PUB
+    queue "**RabbitMQ 3.13**\n//topic rba.events//\n\n• exchange durable\n• una cola por consumidor" as MQ
+    rectangle "**rba-profile-service**\n//cola rba.profile.*//\n\n• reconstruye en Redis el perfil\n• que puntúa el próximo login\n• historial + deduplicación" as PROFILE
+    rectangle "**rba-audit-service**\n//una imagen, dos cargas de trabajo//\n\n• consumidor — cola rba.audit.decision-made.v1 → rba_audit\n• API de lectura :8002 — GET /decisions sobre el archivo" as AUDIT
+  }
+}
+
+' -- el camino sincrónico de login --
+BROWSER -[#141824]-> TRAEFIK : HTTP :8080
+TRAEFIK -[#141824]-> BANK
+TRAEFIK -[#141824]-> IDP
+BANK -[#141824]-> IDP : POST /callback/token\nGET /session
+IDP -[#4C5FE0]-> PDP : **POST /risk/evaluate**
+IDP -[#59627A]-> PDP : GET /decisions · /policy\n//la consola de administración lee del PDP//
+
+' -- un servicio y el almacén que le pertenece --
+IDP -[#59627A]-> PG
+PDP -[#59627A]-> PG
+PDP -[#59627A]-> REDIS
+PROM -[#59627A]-> PDP : recolecta /metrics
+GRAFANA -[#59627A]-> PROM
+
+' -- asincrónico: outbox → topic → dos consumidores --
+PUB -[#59627A]-> PG
+PUB .[#59627A].> MQ
+MQ .[#59627A].> PROFILE
+MQ .[#59627A].> AUDIT
+PROFILE -[#59627A]-> REDIS : escribe el perfil
+PROFILE -[#59627A]-> PG
+AUDIT -[#59627A]-> PG
+
+note right of BANK #E4F3EB
+**Dos namespaces, a propósito**
+La aplicación cliente se despliega como lo haría un
+cliente real: su propio namespace, su propio release
+de Helm, y llega a la plataforma únicamente a través
+del IdP. No puede llamar a /risk/evaluate en forma
+directa, así que el PEP nunca se saltea.
+end note
+
+note bottom of PDP #E9ECFD
+**Por qué el PDP no guarda identidad**
+Recibe un user_id y un conjunto de señales; nunca un
+e-mail, una contraseña ni una sesión. Por eso se puede
+escalar, reiniciar o dar de baja sin tocar credenciales.
+end note
+
+legend
+—— la decisión de riesgo — el camino de login    —— HTTP sincrónico, dentro del clúster
+—— un servicio y el almacén que le pertenece     ---- asincrónico — topic AMQP
+end legend
+
+@enduml

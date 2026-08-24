@@ -1,0 +1,77 @@
+@startuml 04-schema-idp-dir
+' Esquema relacional de rba_idp — directorio y autorización.
+' Flecha sólida: FK → tabla referenciada. Sin pata de gallo.
+
+!include _style.puml
+hide circle
+hide methods
+skinparam linetype ortho
+
+title rba_idp — directorio y autorización
+
+entity "users" as users #line:4C5FE0;line.bold {
+  * user_id : varchar(128) <<PK>>
+  --
+  email : varchar(320) <<UQ>>
+  password_hash : varchar(128)
+  enabled : boolean
+  is_admin : boolean
+}
+
+entity "group_memberships" as gm {
+  * group_id : varchar(128) <<PK FK>>
+  * user_id : varchar(128) <<PK FK>>
+}
+
+entity "groups" as groups {
+  * group_id : varchar(128) <<PK>>
+  --
+  name : varchar(256) <<UQ>>
+  description : varchar(512)
+}
+
+entity "applications" as apps {
+  * application_id : varchar(128) <<PK>>
+  --
+  name : varchar(256)
+  enabled : boolean
+  redirect_uri : varchar(512)
+}
+
+entity "group_roles" as gr {
+  * group_id : varchar(128) <<PK FK>>
+  * role_id : varchar(128) <<PK FK>>
+}
+
+entity "roles" as roles {
+  * role_id : varchar(128) <<PK>>
+  --
+  application_id : varchar(128) <<FK>>
+  name : varchar(128)
+  description : varchar(512)
+}
+
+entity "role_permissions" as rp {
+  * role_id : varchar(128) <<PK FK>>
+  * permission_id : varchar(128) <<PK FK>>
+}
+
+entity "permissions" as perms {
+  * permission_id : varchar(128) <<PK>>
+  --
+  application_id : varchar(128) <<FK>>
+  resource : varchar(64)
+  operation : varchar(64)
+  description : varchar(512)
+}
+
+gm --> users
+gm --> groups
+gr --> groups
+gr --> roles
+rp --> roles
+rp --> perms
+roles --> apps
+perms --> apps
+
+@enduml

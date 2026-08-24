@@ -1,6 +1,6 @@
 # ADR-0019: Groups grant app access on the IdP; admin stays `is_admin`
 
-- Status: Accepted
+- Status: Superseded by [ADR-0029](0029-rbac-roles-and-permissions.md)
 - Date: 2026-08-15
 - Relates to [ADR-0013](0013-idp-staged-start.md) IdP-7,
   [ADR-0012](0012-thin-idp-end-product.md) (groups as stretch),

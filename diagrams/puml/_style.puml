@@ -1,0 +1,17 @@
+' Paleta y tipografía compartidas por las figuras.
+' Los mismos colores que usan los SVG generados desde `design/diagrams/*.py`:
+' la severidad escala alejándose del verde, nunca hacia el rojo, para que la
+' rampa sobreviva a la impresión en escala de grises y al daltonismo.
+
+skinparam backgroundColor        #F3F5FB
+skinparam defaultFontName        Instrument Sans
+skinparam defaultFontSize        13
+skinparam shadowing              false
+skinparam roundCorner            8
+skinparam ArrowColor             #59627A
+skinparam ArrowFontColor         #141824
+skinparam ArrowFontSize          12
+skinparam NoteBackgroundColor    #FFFFFF
+skinparam NoteBorderColor        #DDE3F0
+skinparam NoteFontColor          #59627A
+skinparam NoteFontSize           11

@@ -1,0 +1,66 @@
+@startuml 05-schema-idp-runtime
+' Esquema relacional de rba_idp — sesión y factores.
+' Flecha punteada: identificador sin FK.
+
+!include _style.puml
+hide circle
+hide methods
+skinparam linetype ortho
+
+title rba_idp — sesión y factores
+
+entity "users" as users #line:4C5FE0;line.bold {
+  * user_id : varchar(128) <<PK>>
+  --
+  email : varchar(320) <<UQ>>
+}
+
+entity "sessions" as sessions {
+  * token_hash : varchar(64) <<PK>>
+  --
+  user_id : varchar(128) <<FK>>
+  application_id : varchar(128)
+  expires_at : timestamptz
+}
+
+entity "mfa_challenges" as mfa {
+  * challenge_id : varchar(36) <<PK>>
+  --
+  user_id : varchar(128) <<FK>>
+  application_id : varchar(128)
+  event_id : varchar(36)
+  action : varchar(32)
+  risk_score : double precision
+  risk_level : varchar(16)
+  reasons : json
+  expires_at : timestamptz
+  consumed_at : timestamptz
+  webauthn_challenge : bytea
+  webauthn_mode : varchar(16)
+}
+
+entity "webauthn_credentials" as wa {
+  * credential_id : varchar(256) <<PK>>
+  --
+  user_id : varchar(128) <<FK>>
+  public_key : bytea
+  sign_count : integer
+}
+
+entity "auth_codes" as codes {
+  * code_hash : varchar(64) <<PK>>
+  --
+  session_token : varchar(128)
+  user_id : varchar(128)
+  application_id : varchar(128)
+  redirect_uri : varchar(512)
+  expires_at : timestamptz
+  consumed_at : timestamptz
+}
+
+sessions --> users
+mfa --> users
+wa --> users
+codes ..> users
+
+@enduml

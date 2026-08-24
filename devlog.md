@@ -4,6 +4,339 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-08-21 (latest) — Data model for the informe
+
+Closes the *Modelo de datos* rubric row. Two figures, generated the same way
+as the other three: `04-datastores` (one Postgres, four databases, Redis as a
+JSON document, and the files that are not tables) and `05-idp-er` (crow's-foot
+of `rba_idp`). Columns and FKs read off the SQLAlchemy models; Redis fields
+read off `ProfileState`. The informe section lives at the end of chapter 3,
+after Tecnologías — chapter 4 is still unincluded and was only a stub.
+
+Redis is not an ER. Sessions, MFA challenges and auth codes stay in Postgres;
+the cache is the behavioural profile the PDP GETs on `/risk/evaluate`. There
+is no `Device`, `LoginAttempt` or `Policy` table, and drawing them would have
+been the same class of lie as putting argon2id on the login sequence.
+
+---
+
+## 2026-08-21 — The stack, written down — and the figure was wrong about bcrypt
+
+`docs/tech-stack.md` covers the *Tecnologías* row of the 50% rubric, which asks
+for two things: the choice of languages **justified**, and the network
+architecture that frames the work. So the document is organised around reasons
+rather than a bill of materials — why Python (train/serve parity is an import
+statement, not a discipline), why FastAPI over Flask (the OpenAPI documents are
+generated, not maintained), why RabbitMQ over Kafka (Postgres is already the
+system of record), why WebAuthn over TOTP (a step-up to a phishable factor
+concedes the argument), why two Helm charts and two namespaces (the tenant
+boundary is deployment topology, not discipline). §13 is the network
+architecture: the ingress path, the in-cluster DNS table, the port inventory,
+the protocols, and where authorization is actually resolved. The ML stack is out
+of scope by request and gets §16 only, to place the boundary.
+
+Everything in it was read out of `pyproject.toml`, the Dockerfiles, the charts
+and the cluster definition rather than recalled — which is how the second half of
+this entry happened.
+
+**Figure 1a said `verify_password(argon2id)`. The IdP uses bcrypt.**
+`rba_idp/passwords.py` imports `bcrypt` and nothing else; `argon2` appears
+nowhere in any `pyproject.toml` or any source file. The claim was invented and it
+had been sitting in a figure bound for the informe. Corrected in `figures.py`,
+in the PlantUML copy, in this log's 50%-delivery entry, and in a comment in
+`defense-runbook.html` — four places, all rebuilt and re-verified.
+
+Worth naming the failure rather than just the fix: argon2id is what a *good*
+implementation would use, so it read as plausible and survived several passes
+over the diagram. The check that caught it was not review, it was going back to
+the source to write down a version number. The dummy-hash timing defence in
+`passwords.py` is real, and is now described where it actually lives.
+
+---
+
+## 2026-08-21 — The architecture figure draws only what runs, and each figure gets a `.puml`
+
+Two changes, both asked for.
+
+**The "not deployed" band is gone.** Figure 2 carried a dashed zone along the
+bottom holding `rba-contracts`, `rba-features` and `rba-ml-training`. The band
+was honest — it was labelled *no desplegado* — but it was still three boxes in a
+deployment diagram, and a box in a deployment diagram reads as a thing that
+runs. Two of those repos are libraries: they are `COPY`-ed into the service
+images and `pip install`-ed at build time, so they execute inside the pods drawn
+above them, not beside them. The third is offline work whose output enters the
+picture as a scoring artefact baked into the PDP image, not as a network hop.
+Removing the band cost nothing the figure was actually asserting, and it took
+218 px off the artboard (1268 → 1050). The *Por qué el PDP no guarda identidad*
+callout that lived beside the band moved into the empty column under *Dos
+namespaces, a propósito*, rewrapped to the same 320 px width, so the two
+callouts now read as a matched pair. The subtitle was rewritten to match: it
+used to count repositories, and now it makes the claim the figure is making —
+everything drawn is deployed. Where the three repos went is explained in
+`docs/diagrams/README.md`, in prose, where a reader who wonders can find it.
+
+**Each figure now also ships as PlantUML**, in `docs/diagrams/puml/`, because a
+committee may want an artefact in a UML source format rather than a picture.
+These are hand-written, not generated — `build.py` copies them across, and a
+change to a figure has to be made in both places. That is a real drift risk and
+it is written into the README rather than hidden. Both sequence panels use
+`autonumber` seeded at 1 and 33, so the step numbers match the drawings; that
+was checked by rendering and reading the numbers back out of the SVG rather than
+by counting in my head — 32 messages in 1a, step 19 the outbox insert the
+footnote cites, 33 → 42 in 1b. The architecture one lays out through Graphviz
+and comes out visibly looser than the hand-laid version, which is the honest
+reason the README says the informe should use the PNGs.
+
+Rebuild is clean: bounds 0, overflow 0 on all three, and the marker sweep for
+`RF-`/`RNF-`/`HU-`/`ADR-` still returns 0 across the SVGs, `index.html` and now
+the `.puml` sources too.
+
+---
+
+## 2026-08-20 — The figures speak Spanish, and stop citing us
+
+The three figures were drawn in English and cited ADRs in their captions. Both
+are wrong for the artefact's actual destination. The informe is in Spanish, and
+its reader has never heard of ADR-0027 — a caption that says "ADR-0027 — rules
+may only raise the action" is asking them to take an internal document on faith
+instead of stating the reason.
+
+So: titles, phase headings, guards and every explanatory sentence are now
+Spanish, and each ADR citation was replaced by the claim it was standing in for.
+Identifiers, HTTP routes, field names, database and queue names, and protocol
+values (`ALLOW`, `MFA_REQUIRED`, `INVALID_CREDENTIALS`) stay exactly as the code
+spells them, because renaming them in a drawing makes the drawing lie. Short role
+labels on the lifelines (`Browser`, `user agent`, `relying party`) stay too.
+
+Requirement markers (RF-09, RNF-03, RF-21) went the same way in a second pass.
+The first cut kept them on the argument that they point outward at the informe's
+own numbering rather than inward at this repo — but that is still asking a reader
+to hold a numbering scheme in their head while looking at a drawing. The
+figure-to-requirement mapping belongs in `docs/diagrams/README.md`, where prose
+can carry it; the drawing should just be legible.
+
+Spanish runs 15–20% longer than English, which broke three things the English
+text had been hiding:
+
+- **Six bullets overflowed their component boxes** in figure 2 — `rba-profile-service`
+  ran 46 px past its own border and into `rba-audit-service`. Caught by a checker
+  that walks the emitted SVG, matches each text run to its *tightest* enclosing
+  rect, and flags anything that runs past the right edge. The first version of
+  that checker reported zero, because it matched the enclosing *namespace* zone
+  first; sorting candidate rects by area fixed it.
+- **A guard collided with a note.** `[sin rol en esta aplicación]` is twice the
+  width of `[no role here]`, so it ran under the note on the first message inside
+  the fragment. Fixed in `seqlib.py` rather than by shortening the text: a guard
+  chip is 20 px tall and a note sits 23.5 px above its row, so the first row
+  inside a combined fragment now clears the guard by 44 px. Costs 76 px of height
+  on figure 1a and cannot recur.
+- Bounds and overflow both read **0** across all three figures afterwards.
+
+Figure 1a is now 1400 × 2651 (2800 × 5302 at 2×). The contact sheet and
+`docs/diagrams/README.md` record the language convention so the next edit does
+not quietly drift back into English.
+
+---
+
+## 2026-08-20 — Three figures, generated
+
+The *diagrams* rubric concept had no home in E50. It does now:
+[`docs/diagrams/`](diagrams/README.md), built by
+[`design/diagrams/build.py`](../design/diagrams/build.py).
+
+**The login flow, in two panels.** Figure 1a runs from an unauthenticated `GET /`
+to an enforced decision: the redirect to the hosted login, bcrypt, the
+role-on-this-application check, the geo resolution, `POST /risk/evaluate`, the
+PDP's whole pipeline (profile → features → Freeman → second opinion and travel
+rules → policy → monitor-only → decision + outbox in one transaction), and then
+the `alt` over ALLOW / REQUIRE_MFA / BLOCK including the full WebAuthn ceremony.
+The two `opt` branches that end a login early — wrong password (with the ADR-0027
+report to the PDP) and no role here — are on it, and so is the degraded path when
+the PDP does not answer. Figure 1b picks up where the browser still holds only a
+one-time code: the back-channel exchange, then `GET /session` resolving
+permissions inside the session transaction on every request. Steps are numbered
+continuously, 1 → 42, so the report can cite one message.
+
+**Figure 2 is the deployed architecture** — Traefik, the two namespaces, the four
+databases in one Postgres, Redis, the outbox → RabbitMQ → profile/audit fan-out,
+Prometheus and Grafana, plus the three repos that are source rather than
+workloads. Endpoint, queue and routing-key detail sits *inside* the boxes rather
+than on the edges: an edge label has to fit the gap between two components, box
+text does not, so the drawing stays legible without pushing everything apart.
+
+**Written as code, not drawn.** `design/diagrams/dsl.py` is a small SVG builder;
+`seqlib.py` does lifelines, messages, internal actions and UML combined
+fragments; `figures.py` and `architecture.py` are the layouts. Hand-positioned
+diagrams rot the moment the system changes — these are a re-run. Both fonts are
+embedded as base64 `woff2`, so an SVG renders identically anywhere without a
+network.
+
+Two decisions worth recording. **Datastores are not lifelines** in the sequence
+panels: a round trip to Postgres costs two rows and tells the reader nothing they
+had not assumed, so store access is an internal action tagged with a cylinder
+chip and the topology lives in figure 2. And **the flow is split in two** because
+height is the binding constraint in a printed figure — figure 1a alone is 32
+steps, and at A4 text width its labels land near 3.5 pt. The split was made at
+the real seam (authentication ends, the session begins) rather than where the
+arithmetic wanted it; the README says so, along with the fact that a shorter
+overview figure is the actual fix if the printed copy matters more than the PDF.
+
+Found and corrected while drawing: `rba_profile` was about to be captioned
+"reserved". The profile-service does write it — processed-event dedupe and
+profile history — even though the profile the PDP reads lives in Redis.
+
+---
+
+## 2026-08-20 — The design catches up with the code
+
+Two jobs, both of them about the 50% delivery rather than about behaviour.
+
+**Six more mockup screens.** The canvas at `design/rba-screens` had three login
+screens and two console screens. Added Policy (with monitor-only where it
+belongs — at the top, not buried in the JSON), Users, Groups, and the bank's
+three: accounts as a `customer`, accounts as a `viewer`, and the 403 on
+`/transfer`. Those last three are RF-21 in one diff — same password, same
+device, same risk decision, and the screens differ by one button because the
+users differ by one permission.
+
+**An export the document can actually eat.** `design/rba-screens/export.py`
+strips the canvas wrapper off each artboard and writes `docs/mockups/html/`
+(standalone, one file per screen) plus `docs/mockups/png/` at 2×, with a contact
+sheet. PNG is the answer for Word/Docs — these are HTML with web fonts and
+gradients, so every route to vector rasterises them anyway, and 2× clears 300 dpi
+at the size a thesis prints them. `docs/mockups/README.md` also names the three
+elements drawn ahead of the code, so nobody discovers them during the defence.
+
+**Then ported the palette into the running software**
+([ADR-0030](decisions/0030-two-themes-one-palette.md)). The warm serif look is
+gone from `login.css`, `home.css` and the console. One `theme.css` per deployable
+holds the tokens; light on `:root`, dark on `:root[data-theme="dark"]`, and the
+console's index.html is the only thing that sets it.
+
+Findings worth keeping:
+
+- **Red/amber/green was the wrong ramp for a severity column.** ~8% of men have
+  red-green CVD, and red and green collapse to the same grey in print — so the
+  decision table lost its ranking in the thesis PDF. Green → cyan → indigo →
+  plum separates on lightness too. Nothing in the system uses red now, error
+  states included: a wrong password is not a severity level.
+- **The accent is indigo and so is step 3 of the ramp**, which is only safe
+  because severity is always an outlined mono pill and an action is always a
+  solid filled control. The shape carries the distinction, not the hue.
+- **The fonts are self-hosted** (78 KB of woff2, latin + latin-ext). A login page
+  linking `fonts.googleapis.com` hands a third party a request on every sign-in
+  attempt, failures included. Asserted by a test in each repo, because a 404 on a
+  font is silent — the page still renders, just wrong.
+- **`web/static/*` in `package-data` does not reach `web/static/fonts/*`.** Found
+  while adding the fonts; the wheel would have shipped without them. Fixed in
+  both `pyproject.toml` files.
+- **The no-build admin fallback is stale.** `web/static/admin.js` still calls the
+  `/admin/api/groups/{id}/grants` endpoints ADR-0029 deleted. It is unreachable
+  while the Vite build stays committed, so nothing is broken today — but it
+  should be deleted rather than repainted a third time.
+- The console header now renders the session's actual permissions as chips. It
+  is real data from `GET /session` and it is the on-screen answer to "why can I
+  see this button and my colleague cannot".
+
+Also corrected two pieces of stale copy on the login page: "not in a group
+granted this application" (ADR-0029 made roles the grant) and "the risk service
+did not answer — this IdP fails closed" (ADR-0028 made it degrade to a step-up;
+that panel only ever fires when the *IdP* is unreachable).
+
+Tests: 91 in `rba-idp`, 24 in `rba-demo-banking`, both green — 196 across all
+eight repos.
+
+**And brought the defense runbook up to date.** It had been written on 08-19 and
+described a system three ADRs ago. It now lives in the repo at
+[`plans/defense-runbook.html`](plans/defense-runbook.html) rather than only as a
+published page, and it gained:
+
+- A fourth entry in "things that will ruin the demo", plus **checkpoint 5**:
+  `k3d-up.sh` reuses an existing cluster and Postgres keeps its PVC, so a cluster
+  created before ADR-0029 has the RBAC tables and none of the rows. Every login
+  returns `ACCESS_DENIED` and it reads on stage as a wrong password. One `psql`
+  query catches it.
+- **Phase 6, authorization.** Viewer vs customer, the 403 on `/transfer` when you
+  skip the button, the support operator whose Save is disabled *and* whose API
+  call is refused, and revoking `transfer:create` live with no re-login.
+- **Phase 7, break it on purpose.** Scale the PDP to zero and log in anyway
+  (7a); flip `monitor_only` and watch `BLOCK` get recorded but not enforced (7b).
+  7a carries a warning the runbook needed: a degraded login is *not* written to
+  the decision store, and in this cluster the audit read path proxies through
+  `decision-service`, so admin is unavailable exactly while you are demonstrating
+  the degradation. Say it before someone reads it as a bug.
+- Four new failure-mode rows, all of them "you left something on from phase 6 or
+  7" — `monitor_only` still true, `transfer:create` still revoked. `reset-demo.sh`
+  only resets Redis; it does not touch the directory in Postgres.
+- Repainted onto the ADR-0030 palette, and the lede now says plainly which phases
+  are verified transcripts (1–5, appendix) and which are derived from the code and
+  still need a rehearsal pass (6, 7).
+
+---
+
+## 2026-08-20 (later) — RBAC: the document said roles, the code had a constant
+
+The scope document promises *control de acceso basado en roles*; RF-13 promises
+"usuarios, grupos, **roles y permisos**"; RF-21 promises authorization over
+resources and operations. What existed was `group_app_grants.permission` pinned
+to the literal string `"access"`, plus a `users.is_admin` boolean running a
+second, parallel authorization system for the console.
+
+Built the real thing ([ADR-0029](decisions/0029-rbac-roles-and-permissions.md)):
+`user → group → role → permission(resource, operation)`, NIST RBAC with user
+groups. Four new tables in `rba-idp`; `group_app_grants` removed.
+
+Decisions worth remembering:
+
+- **Roles are scoped to one application**, and `set_role_permissions` returns 422
+  if you try to put another application's permission on a role. Without that, one
+  tenant's admin could mint rights inside someone else's app — the failure that
+  makes an RBAC implementation worthless. Covered by a test.
+- **Holding a role *is* the sign-in grant.** No `app:access` permission to forget.
+  A role with zero permissions is a valid "may sign in, may do nothing else".
+- **Permissions reach relying parties flattened and fresh.** `GET /session`
+  returns `application_id` + `permissions` as `"resource:operation"` strings,
+  scoped to that session's application, resolved inside the session lookup rather
+  than baked into the token. A revoked role stops working on the next request —
+  there is a test that revokes mid-session with no re-login.
+- **`is_admin` is no longer an authorization input.** Three guards replace it:
+  `admin:read` to open the console, `admin:write` to change identity,
+  `policy:write` to retune risk. Splitting the last one matters: changing who may
+  log in and changing how risky a login must be are different powers. The flag
+  survives as a directory label, and setting it through the admin API adds or
+  removes the platform-admin role, so it can never lie.
+- **The bank enforces on the POST handler**, not only by hiding the button.
+
+The seed is now the worked example of §3.2.1's four actors, and it finally
+includes the **operador de soporte** — `support@example.com`, holding
+`admin:read` + `decisions:read`. That actor is in the thesis and could not exist
+while authorization was a boolean: they could read a decision or run the
+platform, nothing in between. On stage the sharper demo is the two bank users:
+`demo@` and `viewer@` log in identically, get scored identically, and only one of
+them can transfer.
+
+Admin console gained a Roles view (create roles, tick permissions, assign to
+groups) and now disables write controls for principals without `admin:write`, so
+the UI tells the truth about what you can do. Rebuilt the Vite bundle.
+
+`rba-contracts` **0.8.0 — breaking**: `GroupDetail.grants` → `roles`;
+`AppPermission` / `GroupGrantPublic` / `CreateGroupGrantRequest` gone;
+`/admin/api/groups/{id}/grants` → `/roles`. One gotcha found while writing the
+example fixtures: `scope` started as a pydantic `computed_field`, which serialises
+out but is rejected on input under `extra="forbid"` — so a client could not GET a
+permission and PUT it back. It is a normal field derived by a validator now, and
+a forged `scope` in the payload is overwritten rather than trusted.
+
+**Existing `rba_idp` databases must be re-seeded.** `create_all` adds the tables
+but cannot populate them, so a running database has no roles and every login
+returns `ACCESS_DENIED`.
+
+New tests: 14 RBAC (resolution, scoping, guards, revocation) + 7 bank enforcement
++ a rewritten groups suite. All suites green: contracts 13, PDP 36, IdP 90,
+bank 23, features 17, publisher 11, audit 3, profile 1.
+
+---
+
 ## 2026-08-20 — requirements audit, then the two gaps worth closing
 
 Read the E50 scope document against the code. 29 requirements (21 RF + 8 RNF):

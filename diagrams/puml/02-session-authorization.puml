@@ -1,0 +1,68 @@
+@startuml 02-session-authorization
+' Figura 1b — entrega de la sesión y autorización en cada pedido.
+'
+' Equivalente PlantUML de `docs/diagrams/svg/02-session-authorization.svg`.
+' Continúa la numeración de 01-login-sequence.puml: arranca en 33.
+
+!include _style_seq.puml
+
+title Flujo de login (2 de 2) — entrega de la sesión y autorización en cada pedido
+
+header
+La autenticación terminó con un código. Así se convierte en una sesión, y así
+decide el banco qué puede hacer realmente el usuario.
+endheader
+
+actor "Browser" as B <<user agent>>
+box "namespace demo" #FFFFFF00
+  participant "rba-demo-banking" as BANK <<relying party>>
+end box
+box "namespace rba" #FFFFFF00
+  participant "rba-idp" as IDP <<IdP + PEP>>
+end box
+
+autonumber 33
+
+== 5  CANJEAR EL CÓDIGO POR UNA SESIÓN ==
+
+B -> BANK : GET /callback?code=…
+BANK -> IDP : POST /callback/token {code}
+note right of BANK
+canal trasero, de servidor a servidor: el token de sesión
+nunca viaja en una URL ni pasa por el navegador
+end note
+IDP -> IDP : consumir auth_code — un solo uso, TTL corto  <font color=#8A93A8><size:10>rba_idp</size></font>
+IDP --> BANK : {session: {token, expires_at}, user}
+BANK --> B : 302 / + Set-Cookie (HttpOnly)
+
+== 6  AUTORIZACIÓN — SE VUELVE A RESOLVER EN CADA PEDIDO ==
+
+B -> BANK : GET /
+BANK -> IDP : GET /session — Authorization: Bearer …
+IDP -> IDP : sesión → grupos → roles → permisos, en una sola transacción  <font color=#8A93A8><size:10>rba_idp</size></font>
+note right of IDP
+se resuelve dentro de la misma búsqueda de sesión, así un rol
+revocado no sobrevive a la transacción
+end note
+IDP --> BANK : {user, permissions: ["account:read", "transfer:create"]}
+note right of BANK
+la aplicación cliente recibe un conjunto plano de permisos;
+nunca ve un grupo, un rol ni otra aplicación
+end note
+BANK -[#2F8055]-> B : se renderizan los saldos · el botón de transferencia se muestra u oculta
+
+note over B, IDP #E9ECFD
+Ocultar el botón es presentación. El control real es la verificación en el camino de escritura.
+POST /transfer resuelve la sesión y vuelve a exigir transfer:create antes de hacer nada, así que
+escribir la URL a mano, o reenviar el formulario, responde 403 exactamente como sugiere el botón oculto.
+end note
+
+legend
+Por qué el banco le pregunta al IdP en cada pedido en lugar de confiar en un claim guardado en la cookie.
+Un token que llevara sus propios permisos seguiría funcionando hasta expirar. Acá la respuesta se recalcula
+en cada pedido, así que revocar un rol en la consola de administración tiene efecto en el próximo clic del
+usuario: sin cerrar sesión, sin refrescar tokens, sin demora de propagación. El costo es una llamada HTTP
+interna por vista.
+end legend
+
+@enduml

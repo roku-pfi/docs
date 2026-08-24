@@ -6,7 +6,7 @@ add a new ADR that **supersedes** the old one (and mark the old one accordingly)
 rather than editing history. This preserves the reasoning trail for the thesis.
 
 Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
-we chose this shape*. Numbering is chronological. Next unused number: **0029**.
+we chose this shape*. Numbering is chronological. Next unused number: **0031**.
 
 ## Index
 
@@ -40,6 +40,8 @@ we chose this shape*. Numbering is chronological. Next unused number: **0029**.
 | [0026](0026-restage-demo-around-tenant-app.md) | Restage Demo-1…4 around a tenant app in another namespace | Accepted |
 | [0027](0027-supervised-second-opinion-and-failed-logins.md) | Supervised second opinion, failed-login bands, success-only familiarity | Accepted (refines 0004; generalises the 0022 escalate) |
 | [0028](0028-degrade-to-step-up-and-monitor-mode.md) | PEP degrades to a step-up when the PDP is silent; monitor-only mode in the policy bundle | Accepted (RF-09/RF-10/RNF-03/RNF-08; supersedes the "fail closed → 503" invariant) |
+| [0029](0029-rbac-roles-and-permissions.md) | RBAC: `user → group → role → permission`, app-scoped; `is_admin` stops being an authorization input | Accepted (RF-13/RF-21; supersedes the `access` grant of 0019) |
+| [0030](0030-two-themes-one-palette.md) | One token file, two themes: light for end users, dark for operators; severity escalates green → cyan → indigo → plum, never red | Accepted |
 
 ## Template
 

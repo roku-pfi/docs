@@ -1,0 +1,19 @@
+!include _style.puml
+
+skinparam ParticipantBackgroundColor  #FFFFFF
+skinparam ParticipantBorderColor      #DDE3F0
+skinparam ParticipantFontColor        #141824
+skinparam ParticipantFontStyle        bold
+skinparam ActorBackgroundColor        #FFFFFF
+skinparam ActorBorderColor            #DDE3F0
+skinparam LifeLineBorderColor         #DDE3F0
+skinparam SequenceBoxBackgroundColor  #FFFFFF00
+skinparam SequenceBoxBorderColor      #4C5FE0
+skinparam SequenceGroupBackgroundColor #FFFFFF00
+skinparam SequenceGroupBorderColor    #59627A
+skinparam SequenceGroupHeaderFontColor #141824
+skinparam SequenceDividerBackgroundColor #E7EBF7
+skinparam SequenceDividerBorderColor  #DDE3F0
+skinparam SequenceDividerFontColor    #59627A
+skinparam SequenceDividerFontSize     12
+skinparam SequenceReferenceBackgroundColor #FFFFFF

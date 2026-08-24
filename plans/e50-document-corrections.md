@@ -3,10 +3,11 @@
 > Cambios a aplicar en `E50pfi.pdf` (§1.2 Alcance y §3.2 Requerimientos). **Nada
 > de esto es trabajo de código:** son requerimientos donde la implementación es
 > la mejor respuesta y el texto quedó atrás, más las inconsistencias internas del
-> documento. Los huecos reales (roles/permisos, LDAP, alarmas, métricas del IdP)
-> **no** están acá — ésos se corrigen construyendo, no reescribiendo.
+> documento. Los huecos reales (LDAP, alarmas, métricas del IdP) **no** están acá
+> — ésos se corrigen construyendo, no reescribiendo. Roles/permisos ya se
+> construyó (ADR-0029), así que §1.2 y RF-13/RF-21 quedaron ciertos sin tocarlos.
 >
-> Estado del código: 19 de agosto de 2026, `rba-*` polyrepo.
+> Estado del código: 20 de agosto de 2026, `rba-*` polyrepo.
 
 ---
 
@@ -151,17 +152,36 @@ código. Hay que corregir **ambas** ocurrencias, no sólo RF-04.
 
 ---
 
+## 2.4 Actores: ahora el código los tiene
+
+§3.2.1 define cuatro actores. Hasta ADR-0029 el código sólo distinguía dos
+(usuario y administrador), porque la autorización era un booleano. Con RBAC los
+cuatro existen como principales reales, y conviene que el capítulo de diseño
+muestre la tabla:
+
+| Actor (§3.2.1) | Usuario sembrado | Grupo | Rol | Permisos |
+|---|---|---|---|---|
+| usuario final | `demo@example.com` | Banking customers | `customer` | `account:read`, `transaction:read`, `transfer:create` |
+| usuario final | `viewer@example.com` | Banking viewers | `viewer` | `account:read`, `transaction:read` |
+| operador de soporte | `support@example.com` | Support operators | `support-operator` | `admin:read`, `decisions:read` |
+| administrador | `admin@example.com` | Platform admins | `platform-admin` | todos |
+
+El **operador de soporte** es el que más conviene mencionar en la defensa: la
+entrevista pedía que quien atiende el incidente pueda explicar la decisión sin
+poder modificar quién entra. Con un booleano `is_admin` ese actor no podía
+existir; con roles, existe y es demostrable.
+
 ## 3. Fuera de este archivo
 
 No son problemas de redacción y no se resuelven reescribiendo:
 
 | Tema | Requerimientos | Qué pasa |
 |---|---|---|
-| Roles y permisos | RF-13, RF-21, §1.2 («control de acceso basado en roles») | Existen usuarios, grupos, aplicaciones y grants grupo→app. **No existen roles**, y `permission` es una columna fijada a la constante `"access"`. Hay que decidir: modelarlos, o angostar el alcance a «acceso por grupo a aplicaciones». **Decidir antes de escribir el capítulo de arquitectura.** |
+| Roles y permisos | RF-13, RF-21, §1.2 | **Resuelto en código (ADR-0029).** Se implementó `usuario → grupo → rol → permiso(recurso, operación)`, con roles acotados a una aplicación. La consola de administración gestiona roles y permisos, `GET /session` devuelve los permisos efectivos, y el banco de demostración exige `transfer:create` para transferir. `is_admin` dejó de ser entrada de autorización. **Nada que corregir en el documento: ahora el texto es cierto.** |
 | Identificador de dispositivo | RF-02 | Se recolecta la *clase* de dispositivo (device_type / os / browser del User-Agent), no un identificador estable. «Dispositivo conocido» significa hoy «tipo de dispositivo conocido». |
 | Retardo progresivo | RF-07 | Las bandas de fallos escalan la acción, pero nada se retarda: no hay backoff ni `Retry-After`. |
 | Alarmas | RF-17 | No hay reglas de alerta. Prometheus/Grafana ya están desplegados y el PDP ya exporta `rba_decisions_total` — es configuración, no código. |
 | Métricas de autenticación | RF-20, RNF-04 | El PDP exporta puntaje y decisión; **el IdP no expone métricas** y el resultado del desafío MFA no se persiste en ningún lado. |
 | MFA permanente | RF-08 | No hay interruptor de MFA siempre, ni por usuario ni por aplicación. Viene de la encuesta. |
-| Modo de sólo monitoreo | RF-09, RNF-08 | En desarrollo. |
-| Degradación a MFA | RF-10, RNF-03 | En desarrollo. |
+| Modo de sólo monitoreo | RF-09, RNF-08 | **Resuelto (ADR-0028).** `monitor_only` en el bundle de política, por aplicación, editable con `PUT /policy`. |
+| Degradación a MFA | RF-10, RNF-03 | **Resuelto (ADR-0028).** El IdP deja de devolver 503 y exige un segundo factor cuando el PDP no responde. |

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin console — roles and permissions</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    a { color: #8FA4FF; text-decoration: none; } a:hover { color: #A6B6FF; text-decoration: underline; }
+  </style>
+<style>* { box-sizing: border-box; } html, body { margin: 0; }</style>
+</head>
+<body>
+<div style="width: 1140px; min-height: 780px; padding: 26px 24px 40px; background: radial-gradient(900px 420px at 12% -10%, #17203A 0%, transparent 62%), #0D1017; color: #E3E8F2; font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;">
+  <div style="max-width: 72rem; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 1.2rem;">
+    <div style="display: flex; align-items: center; gap: 0.55rem;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8FA4FF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.4-3 8.2-7.5 9.5-4.5-1.3-7.5-5.1-7.5-9.5V6z"></path></svg>
+      <p style="margin: 0; font-size: 0.84rem; font-weight: 600; letter-spacing: -0.01em;">RBA Identity</p>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: #5D6679;">admin</span>
+    </div>
+    <p style="margin: 0; font-size: 0.82rem; color: #858FA6;">admin@example.com <span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.72rem; color: #8FA4FF; background: #1B2440; padding: 0.14rem 0.4rem; border-radius: 3px; margin-left: 0.35rem;">platform-admin</span></p>
+  </div>
+  <div style="display: flex; gap: 0.2rem; margin: 0 0 1.1rem; border-bottom: 1px solid #28303F;">
+      <span style="padding: 0.5rem 0.8rem; font-size: 0.84rem; font-weight: 500; color: #858FA6; border-bottom: 2px solid transparent;">Decisions</span>
+      <span style="padding: 0.5rem 0.8rem; font-size: 0.84rem; font-weight: 500; color: #858FA6; border-bottom: 2px solid transparent;">Policy</span>
+      <span style="padding: 0.5rem 0.8rem; font-size: 0.84rem; font-weight: 500; color: #858FA6; border-bottom: 2px solid transparent;">Users</span>
+      <span style="padding: 0.5rem 0.8rem; font-size: 0.84rem; font-weight: 500; color: #858FA6; border-bottom: 2px solid transparent;">Apps</span>
+      <span style="padding: 0.5rem 0.8rem; font-size: 0.84rem; font-weight: 500; color: #858FA6; border-bottom: 2px solid transparent;">Groups</span>
+      <span style="padding: 0.5rem 0.8rem; font-size: 0.84rem; font-weight: 600; color: #E3E8F2; border-bottom: 2px solid #8FA4FF;">Roles</span>
+  </div>
+  <section style="background: #151A23; border: 1px solid #28303F; border-radius: 10px; padding: 1.3rem 1.3rem 1.15rem;">
+    <h1 style="margin: 0 0 0.3rem; font-size: 1.35rem; font-weight: 600; letter-spacing: -0.025em;">Roles &amp; permissions</h1>
+    <p style="margin: 0 0 1.2rem; color: #858FA6; line-height: 1.55; font-size: 0.88rem; max-width: 70ch;">A role bundles permissions on <em>one</em> application. A permission is <span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.83rem; color: #E3E8F2;">resource:operation</span> — the exact string a relying party checks. Roles reach users through groups, never directly.</p>
+    <div style="display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.6rem; align-items: start;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 0.5rem 0.55rem; border-bottom: 1px solid #28303F; color: #5D6679; font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; ">role</th>
+            <th style="text-align: left; padding: 0.5rem 0.55rem; border-bottom: 1px solid #28303F; color: #5D6679; font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; width: 12rem;">application</th>
+            <th style="text-align: left; padding: 0.5rem 0.55rem; border-bottom: 1px solid #28303F; color: #5D6679; font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; width: 4rem; text-align: right;">perms</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem; background: #1C2230;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8rem; color: #8FA4FF;">customer</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.15rem;">View accounts and move money</div></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem; background: #1C2230; white-space: nowrap;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.73rem; color: #858FA6;">demo-banking-app</span></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem; background: #1C2230; text-align: right;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78rem;">3</span></td>
+        </tr>
+        <tr>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem; "><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8rem; color: #E3E8F2;">viewer</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.15rem;">Balances only — no transfer</div></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem;  white-space: nowrap;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.73rem; color: #858FA6;">demo-banking-app</span></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem;  text-align: right;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78rem;">2</span></td>
+        </tr>
+        <tr>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem; "><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8rem; color: #E3E8F2;">platform-admin</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.15rem;">Identity, apps, roles and risk policy</div></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem;  white-space: nowrap;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.73rem; color: #858FA6;">idp-admin-console</span></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem;  text-align: right;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78rem;">4</span></td>
+        </tr>
+        <tr>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem; "><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8rem; color: #E3E8F2;">support-operator</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.15rem;">Read decisions, change nothing</div></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem;  white-space: nowrap;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.73rem; color: #858FA6;">idp-admin-console</span></td>
+          <td style="text-align: left; padding: 0.62rem 0.55rem; border-bottom: 1px solid #1F2633; vertical-align: top; font-size: 0.85rem;  text-align: right;"><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78rem;">2</span></td>
+        </tr>
+        </tbody>
+      </table>
+      <div style="border-left: 1px solid #28303F; padding-left: 1.4rem;">
+        <p style="margin: 0 0 0.2rem; font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: #5D6679;">editing</p>
+        <h2 style="margin: 0 0 0.55rem; font-size: 1.05rem; font-weight: 600; font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; color: #8FA4FF;">customer</h2>
+        <p style="margin: 0 0 1rem; color: #858FA6; font-size: 0.83rem; line-height: 1.55;">Only <span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78rem; color: #E3E8F2;">demo-banking-app</span> permissions are offered. A role can never carry another application’s rights.</p>
+        <ul style="list-style: none; margin: 0 0 1.2rem; padding: 0;">
+            <li style="display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid #1F2633;"><span style="display: inline-block; width: 15px; height: 15px; border-radius: 4px; flex: none; margin-top: 0.2rem; border: 1px solid #8FA4FF; background: #8FA4FF; position: relative;"><span style="position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #0D1017; border-width: 0 2px 2px 0; transform: rotate(45deg);"></span></span><span><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.79rem;">account:read</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.1rem;">Balances and account details</div></span></li>
+            <li style="display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid #1F2633;"><span style="display: inline-block; width: 15px; height: 15px; border-radius: 4px; flex: none; margin-top: 0.2rem; border: 1px solid #8FA4FF; background: #8FA4FF; position: relative;"><span style="position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #0D1017; border-width: 0 2px 2px 0; transform: rotate(45deg);"></span></span><span><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.79rem;">transaction:read</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.1rem;">Transaction history</div></span></li>
+            <li style="display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid #1F2633;"><span style="display: inline-block; width: 15px; height: 15px; border-radius: 4px; flex: none; margin-top: 0.2rem; border: 1px solid #8FA4FF; background: #8FA4FF; position: relative;"><span style="position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid #0D1017; border-width: 0 2px 2px 0; transform: rotate(45deg);"></span></span><span><span style="font-family: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.79rem;">transfer:create</span><div style="font-size: 0.78rem; color: #858FA6; margin-top: 0.1rem;">Move money out of an account</div></span></li>
+        </ul>
+        <span style="display: inline-block; padding: 0.55rem 0.9rem; border-radius: 7px; background: #8FA4FF; color: #0D1017; font-size: 0.85rem; font-weight: 600;">Save permissions</span>
+      </div>
+    </div>
+  </section>
+  </div>
+</div>
+</body>
+</html>

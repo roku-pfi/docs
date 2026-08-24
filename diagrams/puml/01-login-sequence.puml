@@ -1,0 +1,179 @@
+@startuml 01-login-sequence
+' Figura 1a — flujo de login: de la contraseña a una decisión aplicada.
+'
+' Equivalente PlantUML de `docs/diagrams/svg/01-login-sequence.svg`. El SVG es
+' el artefacto que va al informe; este archivo existe para quien quiera el
+' fuente UML. Los dos se editan juntos: figures.py manda, esto lo sigue.
+'
+' Los pasos se numeran de corrido con la figura 1b: acá van del 1 al 32, y
+' 01b arranca en 33, así que una frase puede decir «paso 19» y señalar un
+' único mensaje.
+
+!include _style_seq.puml
+
+title Flujo de login (1 de 2) — de la contraseña a una decisión aplicada
+
+header
+Autenticación basada en riesgo sobre el camino real de login: quién dice ser el
+usuario, qué tan riesgoso parece el intento y qué hace el IdP al respecto.
+endheader
+
+actor "Browser" as B <<user agent>>
+box "namespace demo" #FFFFFF00
+  participant "rba-demo-banking" as BANK <<relying party>>
+end box
+box "namespace rba" #FFFFFF00
+  participant "rba-idp" as IDP <<IdP + PEP>>
+  participant "rba-decision-service" as PDP <<PDP>>
+end box
+
+autonumber 1
+
+== 1  LLEGAR A LA PANTALLA DE LOGIN DEL IdP ==
+
+B -> BANK : GET /
+note right of B : sin cookie de sesión
+BANK --> B : 302 → /login?application_id=demo-banking-app&redirect_uri=…/callback
+note right of B
+el recorrido guiado también fija country y asn acá:
+son controles del presentador, no parte del flujo
+end note
+B -> IDP : GET /login
+IDP --> B : página de login del IdP + login.js
+note right of B
+la contraseña sólo se tipea en el origen del propio IdP,
+nunca en el del banco
+end note
+B -> IDP : POST /login {email, password, application_id, redirect_uri,\nip_address, country, asn, device_type, os, browser}
+
+== 2  CREDENCIALES Y LUEGO ACCESO A ESTA APLICACIÓN ==
+
+IDP -> IDP : verify_password(bcrypt)  <font color=#8A93A8><size:10>rba_idp</size></font>
+note right of IDP
+se verifica incluso si el e-mail no existe, para que el tiempo
+de respuesta no revele qué cuentas existen
+end note
+
+opt la contraseña no coincide
+  IDP -> PDP : POST /risk/evaluate {login_successful: false}
+  note right of IDP
+  la decisión devuelta se descarta: el objetivo es dejar
+  registrado el intento fallido
+  end note
+  IDP -[#8A3A93]-> B : INVALID_CREDENTIALS
+  note right of B
+  sin este reporte el motor sólo vería intentos exitosos
+  y el credential stuffing quedaría invisible
+  end note
+end
+
+IDP -> IDP : ¿algún rol en esta aplicación? usuario → grupo → rol  <font color=#8A93A8><size:10>rba_idp</size></font>
+
+opt sin rol en esta aplicación
+  IDP -[#8A3A93]-> B : ACCESS_DENIED
+  note right of B
+  tener un rol es el permiso; no hay un flag aparte de
+  «puede iniciar sesión» que alguien pueda olvidar
+  end note
+end
+
+== 3  EVALUACIÓN DE RIESGO — LA DECISIÓN ==
+
+IDP -> IDP : resolver ip_address → country, asn
+note right of IDP : tabla local de prefijos, no un producto GeoIP
+IDP -[#4C5FE0]> PDP : POST /risk/evaluate
+note right of IDP
+event_id, user_id, timestamp, ip_address, asn, country,
+device_type, os, browser
+end note
+
+note over BANK, PDP #E9ECFD
+Sin e-mail. Sin contraseña. Sin cookie. Sin token de sesión.
+El PDP puntúa un evento seudónimo y responde con un número, una acción
+y las razones que la sustentan.
+La identidad nunca sale de rba-idp, y por eso el PDP se puede escalar,
+reiniciar o dar de baja sin riesgo.
+end note
+
+PDP -> PDP : GET rba:profile:{user_id}  <font color=#8A93A8><size:10>redis</size></font>
+note right of PDP
+cantidad de logins, dispositivos y ASN conocidos,
+último país y cuándo se lo vio
+end note
+PDP -> PDP : compute_features(event, profile)
+note right of PDP
+rba-features: el mismo módulo con el que se entrenó el modelo,
+así el scoring en línea no diverge del entrenamiento
+end note
+PDP -> PDP : score de Freeman → risk_score + contribución de cada feature
+PDP -[#5B4BC4]> PDP : segunda opinión supervisada · viaje imposible · ráfaga de logins fallidos
+note right of PDP
+las reglas y el segundo modelo sólo pueden endurecer
+la acción, nunca relajarla
+end note
+PDP -> PDP : apply_policy(risk_score) → risk_level, action
+PDP -[#5B4BC4]> PDP : ¿monitor_only? registra el veredicto y devuelve ALLOW
+note right of PDP
+observar el motor sobre tráfico real antes de dejarlo
+actuar sobre alguien
+end note
+PDP -> PDP : INSERT decisions + INSERT outbox  <font color=#8A93A8><size:10>rba_decision</size></font>
+note right of PDP
+una sola transacción: no hay decisión sin el evento
+que la anuncia
+end note
+PDP -[#4C5FE0]-> IDP : 200 {risk_score, risk_level, action, reasons[],\nmodel_version, policy_version, fallback}
+
+opt el PDP no responde
+  IDP -[#5B4BC4]> IDP : degradar a REQUIRE_MFA — fallback=true, sin score, sin razones
+  note right of IDP
+  nunca un ALLOW silencioso, nunca dejar a todos afuera;
+  esta decisión no se persiste
+  end note
+end
+
+== 4  APLICACIÓN — EL IdP ES EL PUNTO DE APLICACIÓN DE POLÍTICAS ==
+
+alt action = ALLOW
+  IDP -> IDP : INSERT idp_session + auth_code  <font color=#8A93A8><size:10>rba_idp</size></font>
+  IDP -[#2F8055]-> B : AUTHENTICATED + redirect_to /callback?code=…
+
+else action = REQUIRE_MFA | REAUTHENTICATE
+  IDP -> IDP : INSERT mfa_challenge (event_id, action, risk_score, reasons)  <font color=#8A93A8><size:10>rba_idp</size></font>
+  note right of IDP
+  el score y sus razones viajan junto al desafío, para poder
+  explicar después por qué se pidió el segundo factor
+  end note
+  IDP -[#5B4BC4]-> B : MFA_REQUIRED + challenge_id
+  B -> IDP : POST /mfa/webauthn/options {challenge_id}
+  IDP --> B : opciones publicKey — create (primer registro) o get (aserción)
+  B -> B : navigator.credentials — autenticador de plataforma
+  note right of B
+  Touch ID / Windows Hello: la clave privada nunca sale
+  del dispositivo y el IdP nunca la ve
+  end note
+  B -> IDP : POST /mfa/webauthn/verify {credential}
+  IDP -> IDP : verificar firma · revalidar acceso · INSERT session + code  <font color=#8A93A8><size:10>rba_idp</size></font>
+  note right of IDP
+  el acceso se verifica una segunda vez: un rol revocado
+  durante el desafío no debe convertirse en sesión
+  end note
+  IDP -[#2F8055]-> B : AUTHENTICATED + redirect_to /callback?code=…
+
+else action = BLOCK
+  IDP -[#8A3A93]-> B : BLOCKED
+  note right of B
+  sin sesión, sin desafío, sin código:
+  el navegador no se queda con nada
+  end note
+end
+
+legend
+Continúa en la figura 1b: el navegador todavía sólo tiene un código de un solo uso.
+La fila de outbox del paso 19 también sale del camino del pedido: rba-event-publisher la reenvía a
+RabbitMQ, donde rba-profile-service actualiza el perfil contra el que se puntúa el próximo login
+y rba-audit-service lo archiva. Ninguno de esos dos saltos bloquea el login.
+La figura 2 muestra dónde vive cada uno.
+end legend
+
+@enduml

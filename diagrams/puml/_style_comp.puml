@@ -1,0 +1,17 @@
+!include _style.puml
+
+skinparam ComponentStyle          rectangle
+skinparam RectangleBackgroundColor #FFFFFF
+skinparam RectangleBorderColor     #DDE3F0
+skinparam RectangleFontColor       #141824
+skinparam DatabaseBackgroundColor  #EDF0F8
+skinparam DatabaseBorderColor      #DDE3F0
+skinparam DatabaseFontColor        #141824
+skinparam QueueBackgroundColor     #EDF0F8
+skinparam QueueBorderColor         #DDE3F0
+skinparam QueueFontColor           #141824
+skinparam NodeBackgroundColor      #FFFFFF00
+skinparam NodeBorderColor          #8A93A8
+skinparam NodeFontColor            #8A93A8
+skinparam ActorBackgroundColor     #FFFFFF
+skinparam ActorBorderColor         #DDE3F0

@@ -1,0 +1,925 @@
+<title>RBA Defense Runbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --ground:      #F3F5FB;
+  --surface:     #FFFFFF;
+  --surface-alt: #EDF0F8;
+  --ink:         #141824;
+  --ink-soft:    #3A4256;
+  --muted:       #59627A;
+  --rule:        #DDE3F0;
+  --rule-strong: #C7D0E4;
+  --accent:      #4C5FE0;
+  --accent-soft: #E9ECFD;
+
+  --allow:  #2F8055;
+  --mfa:    #22809E;
+  --reauth: #5B4BC4;
+  --block:  #8A3A93;
+  --allow-bg:  #E4F3EB;
+  --mfa-bg:    #E0F1F7;
+  --reauth-bg: #EAE7FA;
+  --block-bg:  #F6E6F7;
+
+  --shadow: 0 1px 2px rgba(25,27,31,.05), 0 8px 24px -12px rgba(25,27,31,.18);
+
+  --step: clamp(1rem, .82rem + .78vw, 1.0625rem);
+  --lh: 1.65;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0D1017;
+    --surface:     #151A23;
+    --surface-alt: #1C2230;
+    --ink:         #E3E8F2;
+    --ink-soft:    #B6BECE;
+    --muted:       #858FA6;
+    --rule:        #28303F;
+    --rule-strong: #3A4356;
+    --accent:      #8FA4FF;
+    --accent-soft: #1B2440;
+
+    --allow:  #63C48E;
+    --mfa:    #69C3DE;
+    --reauth: #A192F0;
+    --block:  #D08BE0;
+    --allow-bg:  #16281F;
+    --mfa-bg:    #122630;
+    --reauth-bg: #1F1B36;
+    --block-bg:  #2C1730;
+
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:      #0D1017;
+  --surface:     #151A23;
+  --surface-alt: #1C2230;
+  --ink:         #E3E8F2;
+  --ink-soft:    #B6BECE;
+  --muted:       #858FA6;
+  --rule:        #28303F;
+  --rule-strong: #3A4356;
+  --accent:      #8FA4FF;
+  --accent-soft: #1B2440;
+
+  --allow:  #63C48E;
+  --mfa:    #69C3DE;
+  --reauth: #A192F0;
+  --block:  #D08BE0;
+  --allow-bg:  #16281F;
+  --mfa-bg:    #122630;
+  --reauth-bg: #1F1B36;
+  --block-bg:  #2C1730;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.7);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: var(--step);
+  line-height: var(--lh);
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(1.75rem, 1rem + 3vw, 4rem) clamp(1.1rem, .6rem + 2.2vw, 2.5rem) 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 3.25rem;
+}
+
+h1, h2, h3 {
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  text-wrap: balance;
+  margin: 0;
+  line-height: 1.12;
+  letter-spacing: -.015em;
+}
+h1 { font-size: clamp(2.3rem, 1.5rem + 3.4vw, 3.6rem); font-weight: 700; }
+h2 { font-size: clamp(1.5rem, 1.2rem + 1.3vw, 2rem); font-weight: 700; }
+h3 { font-size: 1.115rem; font-weight: 700; letter-spacing: -.005em; }
+
+p { margin: 0; max-width: 65ch; }
+strong { font-weight: 600; }
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- masthead ---------- */
+.masthead { display: flex; flex-direction: column; gap: 1.1rem; }
+.masthead p.lede {
+  font-size: 1.14rem;
+  color: var(--ink-soft);
+  max-width: 58ch;
+}
+.masthead .rule-line {
+  height: 3px;
+  background: linear-gradient(90deg,
+    var(--allow) 0 25%, var(--mfa) 25% 50%, var(--reauth) 50% 75%, var(--block) 75% 100%);
+  border-radius: 2px;
+}
+
+/* ---------- podium card ---------- */
+.podium {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  padding: 1.4rem clamp(1rem, .7rem + 1vw, 1.6rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+.podium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem 1.6rem;
+}
+.pd { display: flex; flex-direction: column; gap: .28rem; min-width: 0; }
+.pd dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .7rem; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted);
+}
+.pd dd {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .89rem;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.pd dd .sub { color: var(--muted); }
+
+/* ---------- phases ---------- */
+.phase { display: flex; flex-direction: column; gap: 1.25rem; }
+.phase-head { display: flex; align-items: baseline; gap: .85rem; flex-wrap: wrap; }
+.phase-num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .78rem; font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 4px;
+  padding: .18rem .5rem;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+.phase-time { font-size: .84rem; color: var(--muted); font-family: "IBM Plex Mono", monospace; }
+
+/* ---------- code ---------- */
+pre {
+  margin: 0;
+  background: var(--surface-alt);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: 7px;
+  padding: .85rem 1rem;
+  overflow-x: auto;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: .845rem;
+  line-height: 1.6;
+}
+pre code { font: inherit; color: var(--ink); }
+p code, li code, td code, dd code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .855em;
+  background: var(--surface-alt);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: .06em .34em;
+  overflow-wrap: anywhere;
+}
+.cmt { color: var(--muted); }
+
+/* ---------- checkpoint ---------- */
+.check {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--allow);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: .8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+.check .eyebrow { color: var(--allow); }
+.check pre { background: transparent; border: none; border-left: none; padding: 0; font-size: .82rem; }
+.check p { font-size: .93rem; color: var(--ink-soft); }
+
+.warn {
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--reauth);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: .8rem 1rem;
+  display: flex; flex-direction: column; gap: .4rem;
+}
+.warn .eyebrow { color: var(--block); }
+.warn p { font-size: .95rem; color: var(--ink-soft); }
+
+/* ---------- action pills ---------- */
+.pill {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .715rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  padding: .17rem .48rem;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+.pill.allow  { color: var(--allow);  background: var(--allow-bg);  }
+.pill.mfa    { color: var(--mfa);    background: var(--mfa-bg);    }
+.pill.reauth { color: var(--reauth); background: var(--reauth-bg); }
+.pill.block  { color: var(--block);  background: var(--block-bg);  }
+
+/* ---------- script steps ---------- */
+.steps { display: flex; flex-direction: column; gap: .9rem; counter-reset: s; }
+.step {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 9px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 2.9rem 1fr;
+}
+.step-idx {
+  background: var(--surface-alt);
+  border-right: 1px solid var(--rule);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: .95rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.step-body { padding: .9rem 1.1rem 1rem; display: flex; flex-direction: column; gap: .5rem; min-width: 0; }
+.step-title { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.step-title h3 { font-size: 1.06rem; }
+.step-body p { font-size: .95rem; color: var(--ink-soft); }
+.step-do {
+  font-size: .9rem;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--ink);
+  background: var(--surface-alt);
+  border-radius: 5px;
+  padding: .45rem .6rem;
+}
+.say { border-left: 2px solid var(--accent); padding-left: .8rem; font-style: italic; color: var(--ink-soft); font-size: .95rem; }
+
+/* ---------- tables ---------- */
+.tw { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+th, td { text-align: left; padding: .58rem .8rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+thead th {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .69rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-alt);
+  white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: none; }
+td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+ul, ol { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: .42rem; max-width: 65ch; }
+li { padding-left: .1rem; }
+
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+hr.sep { border: none; border-top: 1px solid var(--rule); margin: 0; }
+
+footer { color: var(--muted); font-size: .87rem; display: flex; flex-direction: column; gap: .4rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+@media (max-width: 30rem) {
+  .step { grid-template-columns: 1fr; }
+  .step-idx { border-right: none; border-bottom: 1px solid var(--rule); padding: .4rem 0; justify-content: flex-start; padding-left: 1.1rem; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">PFI &middot; Risk-based authentication &middot; k3d</div>
+    <h1>RBA Defense Runbook</h1>
+    <div class="rule-line"></div>
+    <p class="lede">Cold machine to live demo. Phases 1&ndash;5 and the appendix were run against the k3d cluster on 2026-08-19 &mdash; those outputs are transcripts, not examples. Phases 6 and 7 are new (RBAC, degradation, monitor mode) and are derived from the code and the test suites; they need one rehearsal pass before you trust the exact strings.</p>
+  </header>
+
+  <!-- ============ PODIUM CARD ============ -->
+  <section class="podium">
+    <div class="eyebrow">At the podium</div>
+    <div class="podium-grid">
+      <dl class="pd">
+        <dt>Bank</dt>
+        <dd>demo.localhost:8080</dd>
+      </dl>
+      <dl class="pd">
+        <dt>Walkthrough</dt>
+        <dd>demo.localhost:8080/walkthrough</dd>
+      </dl>
+      <dl class="pd">
+        <dt>Admin console</dt>
+        <dd>localhost:8080/admin</dd>
+      </dl>
+      <dl class="pd">
+        <dt>Grafana</dt>
+        <dd>localhost:8080/grafana <span class="sub">admin / admin</span></dd>
+      </dl>
+      <dl class="pd">
+        <dt>Customer</dt>
+        <dd>demo@example.com <span class="sub">/ demo-password</span></dd>
+      </dl>
+      <dl class="pd">
+        <dt>Viewer <span class="sub">read-only</span></dt>
+        <dd>viewer@example.com <span class="sub">/ viewer-password</span></dd>
+      </dl>
+      <dl class="pd">
+        <dt>Support operator</dt>
+        <dd>support@example.com <span class="sub">/ support-password</span></dd>
+      </dl>
+      <dl class="pd">
+        <dt>Platform admin</dt>
+        <dd>admin@example.com <span class="sub">/ admin-password</span></dd>
+      </dl>
+      <dl class="pd">
+        <dt>Mock OTP</dt>
+        <dd>000000</dd>
+      </dl>
+      <dl class="pd">
+        <dt>Reset between runs</dt>
+        <dd>bash rba-infra/scripts/reset-demo.sh</dd>
+      </dl>
+    </div>
+  </section>
+
+  <div class="warn">
+    <div class="eyebrow">Four things that will ruin the demo</div>
+    <p><strong>Start from a deleted cluster.</strong> <code>k3d-up.sh</code> reuses an existing cluster, and Postgres keeps its PVC. A cluster created before the RBAC change has no <code>roles</code> rows &mdash; <code>create_all</code> adds the tables but cannot populate them, so <em>every</em> login returns <code>ACCESS_DENIED</code> and it looks like the password is wrong. Run <code>k3d-down.sh</code> first, then <code>k3d-up.sh</code>. <a href="#rbacseed">Checkpoint&nbsp;5</a> catches it in five seconds.</p>
+    <p><strong>Present from <code>localhost:8080</code>.</strong> <code>WEBAUTHN_RP_ID</code> is <code>localhost</code>; the passkey step-up fails from any other host or port, including your machine's LAN IP.</p>
+    <p><strong>Reset before every run.</strong> The stuffing steps leave failures in a 24-hour window that keep escalating later logins. A dirty profile changes every action in the script.</p>
+    <p><strong>Never restart the RabbitMQ pod.</strong> See <a href="#failures">failure modes</a> &mdash; it silently destroys queues and drops in-flight events permanently.</p>
+  </div>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 1 ============ -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 1</span>
+      <h2>Bring it up</h2>
+      <span class="phase-time">~5 min cold</span>
+    </div>
+
+    <p>Needs Docker (OrbStack), <code>k3d</code>, <code>helm</code>, <code>kubectl</code>. One script builds all six service images, creates the cluster, imports the images, and installs both Helm releases.</p>
+
+<pre><code>cd ~/Documents/UADE/PFI/develop
+rba-infra/scripts/k3d-up.sh</code></pre>
+
+    <p>If compose is running from earlier work, it can stay &mdash; it binds 5432/6379/5672 and k3d only binds 8080. But the cluster uses its <em>own</em> in-cluster datastores, so don't expect host Redis to reflect anything you see in the demo.</p>
+
+    <div class="check">
+      <div class="eyebrow">Checkpoint &mdash; all pods running</div>
+<pre><code>kubectl --context k3d-rba -n rba get pods</code></pre>
+      <p>Thirteen pods, all <code>1/1 Running</code>: audit-api, audit-service, decision-service&nbsp;&times;2, event-publisher, grafana, idp, kube-state-metrics, postgres, profile-service, prometheus, rabbitmq, redis.</p>
+    </div>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 2 ============ -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 2</span>
+      <h2>Verify before you trust it</h2>
+      <span class="phase-time">~1 min</span>
+    </div>
+
+    <p>Four checks. Each one has failed for real at least once, and each one fails <em>silently</em> &mdash; the login page still renders, so nothing looks wrong until a scenario gives the wrong answer in front of the room.</p>
+
+    <div class="check">
+      <div class="eyebrow">Checkpoint 1 &mdash; both model artifacts loaded in the container</div>
+<pre><code>kubectl --context k3d-rba -n rba logs deploy/decision-service | grep -i artifact</code></pre>
+<pre><code>loaded Freeman artifact /app/artifacts/freeman-0.2.0.json
+loaded supervised artifact /app/artifacts/logreg-0.1.0.json (escalate-only, threshold 0.9028)</code></pre>
+      <p>These paths come from <code>Dockerfile</code> ENV, not from Helm. Running from source never exercises them. If either line is missing, every evaluate returns <code>fallback=true</code> and the whole demo is meaningless.</p>
+    </div>
+
+    <div class="check">
+      <div class="eyebrow">Checkpoint 2 &mdash; the home profile is seeded</div>
+<pre><code>kubectl --context k3d-rba -n rba logs deploy/profile-service | grep seed</code></pre>
+<pre><code>seeded home profile key=rba:profile:usr_demo</code></pre>
+    </div>
+
+    <div class="check">
+      <div class="eyebrow">Checkpoint 3 &mdash; the async plane is actually moving</div>
+<pre><code>kubectl --context k3d-rba -n rba logs deploy/event-publisher --tail=20 | grep published</code></pre>
+<pre><code>published 2/2 outbox row(s)</code></pre>
+      <p>Both numbers must match. <code>published 0/5</code> means the broker link is down and no profile will ever update again &mdash; the log also prints <code>publishing is stalled</code> when that happens.</p>
+    </div>
+
+    <div class="check">
+      <div class="eyebrow">Checkpoint 4 &mdash; every surface answers</div>
+<pre><code>curl -s -o /dev/null -w "%{http_code}\n" http://demo.localhost:8080/walkthrough
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/login
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/grafana</code></pre>
+      <p>Three <code>200</code>s.</p>
+    </div>
+
+    <div class="check" id="rbacseed">
+      <div class="eyebrow">Checkpoint 5 &mdash; the RBAC chain is populated</div>
+<pre><code>kubectl --context k3d-rba -n rba exec deploy/postgres -- \
+  psql -U rba -d rba_idp -c \
+  'select r.name, r.application_id, count(rp.permission_id) as perms
+     from roles r left join role_permissions rp using (role_id)
+    group by 1, 2 order by 2, 1;'</code></pre>
+<pre><code>      name       |  application_id   | perms
+-----------------+-------------------+-------
+ customer        | demo-banking-app  |     3
+ viewer          | demo-banking-app  |     2
+ platform-admin  | idp-admin-console |     4
+ support-operator| idp-admin-console |     2</code></pre>
+      <p>Four roles. <strong>Zero rows means a stale database</strong> &mdash; the schema is created on boot but the seed only inserts into an empty table set, so an upgraded cluster gets the tables without the data. Every login will return <code>ACCESS_DENIED</code>, which reads on stage as a broken password. The fix is <code>k3d-down.sh &amp;&amp; k3d-up.sh</code>; there is no migration tooling.</p>
+    </div>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 3 ============ -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 3</span>
+      <h2>Run the test suites</h2>
+      <span class="phase-time">~1 min</span>
+    </div>
+
+    <p>Do this once the night before, not at the podium. <code>rba-features</code> has no venv of its own &mdash; borrow the decision-service one, which has it installed editable. <strong>196 tests</strong> across eight repos; if the total is right, the demo will behave.</p>
+
+<pre><code>cd ~/Documents/UADE/PFI/develop
+(cd rba-features         && ../rba-decision-service/.venv/bin/python -m pytest -q)
+(cd rba-contracts        && .venv/bin/python -m pytest -q)
+(cd rba-decision-service && .venv/bin/python -m pytest -q)
+(cd rba-idp              && .venv/bin/python -m pytest -q)   <span class="cmt"># ~90s, bcrypt</span>
+(cd rba-demo-banking     && .venv/bin/python -m pytest -q)
+(cd rba-event-publisher  && .venv/bin/python -m pytest -q)
+(cd rba-audit-service    && .venv/bin/python -m pytest -q)
+(cd rba-profile-service  && .venv/bin/python -m pytest -q)</code></pre>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Suite</th><th>Expected</th><th>What it protects</th></tr></thead>
+        <tbody>
+          <tr><td><code>rba-features</code></td><td class="num">17 passed</td><td>Train/serve parity; only a success establishes familiarity</td></tr>
+          <tr><td><code>rba-contracts</code></td><td class="num">13 passed</td><td>Every example round-trips through the Pydantic models</td></tr>
+          <tr><td><code>rba-decision-service</code></td><td class="num">36 passed, 1 skipped</td><td>Escalation ladder, failed-login bands, supervised operating point, monitor mode</td></tr>
+          <tr><td><code>rba-idp</code></td><td class="num">91 passed</td><td>Wrong password reported to the PDP but never enforced; the RBAC chain; degrade-to-step-up</td></tr>
+          <tr><td><code>rba-demo-banking</code></td><td class="num">24 passed</td><td>Scenario contexts, and the 403 on the transfer <em>write</em> path</td></tr>
+          <tr><td><code>rba-event-publisher</code></td><td class="num">11 passed</td><td>Broker reconnect; honest published-vs-attempted accounting</td></tr>
+          <tr><td><code>rba-audit-service</code></td><td class="num">3 passed</td><td>Decision events land in the audit store</td></tr>
+          <tr><td><code>rba-profile-service</code></td><td class="num">1 passed</td><td>Profile updates apply idempotently</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 4 ============ -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 4</span>
+      <h2>Reset</h2>
+      <span class="phase-time">~30 s</span>
+    </div>
+
+    <p>Run this immediately before presenting, and again between rehearsals.</p>
+
+<pre><code>bash rba-infra/scripts/reset-demo.sh</code></pre>
+
+    <div class="check">
+      <div class="eyebrow">Checkpoint &mdash; it must print exactly this</div>
+<pre><code>pristine seed: 98 0 203.0.113.10</code></pre>
+      <p>98 successful logins, 0 failures, only the home IP seen. Anything else and the profile is dirty.</p>
+    </div>
+
+    <p>Why a script rather than one <code>redis-cli DEL</code>: the seed is written <code>SET NX</code>, so deleting the key and restarting <code>profile-service</code> re-seeds it &mdash; but an in-flight decision event can land <em>after</em> the reseed and re-pollute the blob. The script retries until the profile matches the pristine seed exactly. During development this silently corrupted three measurements before anyone noticed; they showed <code>score 0.5000</code> with a <code>low_history</code> reason, which is what an <em>empty</em> profile scores.</p>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 5 &mdash; THE SCRIPT ============ -->
+  <section class="phase" id="script">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 5</span>
+      <h2>The live script</h2>
+      <span class="phase-time">~8 min</span>
+    </div>
+
+    <p>Two browser windows. <strong>Left:</strong> the walkthrough at <code>demo.localhost:8080/walkthrough</code>. <strong>Right:</strong> the admin Decisions view at <code>localhost:8080/admin</code>, already signed in as the admin &mdash; that is where the reasons live, and it is what turns each result into an explanation.</p>
+
+    <p>Every step is the same three clicks: pick the scenario on the left, sign in as <code>demo@example.com</code> / <code>demo-password</code>, then read the newest row on the right. Order matters &mdash; it is the argument, not a list.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-idx">1</div>
+        <div class="step-body">
+          <div class="step-title"><h3>New country</h3><span class="pill mfa">REQUIRE_MFA</span></div>
+          <div class="step-do">Click <strong>New country</strong> &rarr; sign in</div>
+          <p>Germany / Deutsche Telekom. Runs first, from a cold seed, so the travel rule stays quiet.</p>
+          <p><strong>Expect a surprise in admin:</strong> the score reads <code>0.0000</code> and the reason is <code>supervised_second_opinion</code> &mdash; <em>not</em> a novel-signal reason. Freeman abstains here; see <a href="#scores">reading the score</a>.</p>
+          <p class="say">"Two models run on every login. The likelihood-ratio model says this is fine &mdash; the device, browser and network are all still familiar, and novelty has a ceiling while familiarity doesn't. The supervised model disagrees. It can raise the bar; it can never lower it."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">2</div>
+        <div class="step-body">
+          <div class="step-title"><h3>Home</h3><span class="pill allow">ALLOW</span></div>
+          <div class="step-do">Click <strong>Home</strong> &rarr; sign in</div>
+          <p>Argentina / Telecom Argentina. Straight into the bank, no challenge, no risk UI anywhere on the customer surface.</p>
+          <p class="say">"Same system, same user, one second later. Adaptive means most logins feel like nothing happened."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">3</div>
+        <div class="step-body">
+          <div class="step-title"><h3>Teleport</h3><span class="pill mfa">REQUIRE_MFA</span></div>
+          <div class="step-do">Click <strong>Teleport</strong> &rarr; sign in &mdash; <strong>immediately after step 2</strong></div>
+          <p>Japan / KDDI. The reason is <code>impossible_travel</code>, not novelty. This only works right after a successful home login, because the rule measures the gap since the last success.</p>
+          <p class="say">"A deterministic rule, not the model. Some things you don't want a model to be unsure about."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">4</div>
+        <div class="step-body">
+          <div class="step-title"><h3>VPN</h3><span class="pill mfa">REQUIRE_MFA</span></div>
+          <div class="step-do">Click <strong>VPN</strong> &rarr; sign in</div>
+          <p>United States / Cloudflare. Reason is <code>vpn_or_hosting</code> &mdash; a hosting ASN sidesteps the physics check, so it's judged as an untrusted network instead.</p>
+          <p class="say">"The evasion is anticipated. Skipping the travel rule doesn't buy the attacker anything."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">5</div>
+        <div class="step-body">
+          <div class="step-title"><h3>Credential stuffing &mdash; burst</h3><span class="pill reauth">REAUTHENTICATE</span></div>
+          <div class="step-do">Click <strong>Credential stuffing &mdash; burst</strong> &rarr; <strong>wait ~10 seconds</strong> &rarr; sign in</div>
+          <p>Fires four wrong passwords, then hands you the login page. Deliberately from the user's <em>own</em> country and ASN &mdash; a residential proxy, which is what stuffing actually looks like.</p>
+          <p><strong>The number to point at:</strong> the score is <code>0.0000</code> and the level is <code>LOW</code>, while the action is <span class="pill reauth">REAUTHENTICATE</span>. Freeman sees nothing wrong. The rule does.</p>
+          <p class="say">"This is the case the model structurally cannot catch. A failed attempt from the attacker's own machine just looks like an ordinary login. The count is what gives it away &mdash; and notice the score never moved. The rule raises a floor; it never rewrites the model's number."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">6</div>
+        <div class="step-body">
+          <div class="step-title"><h3>Credential stuffing &mdash; lockout</h3><span class="pill block">BLOCK</span></div>
+          <div class="step-do">Click <strong>Credential stuffing &mdash; lockout</strong> &rarr; <strong>wait ~15 seconds</strong> &rarr; sign in</div>
+          <p>Twelve wrong passwords. Past the lockout band the answer is to stop serving the account rather than offer a challenge &mdash; no MFA prompt is shown at all.</p>
+          <p>The reason reads <code>11 failed logins in the last 24h (lockout threshold 10)</code>. Eleven, not twelve &mdash; see <a href="#failures">failure modes</a>. Still well past the threshold.</p>
+          <p class="say">"Four distinct actions from one policy, and the customer never saw a risk score at any point."</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="warn">
+      <div class="eyebrow">The one timing trap</div>
+      <p>On steps 5 and 6, the wrong passwords travel the async path &mdash; PDP &rarr; outbox &rarr; RabbitMQ &rarr; profile-service &rarr; Redis &mdash; before the count is visible to the next decision. Sign in too fast and you get <span class="pill allow">ALLOW</span>, which is exactly backwards from the point you're making. Count to ten. If you want certainty instead of a count, run this until it prints <code>4</code> (or <code>11</code>):</p>
+<pre><code>kubectl --context k3d-rba -n rba exec deploy/redis -- redis-cli GET rba:profile:usr_demo \
+  | python3 -c 'import json,sys;print(len(json.load(sys.stdin).get("failed_login_ts",[])))'</code></pre>
+    </div>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 6 &mdash; AUTHORIZATION ============ -->
+  <section class="phase" id="authz">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 6</span>
+      <h2>Prove authorization, not just authentication</h2>
+      <span class="phase-time">~3 min</span>
+    </div>
+
+    <p>Everything above is about <em>whether you get in</em>. This is about <em>what you may do once you are in</em> &mdash; RF-21, and the half of the scope statement that says <em>control de acceso basado en roles</em>. Use a second browser profile or a private window so both users stay signed in at once.</p>
+
+    <p>The chain is <code>user &rarr; group &rarr; role &rarr; permission</code>. The bank never sees any of it: <code>GET /session</code> hands it a flat list of <code>resource:operation</code> strings and it gates on those. Every screen below prints that list at the bottom of the page, which is the fastest way to show what changed.</p>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-idx">1</div>
+        <div class="step-body">
+          <div class="step-title"><h3>The same login, one permission short</h3></div>
+          <div class="step-do">Private window &rarr; <code>demo.localhost:8080</code> &rarr; sign in as <code>viewer@example.com</code> / <code>viewer-password</code></div>
+          <p>Identical login, identical scoring, identical <span class="pill allow">ALLOW</span> in admin. Balances render. <strong>The "Send money" button is not there</strong>, and the footer reads <code>account:read&nbsp; transaction:read</code>.</p>
+          <p class="say">"Same user experience, same risk decision. Authentication said yes to both of these people. Authorization is a separate question, and it is answered separately."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">2</div>
+        <div class="step-body">
+          <div class="step-title"><h3>Skip the button</h3><span class="pill block">403</span></div>
+          <div class="step-do">In the same window, type <code>demo.localhost:8080/transfer</code> in the address bar</div>
+          <p><em>Not available.</em> <code>Required transfer:create</code>. The check runs on the <code>POST</code> handler as well as the <code>GET</code>, so pasting the URL, replaying the form, or curling it all land in the same place.</p>
+          <p class="say">"Hiding a button is presentation. An attacker does not use your UI. The control is the check on the write path &mdash; this screen is what that check looks like."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">3</div>
+        <div class="step-body">
+          <div class="step-title"><h3>A support operator who can read and cannot touch</h3></div>
+          <div class="step-do">Third window &rarr; <code>localhost:8080/admin</code> &rarr; sign in as <code>support@example.com</code> / <code>support-password</code></div>
+          <p>Decisions opens; every reason is readable. The header chips read <code>admin:read&nbsp; decisions:read</code> and nothing else. On the Policy tab the JSON is visible and <strong>Save policy is disabled</strong>.</p>
+          <p>The disabled button is a courtesy. The control is the API, and it is worth showing that it refuses independently:</p>
+<pre><code>T=$(curl -s http://localhost:8080/login -H 'content-type: application/json' -d '{
+  "email":"support@example.com","password":"support-password",
+  "application_id":"idp-admin-console","ip_address":"203.0.113.10",
+  "asn":"13335","country":"AR","device_type":"desktop",
+  "os":"macOS","browser":"Chrome"}' | jq -r .session.token)
+
+curl -s http://localhost:8080/admin/api/policy \
+  -H "Authorization: Bearer $T" -o /tmp/p.json -w '%{http_code}\n'
+
+curl -s -X PUT http://localhost:8080/admin/api/policy \
+  -H "Authorization: Bearer $T" -H 'content-type: application/json' \
+  -d @/tmp/p.json -w '\n%{http_code}\n'</code></pre>
+<pre><code>200
+{"detail":"requires permission policy:write"}
+403</code></pre>
+          <p class="say">"Reading a decision to explain an incident and retuning the engine that made it are different powers. One person needs the first at 3am; almost nobody needs the second."</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-idx">4</div>
+        <div class="step-body">
+          <div class="step-title"><h3>Revoke it live</h3><span class="pill mfa">no re-login</span></div>
+          <div class="step-do">Admin as <code>admin@example.com</code> &rarr; <strong>Roles</strong> &rarr; <code>customer</code> &rarr; untick <code>transfer:create</code> &rarr; Save &rarr; <strong>reload the customer's bank tab</strong></div>
+          <p>The button disappears without a sign-out. Permissions are resolved inside the session lookup on every request rather than baked into the token at login, so there is no window in which a revoked role still works.</p>
+          <p class="say">"This is the property that makes the model worth having. Revocation takes effect on the next request, not on the next login &mdash; and nobody had to remember to invalidate a token."</p>
+          <p><strong>Put it back before the next rehearsal</strong> &mdash; re-tick <code>transfer:create</code>, or re-run <code>k3d-down.sh &amp;&amp; k3d-up.sh</code>. <code>reset-demo.sh</code> only resets the risk profile in Redis; it does not touch the directory in Postgres.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="warn">
+      <div class="eyebrow">If every login says ACCESS_DENIED</div>
+      <p>The database predates RBAC and has no <code>roles</code> rows. See <a href="#rbacseed">checkpoint&nbsp;5</a>. It is not the passwords.</p>
+    </div>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ PHASE 7 &mdash; BREAK IT ON PURPOSE ============ -->
+  <section class="phase" id="degrade">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 7</span>
+      <h2>Break it on purpose</h2>
+      <span class="phase-time">~4 min</span>
+    </div>
+
+    <p>Two demonstrations that a tribunal is more likely to ask about than any of the happy paths: <em>what happens when the risk engine is down</em>, and <em>how do you deploy this without locking anyone out on day one</em>. Both are policy positions with code behind them, not slideware.</p>
+
+    <h3>7a &mdash; The PDP disappears mid-demo</h3>
+
+    <p>An IdP that hard-fails when the scorer is unreachable has traded an availability incident for a total outage. One that waves everyone through has silently removed the control. RNF-03 names both as wrong, so the answer is neither: <strong>ask for a step-up</strong>.</p>
+
+<pre><code>kubectl --context k3d-rba -n rba scale deploy/decision-service --replicas=0
+kubectl --context k3d-rba -n rba rollout status deploy/decision-service --timeout=60s</code></pre>
+
+    <p>Now sign in as <code>demo@example.com</code> from <strong>Home</strong> &mdash; the scenario that was <span class="pill allow">ALLOW</span> a minute ago. You get the passkey prompt instead, and it works: you end up inside the bank.</p>
+
+    <div class="check">
+      <div class="eyebrow">Where the evidence is</div>
+<pre><code>kubectl --context k3d-rba -n rba logs deploy/idp | grep "PDP unavailable"</code></pre>
+<pre><code>PDP unavailable, degrading to REQUIRE_MFA for user_id=usr_demo: ...</code></pre>
+      <p><strong>Point at the log, not at admin.</strong> A degraded login is deliberately <em>not</em> written to the decision store &mdash; that store lives behind the service that just failed to answer. In this cluster the audit read path is also proxied through <code>decision-service</code>, so the Decisions tab will be unavailable for as long as it is scaled to zero. Say that out loud before someone notices it and reads it as a bug.</p>
+    </div>
+
+    <p>The guarantee is enforced by the <em>type</em>, not by discipline: the setting is <code>pdp_unavailable_action: Literal["REQUIRE_MFA", "REAUTHENTICATE"]</code>. <code>ALLOW</code> and <code>BLOCK</code> are not expressible, so no configuration mistake can turn an outage into open access or a mass lockout.</p>
+
+<pre><code>kubectl --context k3d-rba -n rba scale deploy/decision-service --replicas=2
+kubectl --context k3d-rba -n rba rollout status deploy/decision-service --timeout=2m</code></pre>
+
+    <h3>7b &mdash; Monitor-only mode</h3>
+
+    <p>The honest answer to "how would a bank actually roll this out". Score every login, record it, publish it, and <strong>return <span class="pill allow">ALLOW</span> to the application anyway</strong> &mdash; so you can measure what the engine <em>would</em> have done to real traffic before it does it to anyone.</p>
+
+    <p>Flip it in the admin console's <strong>Policy</strong> tab (today a JSON textarea over the bundle) by setting <code>defaults.monitor_only</code> to <code>true</code> and saving. Scriptable equivalent:</p>
+
+<pre><code>A=$(curl -s http://localhost:8080/login -H 'content-type: application/json' -d '{
+  "email":"admin@example.com","password":"admin-password",
+  "application_id":"idp-admin-console","ip_address":"203.0.113.10",
+  "asn":"13335","country":"AR","device_type":"desktop",
+  "os":"macOS","browser":"Chrome"}' | jq -r .session.token)
+
+curl -s http://localhost:8080/admin/api/policy -H "Authorization: Bearer $A" \
+  | jq '.defaults.monitor_only = true' \
+  | curl -s -X PUT http://localhost:8080/admin/api/policy -H "Authorization: Bearer $A" \
+      -H 'content-type: application/json' -d @- | jq '.defaults.monitor_only'</code></pre>
+
+    <p>Then re-run <strong>Credential stuffing &mdash; lockout</strong>, the step that gave <span class="pill block">BLOCK</span> in phase 5.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Surface</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td>The customer</td><td>Signs straight in. No challenge, no block, no hint that anything was evaluated.</td></tr>
+          <tr><td>Admin &rarr; Decisions</td><td>The row still reads <span class="pill block">BLOCK</span>, with the same reasons, plus a <code>monitor_only</code> reason recording that it was not enforced.</td></tr>
+          <tr><td>Grafana</td><td><code>rba_decisions_total</code> counts the row under <code>enforced="false"</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="say">"This is what you turn on first. It runs for a month, you look at how many real customers would have been challenged or blocked, you retune the bands, and only then do you turn it off. Nothing about the engine changes when you do &mdash; the scoring, the reasons and the record are identical. The only thing that changes is what the application is told."</p>
+
+    <p>It is editable at runtime and hot-reloads the PDP (RNF-05), and it can be set per application as well as globally, so one tenant can go live while the others stay in monitor. <strong>Turn it back off before the next rehearsal</strong> or phase 5 will look broken.</p>
+
+    <div class="warn">
+      <div class="eyebrow">One asymmetry worth being able to explain</div>
+      <p>Monitor mode also suppresses <code>fallback_action</code> &mdash; if the scorer breaks while a tenant is being monitored, the tenant keeps getting <span class="pill allow">ALLOW</span>. A scorer outage is not a reason to start acting on someone who explicitly asked not to be acted on. The RNF-03 guarantee in 7a still holds, because it lives at the IdP, where the PDP's silence makes monitor mode unknowable.</p>
+    </div>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ WHAT TO SHOW IN ADMIN ============ -->
+  <section class="phase">
+    <div class="phase-head">
+      <span class="phase-num">PHASE 8</span>
+      <h2>What to point at in admin</h2>
+    </div>
+
+    <p>Each decision row carries the score, the level, the action, and the reason list. The reasons are the thesis &mdash; they are why this is explainable rather than a black box.</p>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>Reason code</th><th>Source</th><th>Action floor</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>signal_novel</code> / <code>signal_familiar</code></td><td>Freeman per-signal log-likelihood ratio</td><td>&mdash;</td></tr>
+          <tr><td><code>impossible_travel</code></td><td>Country-centroid rule</td><td><span class="pill mfa">REQUIRE_MFA</span></td></tr>
+          <tr><td><code>vpn_or_hosting</code></td><td>Hosting-ASN list</td><td><span class="pill mfa">REQUIRE_MFA</span></td></tr>
+          <tr><td><code>supervised_second_opinion</code></td><td>LogReg above its baked 1%-FPR threshold</td><td><span class="pill mfa">REQUIRE_MFA</span></td></tr>
+          <tr><td><code>failed_login_burst</code></td><td>&ge; 3 failures in 24h</td><td><span class="pill reauth">REAUTHENTICATE</span></td></tr>
+          <tr><td><code>failed_login_lockout</code></td><td>&ge; 10 failures in 24h</td><td><span class="pill block">BLOCK</span></td></tr>
+          <tr><td><code>low_history</code></td><td>&lt; 3 logins on record</td><td>&mdash; (reason only)</td></tr>
+          <tr><td><code>monitor_only</code></td><td>Policy state &mdash; the decision was recorded but not enforced</td><td>forced to <span class="pill allow">ALLOW</span></td></tr>
+          <tr><td><code>pdp_unavailable</code></td><td>IdP-side; the PDP never answered, so there is no score</td><td><span class="pill mfa">REQUIRE_MFA</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>If someone asks how the pieces combine: rules and the second opinion each name a floor, the most severe one wins, and nothing can ever lower an action or overwrite <code>risk_score</code> &mdash; that number stays Freeman's. Step 5 is the visible proof: <code>LOW</code> level, <span class="pill block">BLOCK</span>-adjacent action, score untouched at zero.</p>
+
+    <h3 id="scores">Reading the score</h3>
+
+    <p>The two numbers that look odd in the Decisions list are both correct, and both worth being able to explain cold.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Case</th><th>Sum of LLRs</th><th>Score</th><th>Reading</th></tr></thead>
+        <tbody>
+          <tr><td>Brand-new user, nothing known</td><td class="num">0.000</td><td class="num">0.5000</td><td>Abstains &mdash; no information</td></tr>
+          <tr><td>Usual home login</td><td class="num">&minus;56.899</td><td class="num">0.0000</td><td>Overwhelmingly familiar</td></tr>
+          <tr><td>New country + new ASN</td><td class="num">&minus;31.368</td><td class="num">0.0000</td><td>Still familiar on balance</td></tr>
+          <tr><td>New country + ASN + IP + OS</td><td class="num">&minus;1.768</td><td class="num">0.1458</td><td>Novelty finally competitive</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p><strong>0.50 is not "medium risk" &mdash; it is "no information".</strong> Freeman is a likelihood ratio: <code>log P(value | population) &minus; log P(value | this user)</code>. With an empty profile the user model falls back to the population prior, every term is exactly zero, and the sigmoid returns 0.5. Under this app's bands that lands in HIGH, so a first-ever login is challenged because nothing is known about it &mdash; a policy stance, not a model finding.</p>
+
+    <p><strong>0.00 is saturation, not a bug.</strong> A usual login sums to &minus;56.9; the sigmoid of that is about 2&times;10<sup>&minus;25</sup>.</p>
+
+    <p><strong>Novelty has a ceiling; familiarity does not.</strong> An unseen value contributes exactly <code>log((history + &beta;)/&beta;)</code> &mdash; <code>+3.025</code> on the 98-login seed, identical for every signal, however exotic the value. A familiar signal contributes about <code>&minus;12</code> and keeps growing with history. So two novel signals (<code>+6</code>) lose to three familiar ones (<code>&minus;36</code>), and an established user cannot be pushed over the line by novelty alone. That asymmetry is the whole argument for the supervised second opinion, and step&nbsp;1 is where it shows on screen.</p>
+
+    <p>Grafana at <code>localhost:8080/grafana</code> has the K8s-2 dashboards if latency or the HPA comes up. <code>rba-infra/scripts/load-hpa.sh</code> drives the autoscaler live.</p>
+
+    <h3>If the live demo cannot run</h3>
+
+    <p>Twelve screens are exported at <code>docs/mockups/png/</code> with a contact sheet at <code>docs/mockups/index.html</code> &mdash; the login flow, the bank's three authorization states, and all five console tabs. They are the fallback if the cluster misbehaves, and they are the same screens the document uses for the <em>Mockups</em> rubric concept. Three elements on them are drawn ahead of the code and are named in <code>docs/mockups/README.md</code>; know which three before you show them.</p>
+  </section>
+
+  <hr class="sep">
+
+  <!-- ============ FAILURE MODES ============ -->
+  <section class="phase" id="failures">
+    <div class="phase-head">
+      <span class="phase-num">APPENDIX</span>
+      <h2>Failure modes</h2>
+    </div>
+
+    <p>Every one of these was hit for real during rehearsal on 2026-08-19.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Stuffing step returns <span class="pill allow">ALLOW</span></td>
+            <td>Signed in before the failures propagated</td>
+            <td>Wait, then retry the same step</td>
+          </tr>
+          <tr>
+            <td>Every scenario returns the wrong action; reasons look neutral</td>
+            <td>Dirty or empty profile</td>
+            <td><code>reset-demo.sh</code> until it prints the pristine seed</td>
+          </tr>
+          <tr>
+            <td>Profiles stop updating; logins still work</td>
+            <td>Broker link down. Log shows <code>publishing is stalled</code> or <code>published 0/N</code></td>
+            <td><code>kubectl -n rba rollout restart deploy/event-publisher</code></td>
+          </tr>
+          <tr>
+            <td>Events published but never delivered</td>
+            <td>RabbitMQ pod was recreated &mdash; see below</td>
+            <td>Restart <code>profile-service</code> and <code>audit-service</code>, then reset and re-run</td>
+          </tr>
+          <tr>
+            <td>Passkey step-up fails</td>
+            <td>Presenting from something other than <code>localhost:8080</code></td>
+            <td>Use <code>localhost</code>; <code>WEBAUTHN_RP_ID</code> is pinned to it</td>
+          </tr>
+          <tr>
+            <td>Every login returns <code>ACCESS_DENIED</code>, all four users</td>
+            <td>Database predates RBAC &mdash; tables created, never seeded</td>
+            <td><code>k3d-down.sh &amp;&amp; k3d-up.sh</code>; verify with <a href="#rbacseed">checkpoint 5</a></td>
+          </tr>
+          <tr>
+            <td>Admin Decisions is empty or errors during phase&nbsp;7a</td>
+            <td>Expected. Audit reads proxy through <code>decision-service</code>, which is scaled to zero</td>
+            <td>Scale it back to 2; say it out loud before someone asks</td>
+          </tr>
+          <tr>
+            <td>Phase 5 gives <span class="pill allow">ALLOW</span> for every scenario</td>
+            <td><code>monitor_only</code> left on from phase&nbsp;7b</td>
+            <td>Set it back to <code>false</code> in admin &rarr; Policy</td>
+          </tr>
+          <tr>
+            <td>The customer's "Send money" button is missing</td>
+            <td><code>transfer:create</code> left revoked from phase&nbsp;6 step&nbsp;4</td>
+            <td>Re-tick it in admin &rarr; Roles &rarr; <code>customer</code>. <code>reset-demo.sh</code> does not restore it</td>
+          </tr>
+          <tr>
+            <td>Lockout reason says 11, not 12</td>
+            <td>Known, not root-caused; one attempt is consistently unrecorded</td>
+            <td>Nothing &mdash; 11 clears the threshold of 10</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Why you must not restart RabbitMQ</h3>
+    <p>The broker's node name is derived from the pod hostname &mdash; <code>rabbit@rabbitmq-79667c469-q9sqd</code>. Mnesia stores queues per node name, so a recreated pod comes back as a <em>different</em> node with an empty broker, even though the PersistentVolumeClaim reattaches; the old node's directory is orphaned on the volume. Every queue and binding is gone. Anything the publisher sends before the consumers reconnect and re-declare their queues is discarded by the exchange, and because the outbox has already marked those rows published, they are never retried. That is permanent, silent data loss.</p>
+    <p>It is survivable in rehearsal and fatal on stage. The durable fix is a StatefulSet or a fixed <code>RABBITMQ_NODENAME</code>; neither is applied yet.</p>
+
+    <h3>Teardown</h3>
+<pre><code>rba-infra/scripts/k3d-down.sh</code></pre>
+  </section>
+
+  <hr class="sep">
+
+  <footer>
+    <p>Phases 1&ndash;5 and the appendix were verified against the k3d cluster on 2026-08-19. Phases 6 and 7 were added on 2026-08-20 from the code and the test suites and have not yet been rehearsed against the cluster &mdash; walk them once before the defence.</p>
+    <p>Numbers and reproduction steps: <code>docs/findings/2026-08-19-supervised-escalation-and-failed-logins.md</code>, <code>docs/findings/2026-08-20-step5-rerun.md</code>. Design decisions: <code>0027</code> supervised second opinion &middot; <code>0028</code> degrade to step-up and monitor mode &middot; <code>0029</code> RBAC &middot; <code>0030</code> the two themes. Screens: <code>docs/mockups/</code>.</p>
+  </footer>
+
+</div>

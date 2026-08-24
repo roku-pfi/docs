@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagramas RBA</title>
+<style>
+  :root {
+    --ground:#F3F5FB; --surface:#FFF; --line:#DDE3F0;
+    --ink:#141824; --muted:#59627A; --accent:#4C5FE0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --ground:#0D1017; --surface:#151A23; --line:#28303F;
+             --ink:#E3E8F2; --muted:#858FA6; --accent:#8FA4FF; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:48px 32px 96px; background:var(--ground); color:var(--ink);
+         font:15px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { max-width:1100px; margin:0 auto 40px; }
+  h1 { font-size:30px; margin:0 0 8px; letter-spacing:-.01em; }
+  header p { color:var(--muted); margin:0; max-width:70ch; }
+  figure { max-width:1100px; margin:0 auto 56px; }
+  figcaption h2 { font-size:17px; margin:0 0 4px; }
+  figcaption p { color:var(--muted); margin:0 0 6px; font-size:13.5px; }
+  .links a { color:var(--accent); text-decoration:none; font-family:ui-monospace, Menlo, monospace;
+              font-size:12.5px; }
+  .links a:hover { text-decoration:underline; }
+  .shot { display:block; margin-top:14px; border:1px solid var(--line); border-radius:12px;
+           overflow:hidden; background:var(--surface); }
+  .shot img { display:block; width:100%; height:auto; }
+</style>
+<header>
+  <h1>Diagramas RBA</h1>
+  <p>Generados desde <code>design/diagrams/</code>. Volver a correr <code>python3 build.py</code>
+     después de cualquier cambio en el sistema: están armados por script, no a mano, así que
+     mantenerlos fieles cuesta una corrida. Clic en una figura para abrir el original vectorial.
+     El <code>.puml</code> de cada una es el mismo diagrama en UML textual, por si hace falta
+     entregar el fuente.</p>
+</header>
+    <figure>
+      <figcaption><h2>Figura 1a — Flujo de login: de la contraseña a la decisión aplicada</h2><p>Secuencia. Browser, banco, IdP y PDP, con los tres desenlaces y el camino degradado.</p>
+        <p class="links"><a href="svg/01-login-sequence.svg">SVG</a> ·
+           <a href="png/01-login-sequence.png">PNG @2x</a> ·
+           <a href="puml/01-login-sequence.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/01-login-sequence.svg"><img src="svg/01-login-sequence.svg" alt="Figura 1a — Flujo de login: de la contraseña a la decisión aplicada"></a>
+    </figure>
+    <figure>
+      <figcaption><h2>Figura 1b — Entrega de la sesión y autorización</h2><p>Secuencia. Cómo un código de un solo uso se vuelve sesión, y cómo se resuelven los permisos en cada pedido.</p>
+        <p class="links"><a href="svg/02-session-authorization.svg">SVG</a> ·
+           <a href="png/02-session-authorization.png">PNG @2x</a> ·
+           <a href="puml/02-session-authorization.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/02-session-authorization.svg"><img src="svg/02-session-authorization.svg" alt="Figura 1b — Entrega de la sesión y autorización"></a>
+    </figure>
+    <figure>
+      <figcaption><h2>Figura 2 — Arquitectura desplegada</h2><p>Componentes. Qué corre en el clúster k3d y con qué habla.</p>
+        <p class="links"><a href="svg/03-architecture.svg">SVG</a> ·
+           <a href="png/03-architecture.png">PNG @2x</a> ·
+           <a href="puml/03-architecture.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/03-architecture.svg"><img src="svg/03-architecture.svg" alt="Figura 2 — Arquitectura desplegada"></a>
+    </figure>
+    <figure>
+      <figcaption><h2>Figura 3 — Almacenes</h2><p>Un PostgreSQL, cuatro bases, más el documento de Redis. Qué vive en cada uno.</p>
+        <p class="links"><a href="svg/04-datastores.svg">SVG</a> ·
+           <a href="png/04-datastores.png">PNG @2x</a> ·
+           <a href="puml/04-datastores.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/04-datastores.svg"><img src="svg/04-datastores.svg" alt="Figura 3 — Almacenes"></a>
+    </figure>
+    <figure>
+      <figcaption><h2>Figura 4 — Esquema relacional de rba_idp</h2><p>Entidad-relación. Cadena usuario → grupo → rol → permiso, más sesión y factores.</p>
+        <p class="links"><a href="svg/05-idp-er.svg">SVG</a> ·
+           <a href="png/05-idp-er.png">PNG @2x</a> ·
+           <a href="puml/05-idp-er.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/05-idp-er.svg"><img src="svg/05-idp-er.svg" alt="Figura 4 — Esquema relacional de rba_idp"></a>
+    </figure>
+</html>

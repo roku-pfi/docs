@@ -1,0 +1,79 @@
+@startuml 06-schema-ops
+' Esquemas de rba_decision, rba_profile y rba_audit.
+' No hay FK entre bases. event_id las correlaciona.
+
+!include _style.puml
+hide circle
+hide methods
+skinparam linetype ortho
+
+title rba_decision, rba_profile y rba_audit
+
+package "rba_decision" {
+  entity "decisions" as dec #line:4C5FE0;line.bold {
+    * event_id : uuid <<PK>>
+    --
+    application_id : varchar(128)
+    user_id : varchar(128)
+    risk_score : double precision
+    risk_level : varchar(32)
+    action : varchar(32)
+    model_version : varchar(64)
+    policy_version : varchar(64)
+    feature_schema_version : varchar(32)
+    fallback : boolean
+    reasons : jsonb
+    features : jsonb
+    scored_at : timestamptz
+  }
+  entity "outbox" as outbox {
+    * id : integer <<PK>>
+    --
+    event_id : uuid <<UQ>>
+    channel : varchar(128)
+    payload : jsonb
+    published_at : timestamptz
+    last_error : text
+  }
+}
+
+package "rba_profile" {
+  entity "processed_events" as pe {
+    * event_id : uuid <<PK>>
+    --
+    processed_at : timestamptz
+  }
+  entity "profile_history" as ph {
+    * id : integer <<PK>>
+    --
+    event_id : uuid <<UQ>>
+    user_id : varchar(128)
+    application_id : varchar(128)
+    login : json
+    features : json
+    occurred_at : timestamptz
+  }
+}
+
+package "rba_audit" {
+  entity "audit_decisions" as aud #line:4C5FE0;line.bold {
+    * event_id : uuid <<PK>>
+    --
+    occurred_at : timestamptz
+    application_id : varchar(128)
+    user_id : varchar(128)
+    risk_score : double precision
+    risk_level : varchar(32)
+    action : varchar(32)
+    model_version : varchar(64)
+    policy_version : varchar(64)
+    feature_schema_version : varchar(32)
+    fallback : boolean
+    payload : json
+  }
+}
+
+outbox ..> dec
+ph ..> pe
+
+@enduml
