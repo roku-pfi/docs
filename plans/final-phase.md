@@ -106,8 +106,11 @@ everything else can run in parallel.
       Mi cuenta. *(after T-3, T-5)*
 - [ ] Resumen and the policy estimate read the latest 200 events client-side;
       a server-side summary endpoint if a tenant ever exceeds that in a week.
-- [ ] **U-3** Hosted login in both styles (`rokusec`, `tenant`), plus step-up and
-      blocked pages. *(after T-2)*
+- [x] **U-3** Hosted login in three looks, chosen by destination: console →
+      RokuSec dark; app with RokuSec's page (Kaze) → RokuSec light; app with its
+      own (Roku Bank) → tenant layout and colours + "Protegido por RokuSec".
+      Spanish, terse, scanning-ring check step; step-up, blocked, no-factor,
+      offer and activation pages included. *(after T-2)*
 - [ ] **U-4** Roku Bank rebuilt on its own identity. *(after B-3)*
 - [ ] **U-5** Kaze Labs app (`rba-demo-kaze`): portal home, a page only
       `admin` can reach, a page `viewer` cannot change. *(after B-4, T-6)*

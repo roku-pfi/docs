@@ -4,6 +4,20 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — U-3: one login, three looks
+
+The product owner's rule: the look depends on where the person is going. The
+console's login is RokuSec's in the console's dark theme (any operator, of any
+tenant). An application whose tenant uses RokuSec's page (Kaze Labs' portal) gets
+the same login, light, "Continuá a Kaze Portal". An application whose tenant has
+its own (Roku Bank) gets the tenant's layout: a brand panel in its colours beside
+a rounded form, with a "Protegido por RokuSec" seal; its logo and typeface arrive
+with B-3 through the tenant's branding. The server picks the look, so the first
+paint is right. RokuSec's looks reuse the console's language (IBM Plex, Carbon
+fields and buttons). Everything is Spanish and terse; while the engine decides,
+the mark's ring dims and a light runs around it (at least 0.7 s, so it reads as
+a step). The IdP's old theme.css and Instrument Sans are gone.
+
 ## 2026-10-22 (latest) — U-2 done: every console page on Carbon
 
 Second review note from the product owner: too much text. Rule adopted (ADR-0038):
