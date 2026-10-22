@@ -36,7 +36,8 @@ everything else can run in parallel.
       the IdP and console.
 - [x] **B-3** Roku Bank identity: pine green + lime, Plus Jakarta Sans, coin-and-slot
       mark (`rba-demo-banking/web/static/brand/`).
-- [ ] **B-4** Kaze Labs identity.
+- [x] **B-4** Kaze Labs identity: warm off-white, ink and coral, Manrope, a three-stroke
+      wind mark (*kaze*).
 - [ ] **B-5** Brand rationale + short guide for the informe (Spanish).
 
 ### T: Tenancy and policy (the core code change)
@@ -115,8 +116,10 @@ everything else can run in parallel.
 - [x] **U-4** Roku Bank rebuilt on its own identity: Revolut-style home (balance, round
       actions, movements, accounts), transfer flow, Spanish; its login wears the mark
       and typeface. *(after B-3)*
-- [ ] **U-5** Kaze Labs app (`rba-demo-kaze`): portal home, a page only
-      `admin` can reach, a page `viewer` cannot change. *(after B-4, T-6)*
+- [x] **U-5** Kaze Labs app (`rba-demo-kaze`): Inicio, Proyectos (viewer reads,
+      cannot create: no form and a refused POST), Configuración (admin only, 403
+      otherwise); RokuSec's light login; second release of the demo chart.
+      *(after B-4, T-6)*
 
 ### D: Demos
 

@@ -4,6 +4,22 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — B-4 / U-5: Kaze Labs' portal
+
+The second relying party exists. Where Roku Bank is a consumer app on its own
+login, Kaze Labs is a company's internal tool on RokuSec's light login, so the two
+demos show both branding styles of ADR-0036. Its identity is deliberately unlike
+the bank's: a quiet workspace in the manner of Linear or Notion, warm off-white,
+near-black ink and one coral, Manrope, and a mark of three wind strokes (*kaze*).
+
+It shows the three authorization cases U-5 asked for, each checked on the write
+path as well as in the page: Inicio for anyone with `portal:read`; Proyectos
+readable by everyone and writable only with `projects:write` (Valen, a viewer,
+sees "Solo lectura" and her POST gets a 403); Configuración only with
+`settings:manage` (shown to all with a lock, refused with the permission named).
+It deploys as a second release of the demo chart (`values-kaze.yaml`), at
+`kaze.localhost` locally and on its existing CloudFront distribution in AWS.
+
 ## 2026-10-22 (latest) — Client IDs, a real k3d pass, and Roku Bank's own identity
 
 **Opaque client IDs (ADR-0039).** Login URLs carried `application_id=roku-bank-web`.
