@@ -50,9 +50,11 @@ body: the decision is taken at the point of entry, at login.
 | blue-500 | `#1481F9` | "Sec" body |
 | sky-400 | `#17A2FF` | shackle highlight |
 
-**Open point:** the UIs' current accent (`#4C5FE0`, indigo, ADR-0030) is not the
-logo blue. The UI rebuild should move the RokuSec accent to the logo's blues;
-Roku Bank gets its own, unrelated palette.
+In the UIs (B-2, `rba-idp/src/rba_idp/web/static/theme.css`) the RokuSec accent is
+blue-600 `#1466E5` on light (5.2:1 on white) and the inverse blue `#4C9BFF` on the
+dark console (6.7:1 on `#0D1017`). The IdP serves copies of `favicon.svg`, the
+horizontal lockups and the PNG icons from `/static/brand/`. Roku Bank gets its
+own, unrelated palette (B-3).
 
 ## Known limits
 

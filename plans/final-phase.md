@@ -32,7 +32,7 @@ everything else can run in parallel.
 
 - [x] **B-1** Logo as vector: primary, horizontal, inverse, mono, favicon
       (`design/brand/build.py` → `docs/brand/`).
-- [ ] **B-2** RokuSec tokens move to the logo blues; favicon and logo wired into
+- [x] **B-2** RokuSec tokens move to the logo blues; favicon and logo wired into
       the IdP and console.
 - [ ] **B-3** Roku Bank identity (name, logo, palette, type).
 - [ ] **B-4** Kaze Labs identity.

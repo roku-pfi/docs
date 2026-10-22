@@ -4,6 +4,17 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — B-2: RokuSec wears its own logo
+
+The IdP's pages and the console now carry the logo instead of a generic shield
+glyph, and the accent moved from indigo to the logo's blue: `#1466E5` on the light
+login (5.2:1 on white), `#4C9BFF` on the dark console (6.7:1). Favicons (SVG, 32 px
+PNG, Apple touch icon) are served from `/static/brand/`, copied from `docs/brand/`.
+The severity ramp is unchanged; with the accent no longer indigo, the overlap with
+step 3 that ADR-0030 had to argue away is gone. Titles read "RokuSec" instead of
+"RBA Identity" / "RBA Admin". Wording (Spanish) and the tenant-branded login are
+U-1 and U-3.
+
 ## 2026-10-22 (latest) — First cloud session on a real phone, and a clean teardown
 
 Martín activated a passkey on the laptop and then on a phone, and signed in to
