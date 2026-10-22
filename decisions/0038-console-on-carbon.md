@@ -44,7 +44,9 @@ The console uses **Carbon** (`@carbon/react`, IBM's design system) on its dark
   confirmed in a danger modal; a one-time secret shown in a modal with a copy
   button, never a toast.
 - **Copy**: Spanish (es-AR), including Carbon's built-in labels that default to
-  English (menu, close, pagination).
+  English (menu, close, pagination). Terse: figures, labels and tags on the page;
+  any sentence that explains them goes in a hover tooltip (an ⓘ beside a page
+  title, a dotted underline on a term).
 - Motion is Carbon's own; the only custom motion is the scanning ring on the
   hosted login.
 

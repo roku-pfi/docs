@@ -100,10 +100,12 @@ everything else can run in parallel.
 
 - [x] **U-1** Console shell: logo, tenant name / switcher, navigation, account
       menu, es-AR formatting, reason codes translated.
-- [ ] **U-2** Console pages on Carbon (ADR-0038). Resumen (home), Eventos, Usuarios and
-      Mi cuenta done. Rest legacy. Console pages: Resumen, Decisiones (live, filters, detail page),
-      Política (base policy, mode, bands, saved-prompt figure), Usuarios, Grupos,
-      Roles, Aplicaciones, Organizaciones (platform operator). *(after T-3, T-5)*
+- [x] **U-2** Console pages on Carbon (ADR-0038): Resumen (home), Eventos (+ page
+      per event), Política (form, score bar, impact estimate), Usuarios, Grupos,
+      Roles, Aplicaciones, Organizaciones (platform operator, branding preview),
+      Mi cuenta. *(after T-3, T-5)*
+- [ ] Resumen and the policy estimate read the latest 200 events client-side;
+      a server-side summary endpoint if a tenant ever exceeds that in a week.
 - [ ] **U-3** Hosted login in both styles (`rokusec`, `tenant`), plus step-up and
       blocked pages. *(after T-2)*
 - [ ] **U-4** Roku Bank rebuilt on its own identity. *(after B-3)*

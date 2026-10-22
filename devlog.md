@@ -4,6 +4,24 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — U-2 done: every console page on Carbon
+
+Second review note from the product owner: too much text. Rule adopted (ADR-0038):
+figures and labels on screen, explanations on hover. Resumen now leads with four
+figures; page descriptions sit behind an ⓘ; rule details, mode descriptions and
+"Sin passkey" explain themselves on hover.
+
+Then the remaining pages. **Política** is a form: engine mode as three tiles
+(confirmation when it changes), base policy, fallback action, and the four risk
+levels on a 0–1 bar with recent scores dotted under it, each level's limit and
+action editable, plus an impact estimate (how recent logins would end under the
+draft vs what the engine did). **Grupos** shows member faces and role tags, and
+each group has a page with Miembros and Roles tabs. **Roles** edits permissions
+grouped by resource. **Aplicaciones** are tiles with a monogram. **Organizaciones**
+(platform operator only) lists tenants with domains and login style; each has
+General and Marca tabs, the latter with a live preview of that tenant's login.
+The legacy styles are gone.
+
 ## 2026-10-22 (latest) — Console feedback round: Resumen home, Eventos, account menu
 
 From the product owner's review: the console now opens on **Resumen** instead
