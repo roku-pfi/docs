@@ -4,7 +4,28 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-21 (latest) — C-1: a cloud deployment cannot start on laptop defaults
+## 2026-10-21 (latest) — C-2: the scored address is the client's
+
+ADR-0032 asked for the client IP from trusted proxy headers. Reading the code
+turned up a larger hole: the hosted page posts the `ip_address` it was given,
+and `POST /login` scored whatever the body said. Anyone with a stolen password
+could claim the victim's usual address with one request. The IdP also believed
+any `X-Forwarded-For`, from any peer.
+
+Now the address comes from the request. Headers count only when the direct peer
+is in `TRUSTED_PROXY_CIDRS` (the ALB's subnets). Behind CloudFront the IdP reads
+`CloudFront-Viewer-Address`, since the right-most `X-Forwarded-For` hop there is
+the CloudFront edge. The body's address is used only where
+`TRUST_CLIENT_REPORTED_IP` is on (local, for the walkthrough's stand-in
+attacker). Two quieter fixes: in the cloud a private address no longer scores as
+the demo home (an unresolved ALB address would have looked usual), and global
+IPv6 is no longer classed as unroutable (every IPv6 login scored as home). The
+bank stops pinning the home country on its plain login link in the cloud. All
+four are required by `DEPLOYMENT=cloud`. IdP 202 tests, bank 30.
+
+---
+
+## 2026-10-21 — C-1: a cloud deployment cannot start on laptop defaults
 
 Every setting was already read from the environment. The risk was the other
 way round: every default *works*, so a variable forgotten in the cloud values
