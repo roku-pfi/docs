@@ -4,6 +4,20 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — U-1: the console gets a shell
+
+The console was one 870-line component with a tab row. It is now a sidebar shell
+(logo, organisation with the platform operator's switcher, sections, an account
+menu showing the session's permissions and sign-out) around one file per page.
+Pages are URLs with Spanish slugs (`/admin/decisiones`, `/admin/politica`, …), so
+a reload or a shared link lands on the same page. Messages are toasts; errors
+stay until closed. Every string a person reads is Spanish; dates and numbers go
+through one es-AR formatter; actions, levels, modes and reason codes have Spanish
+labels with the raw code on hover (`admin-ui/src/i18n.ts`). Under 860 px the
+sidebar folds into a top bar. The legacy no-build fallback (`static/admin.js`)
+is gone; the built bundle is committed. Page content (filters, detail pages,
+the policy editor) is U-2.
+
 ## 2026-10-22 (latest) — B-2: RokuSec wears its own logo
 
 The IdP's pages and the console now carry the logo instead of a generic shield

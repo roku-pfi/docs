@@ -98,7 +98,7 @@ everything else can run in parallel.
 
 ### U: Interfaces
 
-- [ ] **U-1** Console shell: logo, tenant name / switcher, navigation, account
+- [x] **U-1** Console shell: logo, tenant name / switcher, navigation, account
       menu, es-AR formatting, reason codes translated.
 - [ ] **U-2** Console pages: Resumen, Decisiones (live, filters, detail page),
       Política (base policy, mode, bands, saved-prompt figure), Usuarios, Grupos,
@@ -126,6 +126,10 @@ everything else can run in parallel.
       BLOCK, enforced passkey in MONITOR). Let real logins build the profile.
 - [ ] Onboarding UX: activation inside the login flow and an activation link
       from the console (discussed; current standalone `/activate` accepted for now).
+
+- [ ] Local in-memory IdP (`USE_MEMORY_DB`) shares one SQLite connection across
+      threads: parallel console requests sometimes fail (401/403/500). Dev-only;
+      Postgres on k3d and AWS is unaffected.
 
 ### Parked (come back after the main work)
 
