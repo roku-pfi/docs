@@ -4,7 +4,110 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-08-21 (latest) — Data model for the informe
+## 2026-10-21 (latest) — RokuSec logo, redrawn as vector
+
+Start of the final phase (cloud on AWS/EKS, demos built around Martín and Diego,
+product-grade UI); the plan itself is still being written. The logo is the one
+piece that depended on nothing else.
+
+The chosen concept was an AI-generated PNG. It is now generated from
+`design/brand/build.py` into `docs/brand/`: primary, horizontal, inverse (dark),
+mono and favicon variants, SVG + PNG. Geometry was measured off the source PNG
+pixel by pixel rather than eyeballed, so the redraw overlays the original. The
+wordmark is Sora 700 (OFL) converted to outlines — the closest of eight geometric
+sans candidates rendered side by side against the source.
+
+One SVG trap worth recording: `clipPath` ignores strokes. The shackle was first
+drawn as a stroked arc and the ring's shadow, clipped to it, leaked into the
+arc's interior. The shackle is now a filled outline, which also folds the round
+end into the same shape.
+
+Open: the UI accent (`#4C5FE0`, ADR-0030) is indigo, not the logo's blue. To be
+settled in the UI rebuild.
+
+**The final-phase plan is written.** `plans/final-phase.md` plus six ADRs:
+0031 (AWS: EKS on Graviton in private subnets, RDS, ElastiCache Valkey, RabbitMQ
+in-cluster, CloudFront for HTTPS since there is no domain, two Terraform stacks
+so an idle month costs about a dollar), 0032 (real client IP and offline
+geolocation; the IdP had never geolocated a real address and ignored IPv6),
+0033 (multi-tenancy, which E90 had excluded while chapter 4's business model
+assumed it), 0034 (monitor mode now keeps the organisation's base policy
+instead of letting everyone in; closes RF-08), 0035 (the demo around Martín and
+Diego, two tenants, attacker Lambdas in three regions) and 0036 (brand, login
+branded per tenant, apps with their own identity, Spanish UI).
+
+One thing found while planning: a login from an AWS region is AS16509, which is
+on the hosting/VPN list, so the travel rule skips it by design. The attacker
+Lambdas therefore demonstrate "untrusted network", truthfully; impossible travel
+stays simulated and labelled as such until a real login from abroad is staged.
+
+**I-1 applied.** AWS access moved off the root user to an IAM Identity Center
+admin (`aws configure sso`, profile `rokusec`). OpenTofu instead of Terraform
+(Homebrew no longer ships Terraform). `rba-infra/tofu/bootstrap` created the
+state bucket; `foundation` created 35 resources: VPC with public/private subnets
+in two AZs and a free S3 endpoint, seven ECR repositories, the GitHub OIDC role,
+a US$30 budget alert, and three CloudFront distributions whose names are now
+fixed — auth `d1fg623tjiucw7`, bank `d3m6kfm1gma0g6`, kaze `d14wc5kuicqxf6`
+(`.cloudfront.net`). They answer 502 until the runtime stack exists.
+
+Found while reading the PDP for T-1: `PUT /policy` writes the replica that served
+it and nobody else. Fixed as part of tenancy (policies in Postgres).
+
+**T-1, T-3 (PDP side), T-4.** `rba-contracts` 0.9.0: `tenant_id` on evaluate,
+decision and event; `TenantPolicy` with `base_policy` + `engine_mode` replaces
+`PolicyConfig` and its per-app overrides; the response separates the verdict
+(`action`) from `enforced_action`; `Tenant` model with branding and operator
+domains. The PDP stores policies in `tenant_policies` with a 5 s per-replica
+cache (a test drives two stores on one database and watches the second
+converge), seeds missing tenants from `config/policies/`, answers 404 for an
+unknown tenant instead of inventing a default, and scopes every decision read
+by tenant (another tenant's event is a 404, not a 403). Profile and audit carry
+`tenant_id`; audit reads are scoped the same way. Suites: contracts 20, PDP 38,
+audit 5, profile 2 (new handler test), publisher 11 — all green.
+
+Worth noting from the run: a first login from a user with no history scores
+HIGH, so Roku Bank's engine says REAUTHENTICATE while the bank, in MONITOR,
+enforces its usual passkey. That is the monitor arc in one decision.
+
+**T-2, T-5, T-6: the IdP is multi-tenant.** `tenants` and `tenant_domains`
+tables; `tenant_id` on applications, users, groups and roles; email unique per
+tenant. An app login takes its tenant from the application; the new
+`POST /console/login` takes it from the email domain, and an unknown domain, an
+unknown user, a wrong password and a user without a console role all return the
+same `INVALID_CREDENTIALS` at the same bcrypt cost. The IdP enforces
+`enforced_action` and, for a tenant whose engine is `OFF`, never calls the PDP
+(it reads the tenant's policy through a 5 s cache; saving a policy drops this
+replica's copy). Each tenant has a console application with `tenant-admin` and
+`support` roles. The admin API resolves every request to an operator and a
+tenant, and every query filters by it; another tenant's object answers 404 like
+a missing one. The platform operator (`juan@rokusec.example`) switches tenants
+with an `X-RokuSec-Tenant` header, which anyone else gets the same 403 for
+whether the tenant exists or not. The seed is the demo cast: Martín and Sofía at
+Roku Bank, Diego and Ana operating it; Lucas, Martín and Valen at Kaze Labs.
+
+Two holes found and closed while writing it. A tenant admin can name a
+permission `admin:read` on their own bank app; the admin API would then have
+accepted bank sessions. The API now requires a session on the operator's own
+tenant's console. And `tenants:read` granted to oneself on a tenant console is
+ignored: it counts only on the platform tenant's console.
+
+`rba-contracts` gains `ConsoleLoginRequest`. A pre-tenancy database is refused
+at startup with a message to reset it (no migrations, ADR-0033). The test
+suite sets `BCRYPT_ROUNDS=4`, since each app start hashes the eight seeded
+users (27 s → 6 s for the admin file). IdP 149 tests (55 new in
+`test_tenancy.py`, including a cross-tenant 404 per admin endpoint; removing a
+tenant filter fails nine of them), contracts 20, bank 24. Checked end to end
+against the real PDP over HTTP: Kaze's console sees only Kaze's decisions, and
+switching Kaze to `OFF` made the next login skip the PDP.
+
+Open: the console screens are the old ones plus a tenant switcher (U-1/U-2);
+the hosted login shows the tenant's name but not its branding yet (U-3); the
+`05-idp-er` figure predates `tenants`; the first step-up still offers passkey
+enrollment (T-7).
+
+---
+
+## 2026-08-21 — Data model for the informe
 
 Closes the *Modelo de datos* rubric row. Two figures, generated the same way
 as the other three: `04-datastores` (one Postgres, four databases, Redis as a

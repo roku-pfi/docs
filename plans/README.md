@@ -6,6 +6,7 @@ checklist.
 
 | File | Role |
 |---|---|
+| [`final-phase.md`](final-phase.md) | **Current plan.** Cloud (AWS/EKS), multi-tenancy, base policy + engine mode, brand and UI, demos around Martín and Diego. Stages B/T/C/I/U/D. |
 | [`status.md`](status.md) | **Start here.** Where we are: phase/step checkboxes + current focus. Update whenever a step completes. |
 | [`development_plan.md`](development_plan.md) | Opinionated full plan: architecture, phases (§8), what is in/out of scope. Distinct from the exploratory chat in `../../material_sources/rba_architecture_conversation.md`. |
 | [`defense-runbook.html`](defense-runbook.html) | **The stage document.** Cold machine to live demo: bring-up, five checkpoints, the eight-minute script, the authorization and failure demos, and the traps that have bitten in rehearsal. Open it in a browser. |

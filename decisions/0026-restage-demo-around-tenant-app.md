@@ -1,6 +1,6 @@
 # ADR-0026: Restage Demo-1…4 around a tenant app in another namespace
 
-- Status: Accepted
+- Status: Accepted (walkthrough scope superseded by [ADR-0035](0035-demo-around-personas-and-tenants.md))
 - Date: 2026-08-16
 - Amends Horizon D sequencing in [ADR-0022](0022-product-demo-over-gitops.md)
   (Demo-2 was seed + scenario picker **before** a client app). Builds on

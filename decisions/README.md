@@ -6,7 +6,7 @@ add a new ADR that **supersedes** the old one (and mark the old one accordingly)
 rather than editing history. This preserves the reasoning trail for the thesis.
 
 Read [`status.md`](../plans/status.md) for *where we are*; this folder is *why
-we chose this shape*. Numbering is chronological. Next unused number: **0031**.
+we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 
 ## Index
 
@@ -37,11 +37,18 @@ we chose this shape*. Numbering is chronological. Next unused number: **0031**.
 | [0023](0023-end-user-login-is-opaque.md) | End-user surfaces stay opaque; explainability lives in admin | Accepted (app location amended by 0024) |
 | [0024](0024-separate-demo-app.md) | Demo client is a separate app that uses the RBA platform | Accepted (namespace 0025; stage order 0026) |
 | [0025](0025-demo-app-separate-namespace.md) | Demo app lives in another namespace and authenticates via the IdP | Accepted |
-| [0026](0026-restage-demo-around-tenant-app.md) | Restage Demo-1…4 around a tenant app in another namespace | Accepted |
+| [0026](0026-restage-demo-around-tenant-app.md) | Restage Demo-1…4 around a tenant app in another namespace | Accepted (walkthrough scope superseded by 0035) |
 | [0027](0027-supervised-second-opinion-and-failed-logins.md) | Supervised second opinion, failed-login bands, success-only familiarity | Accepted (refines 0004; generalises the 0022 escalate) |
-| [0028](0028-degrade-to-step-up-and-monitor-mode.md) | PEP degrades to a step-up when the PDP is silent; monitor-only mode in the policy bundle | Accepted (RF-09/RF-10/RNF-03/RNF-08; supersedes the "fail closed → 503" invariant) |
+| [0028](0028-degrade-to-step-up-and-monitor-mode.md) | PEP degrades to a step-up when the PDP is silent; monitor-only mode in the policy bundle | Accepted (RF-09/RF-10/RNF-03/RNF-08; supersedes the "fail closed → 503" invariant; §2–3 superseded by 0034) |
 | [0029](0029-rbac-roles-and-permissions.md) | RBAC: `user → group → role → permission`, app-scoped; `is_admin` stops being an authorization input | Accepted (RF-13/RF-21; supersedes the `access` grant of 0019) |
-| [0030](0030-two-themes-one-palette.md) | One token file, two themes: light for end users, dark for operators; severity escalates green → cyan → indigo → plum, never red | Accepted |
+| [0030](0030-two-themes-one-palette.md) | One token file, two themes: light for end users, dark for operators; severity escalates green → cyan → indigo → plum, never red | Accepted (shared palette across apps amended by 0036) |
+| [0031](0031-aws-eks-managed-data-plane.md) | AWS: EKS (Graviton, private subnets), RDS + ElastiCache Valkey, RabbitMQ in-cluster, CloudFront for HTTPS, two Terraform stacks | Accepted |
+| [0032](0032-real-login-signals.md) | Real login signals: client IP from trusted proxies, DB-IP Lite geolocation (IPv4 + IPv6), override only for simulated travel | Accepted |
+| [0033](0033-multi-tenancy.md) | Multi-tenancy: organisations with isolated directories, policies and decisions; tenant vs. platform operators | Accepted (changes E90 scope) |
+| [0034](0034-base-policy-and-engine-mode.md) | Base policy (password-only / always-MFA) + engine mode (off / monitor / active); monitor keeps the existing control | Accepted (supersedes 0028 §2–3; closes RF-08) |
+| [0035](0035-demo-around-personas-and-tenants.md) | Final demo: Martín and Diego, Roku Bank and Kaze Labs, attacker Lambdas, presenter panel as stage machinery | Accepted (supersedes 0026 walkthrough scope) |
+| [0036](0036-brand-and-per-tenant-login.md) | RokuSec brand, login branded per tenant, customer apps with their own identity, Spanish UI | Accepted (amends 0030) |
+| [0037](0037-passkey-enrollment-from-trusted-context.md) | A passkey is enrolled only after a low-risk login or with an operator-issued activation code; a step-up without a passkey is denied | Accepted (amends Demo-4 / 0022) |
 
 ## Template
 

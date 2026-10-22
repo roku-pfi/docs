@@ -1,6 +1,6 @@
 # 28. Degrade to a step-up, and add monitor-only mode
 
-- Status: Accepted
+- Status: Accepted (§2 and §3 superseded by [ADR-0034](0034-base-policy-and-engine-mode.md))
 - Date: 2026-08-20
 - Supersedes: the "fail closed → HTTP 503" invariant stated in the workspace
   README and in `rba-idp/AGENTS.md` (never an ADR, but a documented invariant).

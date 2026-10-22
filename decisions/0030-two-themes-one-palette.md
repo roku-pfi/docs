@@ -1,6 +1,6 @@
 # 30. Two themes, one palette: light for users, dark for operators
 
-- Status: Accepted
+- Status: Accepted (shared palette across apps amended by [ADR-0036](0036-brand-and-per-tenant-login.md))
 - Date: 2026-08-20
 - Replaces the warm serif look that had grown across `login.css`, `home.css` and
   the admin console.
