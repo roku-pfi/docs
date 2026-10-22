@@ -50,6 +50,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0036](0036-brand-and-per-tenant-login.md) | RokuSec brand, login branded per tenant, customer apps with their own identity, Spanish UI | Accepted (amends 0030) |
 | [0037](0037-passkey-enrollment-from-trusted-context.md) | A passkey is enrolled only after a low-risk login or with an operator-issued activation code; a step-up without a passkey is denied | Accepted (amends Demo-4 / 0022) |
 | [0038](0038-console-on-carbon.md) | The console is built on IBM's Carbon (g100) with the logo's blues, IBM Plex self-hosted, Carbon's UI shell | Accepted (amends 0030, 0036 for the console) |
+| [0039](0039-public-client-ids.md) | Login URLs name applications by an opaque public client ID (`rk_…`); the internal application ID never reaches the browser | Accepted |
 
 ## Template
 
