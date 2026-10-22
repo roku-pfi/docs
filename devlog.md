@@ -4,6 +4,37 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — I-3 and the two-command cloud environment
+
+`tofu plan` on the runtime stack first needed two fixes (security-group rules
+keyed by IDs unknown at plan time; a module-wide `depends_on` on EKS that
+deferred the module's own lookups) and two cost trims (no per-session KMS key,
+no control-plane logs). Plan: 67 to add, nothing changed or destroyed.
+
+**I-3.** The chart learned what the cloud needs, with the k3d render
+byte-identical to before: an image registry prefix; in-chart Postgres/Redis
+switchable, and the wait-for init containers pointed at configurable hosts
+(they were hardcoded to `postgres`/`redis`, which do not exist on AWS);
+`emptyDir` instead of PVCs for RabbitMQ and Prometheus, so no EBS driver is
+needed; Grafana's password from the Secret; ALB annotations on every Ingress,
+one ALB for both charts, each rule requiring CloudFront's `X-Origin-Verify`
+header and its own health path. The IdP's environment is one template shared by
+the Deployment and its init Job, so the Job seeds the cloud redirect URIs and
+passes the same `DEPLOYMENT=cloud` check; running the real IdP and bank images
+with the rendered environment, both accepted it. The runtime stack adds the ALB
+security group (CloudFront origin-facing prefix list only) and a Grafana
+password.
+
+**I-4, written.** `make aws-up` builds and pushes images (tag derived from the
+commits of every repo, skipped if already in ECR), applies the runtime stack,
+writes per-session values from the outputs, installs both charts (init Jobs
+first), waits for the ALB, re-points the three CloudFront distributions, and
+smoke-tests both `/healthz`. `make aws-down` uninstalls the charts first so the
+controller deletes the ALB it owns, points CloudFront away, destroys the stack
+and lists leftovers. First real run pending.
+
+---
+
 ## 2026-10-22 (latest) — C-5 done; I-2 written, not applied
 
 **C-5.** Every image was already on `python:3.12-slim` with no per-architecture

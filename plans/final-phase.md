@@ -88,9 +88,9 @@ everything else can run in parallel.
       `d14wc5kuicqxf6.cloudfront.net`.
 - [~] **I-2** Written and validated 2026-10-22, **not applied**. Terraform `runtime`: NAT, EKS + Graviton node group, RDS,
       ElastiCache Valkey, AWS Load Balancer Controller, metrics-server.
-- [ ] **I-3** `values-aws.yaml` for both charts; Ingress by CloudFront host;
+- [x] **I-3** `values-aws.yaml` for both charts; Ingress by CloudFront host;
       Secrets from Terraform. *(after I-2, C-1)*
-- [ ] **I-4** `make up` / `make down`, including re-pointing CloudFront to the
+- [~] **I-4** Scripts written 2026-10-22, first run pending (`make aws-up` / `make aws-down`). `make up` / `make down`, including re-pointing CloudFront to the
       new ALB; first end-to-end login over HTTPS with a passkey.
 - [ ] **I-5** GitHub Actions: reusable test → build → push workflow in every
       service repo; deploy step when a cluster is up.
