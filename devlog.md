@@ -4,7 +4,34 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-22 (latest) — C-3: real addresses get a country and a network
+## 2026-10-22 (latest) — C-4: schema and seed run once, and k3d end to end
+
+Every service that owns tables (IdP, PDP, audit, profile) has
+`python -m <package>.init`: create the schema and seed, idempotently, and never
+over an operator's change (the PDP inserts only tenants with no policy). With
+`INIT_ON_STARTUP=true` (the default) services still do it themselves, as on
+k3d and compose; the IdP's cloud mode requires it off. The chart gains
+`init.mode: job`, which runs the four commands as pre-install/pre-upgrade hook
+Jobs and leaves replicas with nothing to race on, and
+`credentials.existingSecret`, so a Secret created by OpenTofu replaces the
+chart's. k3d keeps `startup`: its Postgres is part of the same release.
+
+Found on the way: the profile service still seeded a home history for
+`usr_demo`, and `reset-demo.sh` still reset it. ADR-0033 renamed the users, so
+Martín's first local login had no history and scored HIGH. It now seeds
+`usr_rb_martin` and `usr_kz_martin`.
+
+**First full k3d run since tenancy** (OrbStack back up): all 13 pods healthy,
+DB-IP loaded in the cluster, Kaze's Martín ALLOWed at a near-zero score with
+the passkey offer, the bank recording verdict ALLOW / enforced REQUIRE_MFA in
+MONITOR, the mock OTP answering 404, and a full break-glass round on the real
+stack — CLI code inside the pod, `/activate`, a software passkey, then a real
+step-up passing; the code refused on reuse. On a fresh local database nobody
+can pass a step-up until they enroll, so the chart's NOTES now say how.
+
+---
+
+## 2026-10-22 — C-3: real addresses get a country and a network
 
 DB-IP Lite (country + ASN, IPv4 and IPv6, CC BY 4.0) is fetched at image build
 by `scripts/fetch_geoip.py` and read in memory with `maxminddb`; the TEST-NET

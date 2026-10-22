@@ -73,7 +73,7 @@ everything else can run in parallel.
 - [x] **C-3** IP geolocation with DB-IP Lite, IPv4 + IPv6; `simulated` flag on
       decisions taken with an override. In the cloud an override needs a signed
       simulation ticket (`POST /simulation/ticket`, presenter secret).
-- [ ] **C-4** Schema creation and seed as Kubernetes Jobs (not on pod start,
+- [x] **C-4** Schema creation and seed as Kubernetes Jobs (not on pod start,
       so replicas do not race).
 - [ ] **C-5** Multi-arch images (arm64 + amd64) for every service.
 
