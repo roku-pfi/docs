@@ -4,6 +4,25 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — C-5 done; I-2 written, not applied
+
+**C-5.** Every image was already on `python:3.12-slim` with no per-architecture
+downloads, so multi-arch is a `buildx` matter: `scripts/build-images.sh` builds
+all six for arm64 (EKS Graviton) and amd64, tags them with each repo's short
+SHA (ECR tags are immutable) and pushes with `--push`. All six built; the amd64
+IdP was run under emulation and its native wheels and DB-IP lookups worked.
+
+**I-2, code only.** `tofu/runtime/`: NAT gateway and the private default route;
+EKS via `terraform-aws-modules/eks` with a Graviton node group, metrics-server
+and Pod Identity; the AWS Load Balancer Controller; RDS PostgreSQL 16 and
+ElastiCache Valkey 8, both TLS and reachable only from the nodes; every password
+generated; the `rba-credentials` Secret the chart now references; and a Job that
+creates one database and login role per service, since a private RDS cannot be
+reached from a laptop. Validated with `tofu validate`; `plan` waits for an AWS
+login, `apply` for a go-ahead.
+
+---
+
 ## 2026-10-22 (latest) — C-4: schema and seed run once, and k3d end to end
 
 Every service that owns tables (IdP, PDP, audit, profile) has

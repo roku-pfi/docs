@@ -75,7 +75,9 @@ everything else can run in parallel.
       simulation ticket (`POST /simulation/ticket`, presenter secret).
 - [x] **C-4** Schema creation and seed as Kubernetes Jobs (not on pod start,
       so replicas do not race).
-- [ ] **C-5** Multi-arch images (arm64 + amd64) for every service.
+- [x] **C-5** Multi-arch images (arm64 + amd64) for every service.
+      `rba-infra/scripts/build-images.sh` (buildx); all six build for both, the
+      amd64 IdP verified running under emulation.
 
 ### I: Infrastructure on AWS
 
@@ -84,7 +86,7 @@ everything else can run in parallel.
       role, AWS Budgets alert. Applied 2026-10-21. Hosts: auth
       `d1fg623tjiucw7.cloudfront.net`, bank `d3m6kfm1gma0g6.cloudfront.net`, kaze
       `d14wc5kuicqxf6.cloudfront.net`.
-- [ ] **I-2** Terraform `runtime`: NAT, EKS + Graviton node group, RDS,
+- [~] **I-2** Written and validated 2026-10-22, **not applied**. Terraform `runtime`: NAT, EKS + Graviton node group, RDS,
       ElastiCache Valkey, AWS Load Balancer Controller, metrics-server.
 - [ ] **I-3** `values-aws.yaml` for both charts; Ingress by CloudFront host;
       Secrets from Terraform. *(after I-2, C-1)*
