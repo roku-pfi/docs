@@ -40,15 +40,16 @@ At 0/38 and 38/38 the bootstrap degenerates to a point; cite Wilson there.
    38 % of legitimate logins**, against 100 % for MFA always. With 38 positives
    the interval is wide; the claim is "most", not a precise rate.
 2. **Most of the friction is the cold start.** A user's first login has no history,
-   so every one is challenged (6,613 logins, 100 %). For returning users friction is
-   **23.2 %** and the engine stops **24 of 30** takeovers.
+   so every one is challenged (6,613 logins, 100 %). For returning users, under the
+   adopted default, friction is **20.7 %** and the engine stops **24 of 30**
+   takeovers.
 
    | Prior successful logins | Legit logins | Friction | Takeovers | Stopped |
    |---|---|---|---|---|
-   | 0 | 6,613 | 100 % | 8 | 8 |
-   | 1–2 | 7,523 | 33.4 % | 9 | 9 |
-   | 3–9 | 10,563 | 25.4 % | 15 | 12 |
-   | 10+ | 9,494 | 12.6 % | 6 | 3 |
+   | 0 | 6,613 | 100.0 % | 8 | 8 |
+   | 1–2 | 7,523 | 28.4 % | 9 | 9 |
+   | 3–9 | 10,563 | 23.1 % | 15 | 12 |
+   | 10+ | 9,494 | 11.9 % | 6 | 3 |
 3. **Blocking on the score is all cost, no benefit.** The starter policy's
    "critical → block" band blocks **6.21 %** of legitimate logins. Stepping up
    instead (re-authenticate with the passkey) stops exactly the same 32 takeovers

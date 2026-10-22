@@ -4,6 +4,18 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — D-2: how effective is it, and what that changed
+
+Replayed the 34,231 successful held-out logins (38 account takeovers, all with the
+right password) through the production decision code. The engine as configured
+stopped **32 of 38 (84 %, CI 70–93 %)** with **38 %** friction, against 100 % for a
+passkey on every login. Two things fell out: the "critical → block" band blocked
+**6.2 %** of legitimate logins without stopping a single takeover a step-up would
+not have, and the LOW band could rise to 0.40 for free. Both became the new defaults
+(ADR-0040, policies 3.0.0): **84 % stopped, 36 % friction, 0.02 % blocked**. Most of
+the remaining friction is first logins (no history); returning users see about 21 %.
+The console's new **Efectividad** page shows the comparison with its intervals.
+
 ## 2026-10-22 (latest) — B-4 / U-5: Kaze Labs' portal
 
 The second relying party exists. Where Roku Bank is a consumer app on its own

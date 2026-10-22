@@ -382,21 +382,21 @@
     {
       "depth": "1-2",
       "legit_n": 7523,
-      "legit_friction": 0.3343081217599362,
+      "legit_friction": 0.2836634321414329,
       "ato_n": 9,
       "ato_stopped": 9
     },
     {
       "depth": "3-9",
       "legit_n": 10563,
-      "legit_friction": 0.25437849095900783,
+      "legit_friction": 0.23080564233645745,
       "ato_n": 15,
       "ato_stopped": 12
     },
     {
       "depth": "10+",
       "legit_n": 9494,
-      "legit_friction": 0.12618495892142406,
+      "legit_friction": 0.1191278702338319,
       "ato_n": 6,
       "ato_stopped": 3
     }
