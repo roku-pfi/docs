@@ -4,6 +4,30 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — RokuSec is on AWS
+
+`make aws-up` ran end to end on the first attempt: six multi-arch images pushed
+to ECR, the runtime stack applied (67 resources; the EKS control plane took 11
+min, the Graviton nodes under 2), the database Job created the four databases
+and roles in 17 s, the four init Jobs seeded before any replica started, the
+ALB came up from the Ingresses, CloudFront was re-pointed and both
+`https://…/healthz` answered 200.
+
+Checked on the live system:
+
+- the ALB does not answer a direct request (security group: CloudFront only);
+- the IdP sees the real client — here an **IPv6** address, resolved by DB-IP to
+  AR / AS14593 (Starlink). Before C-2/C-3 that login would have scored as the
+  demo home;
+- `?country=JP` without a ticket is ignored; the mock OTP answers 404;
+- break-glass on the real RP ID: activation code from the pod, a passkey
+  enrolled at `https://d1fg623tjiucw7.cloudfront.net/activate`, Juan's first
+  console login scored HIGH (no history) and demanded a reauthentication, the
+  passkey passed it, and the platform operator then listed the three tenants
+  and read each one's decisions through the tenant switch.
+
+---
+
 ## 2026-10-22 (latest) — I-3 and the two-command cloud environment
 
 `tofu plan` on the runtime stack first needed two fixes (security-group rules

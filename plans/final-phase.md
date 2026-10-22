@@ -86,11 +86,11 @@ everything else can run in parallel.
       role, AWS Budgets alert. Applied 2026-10-21. Hosts: auth
       `d1fg623tjiucw7.cloudfront.net`, bank `d3m6kfm1gma0g6.cloudfront.net`, kaze
       `d14wc5kuicqxf6.cloudfront.net`.
-- [~] **I-2** Written and validated 2026-10-22, **not applied**. Terraform `runtime`: NAT, EKS + Graviton node group, RDS,
+- [x] **I-2** Applied 2026-10-22 by `make aws-up` (67 resources). Terraform `runtime`: NAT, EKS + Graviton node group, RDS,
       ElastiCache Valkey, AWS Load Balancer Controller, metrics-server.
 - [x] **I-3** `values-aws.yaml` for both charts; Ingress by CloudFront host;
       Secrets from Terraform. *(after I-2, C-1)*
-- [~] **I-4** Scripts written 2026-10-22, first run pending (`make aws-up` / `make aws-down`). `make up` / `make down`, including re-pointing CloudFront to the
+- [~] **I-4** `make aws-up` verified end to end 2026-10-22 (first run, no fixes); `make aws-down` not yet run. `make up` / `make down`, including re-pointing CloudFront to the
       new ALB; first end-to-end login over HTTPS with a passkey.
 - [ ] **I-5** GitHub Actions: reusable test → build → push workflow in every
       service repo; deploy step when a cluster is up.
