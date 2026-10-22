@@ -67,7 +67,9 @@ everything else can run in parallel.
       origins, cookie `Secure`, public URLs of each surface. Everything was
       already env-driven; `DEPLOYMENT=cloud` now refuses local-only defaults
       (IdP, bank) and the bank cookie is `Secure` there.
-- [ ] **C-2** Client IP from trusted proxy headers (`TRUSTED_PROXY_CIDRS`).
+- [x] **C-2** Client IP from trusted proxy headers (`TRUSTED_PROXY_CIDRS`).
+      Also: the login body's `ip_address` is no longer believed in the cloud,
+      private addresses stop scoring as home there, IPv6 is routable.
 - [ ] **C-3** IP geolocation with DB-IP Lite, IPv4 + IPv6; `simulated` flag on
       decisions taken with an override.
 - [ ] **C-4** Schema creation and seed as Kubernetes Jobs (not on pod start,
