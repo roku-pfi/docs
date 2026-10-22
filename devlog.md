@@ -4,6 +4,20 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — Console feedback round: Resumen home, Eventos, account menu
+
+From the product owner's review: the console now opens on **Resumen** instead
+of the decision list. It leads with one sentence of the week's numbers (logins,
+share without extra steps, confirmations, blocks) rather than stat cards; then
+logins per day stacked by outcome (palette validated for colour-vision
+deficiency on the g100 surface; hover tooltip per day; a table for screen
+readers), the engine's state and base policy, how many users lack a passkey,
+the latest events that needed attention, and where logins came from.
+"Decisiones" is renamed **Eventos** (`/admin/eventos`). The header reads just
+"RokuSec". The account button shows the email and standing; its menu holds
+"Mi cuenta" and "Cerrar sesión", and the session's permissions moved to the
+Mi cuenta page, each explained in words.
+
 ## 2026-10-22 (latest) — Decisiones on Carbon: from where, and why
 
 The product owner approved the Carbon direction on Usuarios. Decisiones was
