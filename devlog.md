@@ -4,6 +4,41 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — First cloud session on a real phone, and a clean teardown
+
+Martín activated a passkey on the laptop and then on a phone, and signed in to
+Roku Bank over HTTPS with the phone's passkey. Three things only a real device
+could show:
+
+1. **Mobile browsers open the passkey prompt only straight from a tap.** The
+   pages awaited the options request between the tap and `create()`; iOS
+   cancelled it ("cancelled"). Activation is now two taps (check code and
+   password, then create) and the step-up and the add-a-passkey offer fetch
+   their options when their panel appears.
+2. **The phone kept running the old script.** It loaded the new page and its
+   cached `activate.js`. Static assets are now versioned (`?v=<hash>`) and
+   served `Cache-Control: no-cache`.
+3. **In-app browsers accept the WebAuthn call and never show a prompt.** The
+   link had been opened from a chat app. Passkey buttons now show a waiting
+   state with what to check, and warn up front in a detected in-app browser.
+   Password fields gained a show/hide toggle.
+
+The phone login's decision is the monitor-mode argument in one row: score
+0.9998, verdict **BLOCK**, enforced **REQUIRE_MFA**. Martín's seeded history is
+the TEST-NET demo home, so a real phone on Starlink looked new on every signal.
+In ACTIVE mode a legitimate customer would have been blocked; in MONITOR the
+operator sees that before switching. The fake history should not be seeded in
+the cloud (plan item added).
+
+Each fix was deployed by re-running `make aws-up`: 0 infrastructure changes,
+new images, charts upgraded, data kept. `make aws-down` then removed the ALB
+through the controller, pointed CloudFront away and destroyed all 67 runtime
+resources; every billable service confirmed empty. Its leftover check had
+listed deleted resources from the tagging API (stale for a while after a
+destroy); it now asks each service for live resources instead.
+
+---
+
 ## 2026-10-22 (latest) — RokuSec is on AWS
 
 `make aws-up` ran end to end on the first attempt: six multi-arch images pushed

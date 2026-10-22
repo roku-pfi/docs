@@ -90,7 +90,7 @@ everything else can run in parallel.
       ElastiCache Valkey, AWS Load Balancer Controller, metrics-server.
 - [x] **I-3** `values-aws.yaml` for both charts; Ingress by CloudFront host;
       Secrets from Terraform. *(after I-2, C-1)*
-- [~] **I-4** `make aws-up` verified end to end 2026-10-22 (first run, no fixes); `make aws-down` not yet run. `make up` / `make down`, including re-pointing CloudFront to the
+- [x] **I-4** `make aws-up` / `make aws-down` verified end to end 2026-10-22, including re-runs and a real phone. `make up` / `make down`, including re-pointing CloudFront to the
       new ALB; first end-to-end login over HTTPS with a passkey.
 - [ ] **I-5** GitHub Actions: reusable test → build → push workflow in every
       service repo; deploy step when a cluster is up.
@@ -118,6 +118,14 @@ everything else can run in parallel.
       finding + JSON → the console's Efectividad page.
 - [ ] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
 - [ ] **D-4** Rewrite `defense-runbook.html` around the new script.
+
+### Found on the first cloud session (2026-10-22)
+
+- [ ] Don't seed the fake TEST-NET home history in the cloud: it never matches a
+      real login, so Martín's first real phone login scored CRITICAL (verdict
+      BLOCK, enforced passkey in MONITOR). Let real logins build the profile.
+- [ ] Onboarding UX: activation inside the login flow and an activation link
+      from the console (discussed; current standalone `/activate` accepted for now).
 
 ### Parked (come back after the main work)
 
