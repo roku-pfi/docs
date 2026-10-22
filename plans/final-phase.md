@@ -100,7 +100,8 @@ everything else can run in parallel.
 
 - [x] **U-1** Console shell: logo, tenant name / switcher, navigation, account
       menu, es-AR formatting, reason codes translated.
-- [ ] **U-2** Console pages: Resumen, Decisiones (live, filters, detail page),
+- [ ] **U-2** Console pages on Carbon (ADR-0038). Usuarios done (first page, for
+      review); the rest still render as legacy. Console pages: Resumen, Decisiones (live, filters, detail page),
       Política (base policy, mode, bands, saved-prompt figure), Usuarios, Grupos,
       Roles, Aplicaciones, Organizaciones (platform operator). *(after T-3, T-5)*
 - [ ] **U-3** Hosted login in both styles (`rokusec`, `tenant`), plus step-up and
@@ -127,9 +128,8 @@ everything else can run in parallel.
 - [ ] Onboarding UX: activation inside the login flow and an activation link
       from the console (discussed; current standalone `/activate` accepted for now).
 
-- [ ] Local in-memory IdP (`USE_MEMORY_DB`) shares one SQLite connection across
-      threads: parallel console requests sometimes fail (401/403/500). Dev-only;
-      Postgres on k3d and AWS is unaffected.
+- [x] Local in-memory IdP (`USE_MEMORY_DB`) shared one SQLite connection across
+      threads; sessions now take turns there.
 
 ### Parked (come back after the main work)
 

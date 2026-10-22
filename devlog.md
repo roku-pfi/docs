@@ -4,6 +4,28 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — The console moves to Carbon (ADR-0038)
+
+The product owner found the console, and three restyled directions of it, "too
+fabricated": it looked like every generated frontend. Their references
+(authentik, Frontegg) feel designed because a system sits under them. We
+compared screens side by side (square vs soft shapes, two-line cells, avatars,
+tags with "+N", grouped navigation, overflow menus, pagination) and chose to
+build on IBM's Carbon, dark g100 theme, with the logo's blues in place of IBM's
+and IBM Plex served from the IdP.
+
+First page rebuilt: **Usuarios**. Each row shows the person (avatar, email,
+admin, created), their groups as tags, whether they have a passkey (and so
+whether a step-up can succeed), and when they last signed in. For that, the
+user row in the contract (`rba-contracts` 0.12.0) gained `groups`, `passkeys`
+and `last_login_at`; the IdP stamps `users.last_login_at` when it issues a
+session, because logout deletes the session row. New nullable columns are now
+added in place to a kept database (k3d) instead of requiring a reset.
+Activation codes appear in a modal with a copy button; disabling asks first.
+
+Also fixed: the local in-memory IdP's race (one SQLite connection shared by all
+threads): sessions take turns there, 100/100 parallel requests now succeed.
+
 ## 2026-10-22 (latest) — U-1: the console gets a shell
 
 The console was one 870-line component with a tab row. It is now a sidebar shell

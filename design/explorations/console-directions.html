@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RokuSec · direcciones de interfaz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Schibsted+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Exploration for U-2 / U-3: three ways RokuSec could look and move. The
+   palette is fixed (B-2); fonts, surfaces, component shape and motion change. */
+:root {
+  --blue: #1466E5; --blue-d: #4C9BFF; --sky: #17A2FF; --navy: #152953;
+  --s1: #63C48E; --s2: #69C3DE; --s3: #A192F0; --s4: #D08BE0;
+  --l1: #2F8055; --l2: #22809E; --l3: #5B4BC4; --l4: #8A3A93;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #05070C; color: #E3E8F2; font-family: "Hanken Grotesk", system-ui, sans-serif; }
+button { font: inherit; cursor: pointer; }
+
+/* ---------- picker ---------- */
+.picker {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; align-items: center;
+  padding: .9rem 1.4rem; background: rgba(5,7,12,.86); backdrop-filter: blur(10px);
+  border-bottom: 1px solid #1B2130;
+}
+.picker h1 { margin: 0; font: 600 .95rem "Sora", sans-serif; letter-spacing: -.01em; }
+.picker nav { display: flex; gap: .3rem; }
+.picker nav button {
+  padding: .45rem .85rem; border: 1px solid #252C3C; border-radius: 99px;
+  background: transparent; color: #9AA4BA; font-size: .85rem;
+}
+.picker nav button[aria-pressed="true"] { background: #E3E8F2; color: #05070C; border-color: #E3E8F2; }
+.picker p { margin: 0; flex-basis: 100%; color: #8790A6; font-size: .88rem; max-width: 90ch; line-height: 1.5; }
+.picker p b { color: #E3E8F2; font-weight: 600; }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 1.4rem; padding: 1.4rem; }
+@media (max-width: 1100px) { .stage { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- the lock (the mark, animated) — shared by every direction ---------- */
+.lock { display: block; overflow: visible; }
+.lock .shackle { transform-box: view-box; transition: transform var(--lock-dur, .5s) var(--lock-ease, cubic-bezier(.3,1.6,.5,1)); }
+.lock .scan { fill: none; stroke: var(--sky); stroke-width: 84; stroke-linecap: round;
+  stroke-dasharray: 160 778; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.lock .tint { fill: none; stroke-width: 84; opacity: 0; transition: opacity .35s, stroke .35s; }
+.lock .ring { transition: opacity .3s; }
+/* While the engine decides, the ring dims and a light runs around it. */
+.lock.checking .ring { opacity: .22; }
+.lock.checking .scan { opacity: 1; animation: scan .9s linear infinite; }
+.lock.open .shackle { transform: translateY(-34px); }
+.lock.closed .shackle { transform: translateY(52px); }
+.lock.ok .tint { stroke: var(--s1); opacity: .85; }
+.lock.warn .tint { stroke: var(--s2); opacity: .85; }
+@keyframes scan { to { transform: rotate(360deg); } }
+
+/* ---------- shared mock structure ---------- */
+.console { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 640px; overflow: hidden; }
+@media (max-width: 760px) { .console { grid-template-columns: minmax(0, 1fr); } .side { display: none; } }
+.side { display: flex; flex-direction: column; gap: 1.2rem; padding: 1.2rem .9rem; }
+.side .logo { display: flex; align-items: center; gap: .5rem; padding: 0 .4rem; }
+.side .logo b { font: 700 1rem "Sora", sans-serif; letter-spacing: -.02em; }
+.side .logo b i { font-style: normal; color: var(--blue-d); }
+.side .nav { display: flex; flex-direction: column; gap: 2px; }
+.side .nav a { display: flex; align-items: center; gap: .55rem; padding: .5rem .6rem; color: #8790A6; text-decoration: none; font-size: .88rem; }
+.side .nav a svg { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.6; }
+.side .org { padding: 0 .4rem; }
+.side .org small { display: block; color: #5D6679; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: .3rem; }
+.main { padding: 1.5rem 1.6rem; min-width: 0; }
+.head { display: flex; justify-content: space-between; align-items: end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+.head h2 { margin: 0; }
+.head .sub { margin: .25rem 0 0; color: #8790A6; font-size: .9rem; }
+.live { display: inline-flex; align-items: center; gap: .45rem; font-size: .8rem; color: #8790A6; }
+.live i { width: 7px; height: 7px; border-radius: 50%; background: var(--s1); box-shadow: 0 0 0 0 rgba(99,196,142,.6); animation: ping 2s infinite; }
+@keyframes ping { 70% { box-shadow: 0 0 0 7px rgba(99,196,142,0); } 100% { box-shadow: 0 0 0 0 rgba(99,196,142,0); } }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .8rem; margin-bottom: 1.2rem; }
+.rows { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 1rem; align-items: center; cursor: pointer; }
+.row .who b { font-weight: 600; }
+.row .who span, .row .where { color: #8790A6; font-size: .84rem; }
+.detail { margin-top: 1.2rem; }
+.reasons { list-style: none; margin: .6rem 0 0; padding: 0; display: flex; flex-direction: column; gap: .45rem; }
+.reasons li { display: flex; gap: .6rem; align-items: baseline; font-size: .9rem; }
+.reasons li .bar { flex: none; height: 6px; border-radius: 3px; background: currentColor; opacity: .85; }
+
+.loginwrap { display: flex; flex-direction: column; gap: .6rem; }
+.loginwrap > small { color: #5D6679; font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; }
+.login { color: #121A2C; padding: 2rem 1.8rem; min-height: 470px; display: flex; flex-direction: column; }
+.login .brand { display: flex; align-items: center; gap: .5rem; margin-bottom: 1.6rem; }
+.login .brand b { font: 700 1.05rem "Sora", sans-serif; letter-spacing: -.02em; }
+.login .brand b i { font-style: normal; color: var(--blue); }
+.login label { display: block; font-size: .8rem; color: #59627A; margin: .9rem 0 .35rem; }
+.login input { width: 100%; padding: .7rem .8rem; font: inherit; color: inherit; }
+.login .go { width: 100%; margin-top: 1.3rem; padding: .78rem; border: 0; color: #fff; background: var(--blue); font-weight: 600; }
+.login .check { flex: 1; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1rem; }
+.login.busy form { display: none; }
+.login.busy .check { display: flex; }
+.login .check p { margin: 0; max-width: 24ch; }
+.login .check .then { display: none; }
+.login .check .then button { margin-top: .4rem; padding: .7rem 1.1rem; border: 0; background: var(--blue); color: #fff; font-weight: 600; }
+.hint { color: #5D6679; font-size: .8rem; }
+
+/* =============== A · INSTRUMENTO =============== */
+[data-dir="a"] { --ui: "Hanken Grotesk"; --disp: "Sora"; --mono: "JetBrains Mono"; --lock-ease: cubic-bezier(.3,1.7,.45,1); }
+[data-dir="a"] .console { font-family: var(--ui); background: #0A0F1C; border: 1px solid #1A2236; border-radius: 16px;
+  background-image: radial-gradient(700px 300px at 0% 0%, rgba(20,102,229,.16), transparent 60%); }
+[data-dir="a"] .side { border-right: 1px solid #172036; }
+[data-dir="a"] .side .nav a { border-radius: 9px; transition: background .2s, color .2s; }
+[data-dir="a"] .side .nav a:hover { background: #121A2E; color: #E3E8F2; }
+[data-dir="a"] .side .nav a.on { background: linear-gradient(90deg, rgba(76,155,255,.18), rgba(76,155,255,.04)); color: #fff; }
+[data-dir="a"] .side .nav a.on svg { stroke: var(--blue-d); }
+[data-dir="a"] .side .org b { font: 600 .92rem var(--disp); }
+[data-dir="a"] .head h2 { font: 600 1.6rem/1.1 var(--disp); letter-spacing: -.03em; }
+[data-dir="a"] .stat { padding: .9rem 1rem; border-radius: 12px; background: linear-gradient(180deg, #111A2E, #0D1424); border: 1px solid #1A2440;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04); }
+[data-dir="a"] .stat small { color: #7D88A3; font-size: .78rem; }
+[data-dir="a"] .stat b { display: block; font: 600 1.7rem var(--disp); letter-spacing: -.03em; margin-top: .2rem; font-variant-numeric: tabular-nums; }
+[data-dir="a"] .stat em { font-style: normal; font-size: .75rem; color: var(--s1); }
+[data-dir="a"] .rows { border: 1px solid #1A2440; border-radius: 12px; overflow: hidden; background: #0C1322; }
+[data-dir="a"] .row { padding: .75rem 1rem; border-top: 1px solid #151E33; transition: background .18s; }
+[data-dir="a"] .row:first-child { border-top: 0; }
+[data-dir="a"] .row:hover, [data-dir="a"] .row.sel { background: #111B30; }
+[data-dir="a"] .row.enter { animation: a-enter .7s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes a-enter { from { opacity: 0; transform: translateY(-8px); background: rgba(76,155,255,.22); } 60% { background: rgba(76,155,255,.12); } }
+[data-dir="a"] .where { font-family: var(--mono); font-size: .76rem !important; }
+[data-dir="a"] .verdict { display: flex; align-items: center; gap: .6rem; }
+[data-dir="a"] .gauge { width: 30px; height: 30px; }
+[data-dir="a"] .gauge circle { fill: none; stroke-width: 4; }
+[data-dir="a"] .gauge .track { stroke: #1D2740; }
+[data-dir="a"] .gauge .val { stroke-linecap: round; transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset .9s cubic-bezier(.2,.8,.2,1); }
+[data-dir="a"] .pill { display: inline-flex; align-items: center; gap: .4rem; padding: .22rem .6rem; border-radius: 99px; font-size: .78rem; font-weight: 500; background: color-mix(in srgb, currentColor 13%, transparent); }
+[data-dir="a"] .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+[data-dir="a"] .detail { padding: 1rem 1.1rem; border-radius: 12px; border: 1px solid #1A2440; background: #0C1322; animation: a-fade .35s ease both; }
+@keyframes a-fade { from { opacity: 0; transform: translateY(4px); } }
+[data-dir="a"] .detail h3 { margin: 0; font: 600 1rem var(--disp); }
+[data-dir="a"] .btn { padding: .5rem .9rem; border-radius: 9px; border: 1px solid #22305080; background: #121B30; color: #E3E8F2; font-size: .85rem; transition: transform .15s; }
+[data-dir="a"] .btn:active { transform: scale(.96); }
+[data-dir="a"] .login { font-family: var(--ui); background: #fff; border-radius: 18px; box-shadow: 0 30px 60px -30px rgba(20,102,229,.5); }
+[data-dir="a"] .login h3 { margin: 0; font: 600 1.5rem var(--disp); letter-spacing: -.03em; }
+[data-dir="a"] .login input { border: 1px solid #DCE3EF; border-radius: 10px; background: #F6F8FC; transition: border-color .2s, box-shadow .2s; }
+[data-dir="a"] .login input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 4px #E3EEFD; }
+[data-dir="a"] .login .go, [data-dir="a"] .login .then button { border-radius: 10px; transition: transform .15s, box-shadow .2s; box-shadow: 0 8px 20px -10px var(--blue); }
+[data-dir="a"] .login .go:active { transform: scale(.97); }
+
+/* =============== B · LIBRO =============== */
+[data-dir="b"] { --ui: "Schibsted Grotesk"; --disp: "Instrument Serif"; --mono: "IBM Plex Mono"; --lock-ease: cubic-bezier(.2,.7,.2,1); --lock-dur: .8s; }
+[data-dir="b"] .console { font-family: var(--ui); background: #0E0F12; border: 1px solid #22242A; border-radius: 4px; }
+[data-dir="b"] .side { border-right: 1px solid #22242A; background: #0B0C0E; }
+[data-dir="b"] .side .nav a { border-left: 1px solid transparent; padding-left: .8rem; transition: color .3s, border-color .3s; }
+[data-dir="b"] .side .nav a svg { display: none; }
+[data-dir="b"] .side .nav a:hover { color: #E3E8F2; }
+[data-dir="b"] .side .nav a.on { color: #F2EFE8; border-left-color: var(--blue-d); }
+[data-dir="b"] .side .org b { font: 400 1.25rem var(--disp); }
+[data-dir="b"] .head { border-bottom: 1px solid #22242A; padding-bottom: 1rem; }
+[data-dir="b"] .head h2 { font: 400 2.6rem/1 var(--disp); letter-spacing: -.01em; color: #F2EFE8; }
+[data-dir="b"] .stats { gap: 0; border-bottom: 1px solid #22242A; padding-bottom: 1rem; }
+[data-dir="b"] .stat { padding: 0 1rem; border-left: 1px solid #22242A; }
+[data-dir="b"] .stat:first-child { border-left: 0; padding-left: 0; }
+[data-dir="b"] .stat small { color: #8A8F9B; font-size: .78rem; }
+[data-dir="b"] .stat b { display: block; font: 400 2.6rem/1.1 var(--disp); color: #F2EFE8; font-variant-numeric: tabular-nums; }
+[data-dir="b"] .stat em { font: italic .82rem var(--disp); color: #8A8F9B; font-size: 1rem; }
+[data-dir="b"] .row { grid-template-columns: 4.2rem minmax(0, 1.6fr) auto; padding: .95rem 0; border-bottom: 1px solid #1A1C21; }
+[data-dir="b"] .row .time { font: 400 1.35rem var(--disp); color: #8A8F9B; }
+[data-dir="b"] .row .where { display: none; }
+[data-dir="b"] .row .who b { font-weight: 500; }
+[data-dir="b"] .row .who span { display: block; margin-top: .15rem; }
+[data-dir="b"] .row:hover .who b, [data-dir="b"] .row.sel .who b { text-decoration: underline; text-decoration-color: var(--blue-d); text-underline-offset: 4px; }
+[data-dir="b"] .row.enter { animation: b-enter 1.1s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes b-enter { from { opacity: 0; clip-path: inset(0 0 100% 0); } }
+[data-dir="b"] .gauge { display: none; }
+[data-dir="b"] .pill { font: italic 1.15rem var(--disp); }
+[data-dir="b"] .pill::after { content: " →"; font-style: normal; font-size: .9rem; opacity: .5; }
+[data-dir="b"] .detail { padding: 1.2rem 0 0; animation: b-fade .6s ease both; }
+@keyframes b-fade { from { opacity: 0; } }
+[data-dir="b"] .detail h3 { margin: 0 0 .3rem; font: 400 1.7rem/1.15 var(--disp); color: #F2EFE8; max-width: 34ch; }
+[data-dir="b"] .detail h3 em { color: var(--blue-d); }
+[data-dir="b"] .reasons li .bar { height: 1px; }
+[data-dir="b"] .btn { padding: .45rem 0; border: 0; border-bottom: 1px solid var(--blue-d); background: none; color: #F2EFE8; font-size: .88rem; }
+[data-dir="b"] .live { font: italic 1rem var(--disp); }
+[data-dir="b"] .login { font-family: var(--ui); background: #FBFAF7; border-radius: 2px; border-top: 3px solid var(--blue); }
+[data-dir="b"] .login h3 { margin: 0; font: 400 2.2rem/1.05 var(--disp); }
+[data-dir="b"] .login input { border: 0; border-bottom: 1px solid #C9CCD3; background: transparent; padding-left: 0; border-radius: 0; transition: border-color .3s; }
+[data-dir="b"] .login input:focus { outline: none; border-bottom-color: var(--blue); }
+[data-dir="b"] .login .go, [data-dir="b"] .login .then button { border-radius: 2px; }
+[data-dir="b"] .login .check p { font: 400 1.5rem/1.2 var(--disp); }
+
+/* =============== C · SEIS =============== */
+[data-dir="c"] { --ui: "Zen Kaku Gothic New"; --disp: "Sora"; --mono: "Martian Mono"; --lock-ease: cubic-bezier(.7,0,.2,1); --lock-dur: .28s; }
+[data-dir="c"] .console { font-family: var(--ui); background: #070A12; border: 1px solid #1A2133; border-radius: 6px;
+  background-image: linear-gradient(#0E1424 1px, transparent 1px), linear-gradient(90deg, #0E1424 1px, transparent 1px); background-size: 48px 48px; }
+[data-dir="c"] .side { border-right: 1px solid #1A2133; background: #070A12; }
+[data-dir="c"] .side .nav a { font-family: var(--mono); font-size: .72rem; letter-spacing: .02em; text-transform: uppercase; border-radius: 3px; }
+[data-dir="c"] .side .nav a .n { color: #39425A; width: 1.3rem; }
+[data-dir="c"] .side .nav a svg { display: none; }
+[data-dir="c"] .side .nav a.on { background: var(--blue-d); color: #070A12; }
+[data-dir="c"] .side .nav a.on .n { color: #070A12; }
+[data-dir="c"] .side .org b { font: 600 .95rem var(--disp); }
+[data-dir="c"] .head h2 { font: 700 1.9rem/1 var(--disp); letter-spacing: -.04em; text-transform: none; }
+[data-dir="c"] .head h2 span { color: #39425A; font-weight: 400; }
+[data-dir="c"] .stat { padding: .8rem .9rem; border: 1px solid #1A2133; background: #070A12; border-radius: 3px; }
+[data-dir="c"] .stat small { font-family: var(--mono); font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; color: #6A7389; }
+[data-dir="c"] .stat b { display: block; font: 500 1.6rem var(--mono); letter-spacing: -.04em; margin-top: .3rem; }
+[data-dir="c"] .stat em { font-style: normal; font-family: var(--mono); font-size: .66rem; color: var(--s1); }
+[data-dir="c"] .rows { gap: 6px; }
+[data-dir="c"] .row { padding: .7rem .9rem; border: 1px solid #1A2133; background: #070A12; border-radius: 3px; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) auto; transition: border-color .12s; }
+[data-dir="c"] .row:hover, [data-dir="c"] .row.sel { border-color: var(--blue-d); }
+[data-dir="c"] .row.enter { animation: c-enter .45s steps(6, end) both; }
+@keyframes c-enter { from { clip-path: inset(0 100% 0 0); } }
+[data-dir="c"] .where { font-family: var(--mono); font-size: .68rem !important; }
+[data-dir="c"] .gauge { display: none; }
+[data-dir="c"] .verdict { display: flex; align-items: center; gap: .7rem; }
+[data-dir="c"] .meter { display: flex; gap: 2px; }
+[data-dir="c"] .meter i { width: 5px; height: 14px; background: #1A2133; }
+[data-dir="c"] .meter i.on { background: currentColor; }
+[data-dir="c"] .pill { position: relative; display: inline-grid; place-items: center; min-width: 5.6rem; padding: .3rem .5rem; border: 1.5px solid currentColor; border-radius: 5px;
+  font: 500 .62rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+[data-dir="c"] .row.enter .pill { animation: stamp .5s .35s cubic-bezier(.3,1.8,.5,1) both; }
+@keyframes stamp { from { transform: scale(1.8) rotate(-8deg); opacity: 0; } }
+[data-dir="c"] .detail { padding: 1rem; border: 1px solid #1A2133; background: #070A12; border-radius: 3px; animation: c-enter .3s steps(4, end) both; }
+[data-dir="c"] .detail h3 { margin: 0; font: 600 1rem var(--disp); }
+[data-dir="c"] .reasons li { font-size: .86rem; }
+[data-dir="c"] .reasons li .bar { border-radius: 0; height: 8px; }
+[data-dir="c"] .btn { padding: .5rem .8rem; border: 1px solid var(--blue-d); border-radius: 3px; background: none; color: var(--blue-d); font: 500 .66rem var(--mono); text-transform: uppercase; letter-spacing: .06em; }
+[data-dir="c"] .btn:hover { background: var(--blue-d); color: #070A12; }
+[data-dir="c"] .live { font-family: var(--mono); font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; }
+[data-dir="c"] .login { font-family: var(--ui); background: #fff; border-radius: 6px; border: 1px solid #DCE3EF;
+  background-image: linear-gradient(#F1F4F9 1px, transparent 1px), linear-gradient(90deg, #F1F4F9 1px, transparent 1px); background-size: 24px 24px; }
+[data-dir="c"] .login h3 { margin: 0; font: 700 1.6rem var(--disp); letter-spacing: -.04em; }
+[data-dir="c"] .login label { font-family: var(--mono); font-size: .62rem; text-transform: uppercase; letter-spacing: .06em; }
+[data-dir="c"] .login input { border: 1.5px solid #121A2C; border-radius: 3px; background: #fff; }
+[data-dir="c"] .login input:focus { outline: none; border-color: var(--blue); box-shadow: 3px 3px 0 var(--blue); }
+[data-dir="c"] .login .go, [data-dir="c"] .login .then button { border-radius: 3px; font-family: var(--mono); font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; box-shadow: 3px 3px 0 #121A2C; transition: transform .1s, box-shadow .1s; }
+[data-dir="c"] .login .go:active { transform: translate(3px,3px); box-shadow: 0 0 0 #121A2C; }
+[data-dir="c"] .login .check p { font-family: var(--mono); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g-sh" gradientUnits="userSpaceOnUse" x1="520" y1="300" x2="770" y2="455"><stop offset="0" stop-color="#17A2FF"/><stop offset="1" stop-color="#1466E5"/></linearGradient>
+    <linearGradient id="g-rg" gradientUnits="userSpaceOnUse" x1="805" y1="470" x2="480" y2="815"><stop offset="0" stop-color="#1A8CFA"/><stop offset=".5" stop-color="#1150B0"/><stop offset="1" stop-color="#152953"/></linearGradient>
+  </defs>
+</svg>
+
+<header class="picker">
+  <h1>RokuSec · tres direcciones</h1>
+  <nav id="tabs">
+    <button data-go="a" aria-pressed="true">A · Instrumento</button>
+    <button data-go="b" aria-pressed="false">B · Libro</button>
+    <button data-go="c" aria-pressed="false">C · Seis</button>
+  </nav>
+  <p id="blurb"></p>
+</header>
+
+<div class="stage" id="stage"></div>
+
+<script>
+const BLURB = {
+  a: "<b>Instrumento.</b> Preciso y calmo, como un instrumento de medición. Sora para títulos y cifras, Hanken Grotesk para la interfaz, JetBrains Mono para datos. Superficies azul noche con luz desde arriba; el puntaje es un anillo, como el del logo. Movimiento con resorte: las cosas llegan y se asientan.",
+  b: "<b>Libro.</b> Editorial, como un registro de auditoría bien escrito. Instrument Serif para títulos y cifras grandes, Schibsted Grotesk para el texto. Sin tarjetas: líneas finas, mucho aire, la decisión se lee como una oración. Movimiento lento y suave, casi nada se mueve sin motivo.",
+  c: "<b>Seis.</b> Del nombre: roku, seis. Sora en títulos, Zen Kaku Gothic New (una gótica japonesa) en el texto, Martian Mono para datos. Una retícula visible, un medidor de seis marcas, y el veredicto se estampa como un sello. Movimiento seco, en pasos, mecánico.",
+};
+const SEV = { LOW: 1, MEDIUM: 2, HIGH: 3, CRITICAL: 4 };
+const ACTION = { ALLOW: "Permitido", REQUIRE_MFA: "Pidió passkey", REAUTHENTICATE: "Reautenticar", BLOCK: "Bloqueado" };
+const ROWS = [
+  { t: "14:32", who: "Martín Gómez", app: "Roku Bank", where: "Tokio, JP · AS2516", level: "CRITICAL", action: "BLOCK", score: .97,
+    story: "Martín apareció en <em>Tokio</em> dos horas después de iniciar sesión en Buenos Aires.",
+    reasons: [["Viaje imposible: 18.400 km en 2 h", 1], ["Red nueva para este usuario", .7], ["Navegador nuevo", .45]] },
+  { t: "14:05", who: "Valen Ruiz", app: "Kaze Labs", where: "Rosario, AR · AS7303", level: "HIGH", action: "REAUTHENTICATE", score: .79,
+    story: "Siete contraseñas incorrectas en diez minutos contra la cuenta de Valen.",
+    reasons: [["Ráfaga de contraseñas incorrectas (7 en 24 h)", .9], ["Hora inusual", .3]] },
+  { t: "13:48", who: "Sofía Paz", app: "Roku Bank", where: "Córdoba, AR · AS27747", level: "MEDIUM", action: "REQUIRE_MFA", score: .61,
+    story: "Sofía usó un dispositivo que nunca habíamos visto; le pedimos su passkey.",
+    reasons: [["Dispositivo nuevo", .6], ["Hora inusual", .25], ["País habitual", -.4]] },
+  { t: "13:40", who: "Martín Gómez", app: "Roku Bank", where: "Buenos Aires, AR · AS7303", level: "LOW", action: "ALLOW", score: .08,
+    story: "Martín, desde su casa y su navegador de siempre. Entró sin pasos extra.",
+    reasons: [["País habitual", -.6], ["Red habitual", -.5], ["Navegador habitual", -.4]] },
+];
+const NEW_ROWS = [
+  { who: "Lucas Ferreyra", app: "Kaze Labs", where: "São Paulo, BR · AS28573", level: "LOW", action: "ALLOW", score: .12,
+    story: "Lucas, en su viaje habitual de los martes a São Paulo.", reasons: [["País visitado antes", -.3], ["Red habitual", -.5]] },
+  { who: "Ana López", app: "Roku Bank", where: "Amsterdam, NL · AS14061", level: "HIGH", action: "REAUTHENTICATE", score: .74,
+    story: "Ana desde una red de hosting en Ámsterdam: posible VPN.", reasons: [["Red de hosting o VPN", .8], ["País nuevo", .5]] },
+];
+const ICON = {
+  home: '<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+  dec: '<path d="M4 6h16M4 12h10M4 18h7"/>',
+  pol: '<path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/>',
+  usr: '<circle cx="12" cy="8" r="3.5"/><path d="M5 20c1-4 4-6 7-6s6 2 7 6"/>',
+  app: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+};
+
+const lockSvg = (h) => `<svg class="lock" viewBox="380 200 500 680" height="${h}" aria-hidden="true">
+  <path class="shackle" d="M467 565V414.5a157.75 157.75 0 0 1 315.5 0 39 39 0 0 1-78 0 79.75 79.75 0 0 0-159.5 0V565Z" fill="url(#g-sh)"/>
+  <circle class="ring" cx="628" cy="646" r="149.25" fill="none" stroke="url(#g-rg)" stroke-width="83.5"/>
+  <circle class="tint" cx="628" cy="646" r="149.25"/>
+  <circle class="scan" cx="628" cy="646" r="149.25"/>
+  <path d="M595 633a32 32 0 1 1 49.5 26.24l9 44.76q0 4-4 4h-45q-4 0-4-4l9-44.76A32 32 0 0 1 595 633Z" fill="#152953"/>
+</svg>`;
+
+const sevColor = (level, light) => `var(--${light ? "l" : "s"}${SEV[level]})`;
+
+function gauge(score, level) {
+  const c = 2 * Math.PI * 12;
+  return `<svg class="gauge" viewBox="0 0 30 30"><circle class="track" cx="15" cy="15" r="12"/>
+    <circle class="val" cx="15" cy="15" r="12" stroke="${sevColor(level)}" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - score)}"/></svg>`;
+}
+const meter = (score, level) =>
+  `<span class="meter" style="color:${sevColor(level)}">${Array.from({ length: 6 }, (_, i) => `<i class="${i < Math.round(score * 6) ? "on" : ""}"></i>`).join("")}</span>`;
+
+function rowHtml(r, i, dir, enter) {
+  return `<div class="row ${enter ? "enter" : ""}" data-i="${i}">
+    ${dir === "b" ? `<span class="time">${r.t}</span>` : ""}
+    <div class="who"><b>${r.who}</b> <span>· ${r.app}${dir === "b" ? ` · ${r.where.split(" · ")[0]}` : ""}</span></div>
+    ${dir === "b" ? "" : `<div class="where">${r.where}</div>`}
+    <div class="verdict">${dir === "c" ? meter(r.score, r.level) : gauge(r.score, r.level)}
+      <span class="pill" style="color:${sevColor(r.level)}">${ACTION[r.action]}</span></div>
+  </div>`;
+}
+
+function detailHtml(r, dir) {
+  const fmt = (n) => n.toFixed(2).replace(".", ",");
+  const title = dir === "b" ? r.story : `${r.who} · ${ACTION[r.action]} <span style="color:#7D88A3;font-weight:400">· puntaje ${fmt(r.score)}</span>`;
+  return `<div class="detail"><h3>${title}</h3>
+    ${dir === "b" ? "" : `<p style="margin:.35rem 0 0;color:#8790A6;font-size:.88rem">${r.story.replace(/<\/?em>/g, "")}</p>`}
+    <ul class="reasons">${r.reasons.map(([txt, w]) => `<li style="color:${w > 0 ? sevColor(r.level) : "var(--s1)"}">
+      <span class="bar" style="width:${Math.round(Math.abs(w) * 46) + 6}px"></span><span style="color:#C9D0DE">${txt}</span></li>`).join("")}</ul></div>`;
+}
+
+let state = { dir: "a", rows: [...ROWS], sel: 0, next: 0, outcome: 0 };
+
+function render() {
+  const d = state.dir;
+  const nav = [["home", "Resumen"], ["dec", "Decisiones"], ["pol", "Política"], ["usr", "Usuarios"], ["app", "Aplicaciones"]];
+  const blocked = state.rows.filter((r) => r.action === "BLOCK").length;
+  document.getElementById("blurb").innerHTML = BLURB[d];
+  document.getElementById("stage").innerHTML = `
+  <section data-dir="${d}">
+    <div class="console">
+      <aside class="side">
+        <div class="logo">${lockSvg(26)}<b>Roku<i>Sec</i></b></div>
+        <div class="org"><small>Organización</small><b>Roku Bank</b></div>
+        <nav class="nav">${nav.map(([k, l], i) => `<a href="#" class="${i === 1 ? "on" : ""}"><span class="n">0${i + 1}</span><svg viewBox="0 0 24 24">${ICON[k]}</svg>${l}</a>`).join("")}</nav>
+      </aside>
+      <div class="main">
+        <div class="head">
+          <div><h2>Decisiones${d === "c" ? ' <span>/ hoy</span>' : ""}</h2><p class="sub">Cada inicio de sesión, por qué se decidió lo que se decidió.</p></div>
+          <div style="display:flex;gap:1rem;align-items:center"><span class="live"><i></i>En vivo</span><button class="btn" id="sim">Simular inicio</button></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><small>Inicios hoy</small><b>${(1284 + state.rows.length - 4).toLocaleString("es-AR")}</b><em>${d === "b" ? "algo más que ayer" : "+4,1 % vs. ayer"}</em></div>
+          <div class="stat"><small>Sin pasos extra</small><b>${d === "b" ? "94 %" : "94,2 %"}</b><em>${d === "b" ? "la mayoría ni lo nota" : "objetivo ≥ 90 %"}</em></div>
+          <div class="stat"><small>Bloqueados</small><b>${blocked + 11}</b><em style="color:var(--s4)">${d === "b" ? "dos viajes imposibles" : "2 viajes imposibles"}</em></div>
+        </div>
+        <div class="rows">${state.rows.map((r, i) => rowHtml(r, i, d, i === 0 && state.justAdded)).join("")}</div>
+        ${detailHtml(state.rows[state.sel], d)}
+      </div>
+    </div>
+  </section>
+  <section data-dir="${d}" class="loginwrap">
+    <small>Login (claro) · probá “Continuar” dos veces</small>
+    <div class="login" id="login">
+      <div class="brand">${lockSvg(30)}<b>Roku<i>Sec</i></b></div>
+      <form id="lf">
+        <h3>Iniciá sesión</h3>
+        <p class="hint" style="margin:.4rem 0 0">Continuá a Kaze Labs</p>
+        <label>Email</label><input value="martin@kazelabs.example">
+        <label>Contraseña</label><input type="password" value="secreto123">
+        <button class="go" type="submit">Continuar</button>
+      </form>
+      <div class="check">
+        ${lockSvg(96)}
+        <p class="msg">Verificando el contexto…</p>
+        <div class="then"><button type="button" id="again">Usar passkey</button></div>
+        <a href="#" id="reset" class="hint" style="display:none">volver</a>
+      </div>
+    </div>
+  </section>`;
+  state.justAdded = false;
+  wire();
+}
+
+function wire() {
+  document.querySelectorAll(".row").forEach((el) => el.addEventListener("click", () => { state.sel = +el.dataset.i; render(); }));
+  document.getElementById("sim").addEventListener("click", () => {
+    const r = { ...NEW_ROWS[state.next++ % NEW_ROWS.length], t: new Date().toTimeString().slice(0, 5) };
+    state.rows = [r, ...state.rows].slice(0, 6); state.sel = 0; state.justAdded = true; render();
+  });
+  const login = document.getElementById("login");
+  const lock = login.querySelector(".check .lock");
+  const msg = login.querySelector(".msg");
+  const then = login.querySelector(".then");
+  const reset = document.getElementById("reset");
+  document.getElementById("lf").addEventListener("submit", (e) => {
+    e.preventDefault();
+    login.classList.add("busy"); lock.setAttribute("class", "lock checking"); msg.textContent = "Verificando el contexto…";
+    then.style.display = "none"; reset.style.display = "none";
+    const stepUp = state.outcome++ % 2 === 1;
+    setTimeout(() => {
+      lock.setAttribute("class", `lock ${stepUp ? "closed warn" : "open ok"}`);
+      msg.textContent = stepUp ? "Este inicio es distinto a los habituales. Confirmá que sos vos." : "Te reconocimos. Entrando a Kaze Labs…";
+      if (stepUp) then.style.display = "block";
+      reset.style.display = "inline";
+    }, 1500);
+  });
+  reset.addEventListener("click", (e) => { e.preventDefault(); login.classList.remove("busy"); });
+}
+
+document.getElementById("tabs").addEventListener("click", (e) => {
+  const go = e.target.closest("button")?.dataset.go; if (!go) return;
+  state.dir = go;
+  document.querySelectorAll("#tabs button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.go === go));
+  render();
+});
+render();
+</script>
+</body>
+</html>
