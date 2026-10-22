@@ -63,8 +63,10 @@ everything else can run in parallel.
 
 ### C: Cloud-readiness in code
 
-- [ ] **C-1** Configuration from the environment: secrets, WebAuthn RP ID and
-      origins, cookie `Secure`, public URLs of each surface.
+- [x] **C-1** Configuration from the environment: secrets, WebAuthn RP ID and
+      origins, cookie `Secure`, public URLs of each surface. Everything was
+      already env-driven; `DEPLOYMENT=cloud` now refuses local-only defaults
+      (IdP, bank) and the bank cookie is `Secure` there.
 - [ ] **C-2** Client IP from trusted proxy headers (`TRUSTED_PROXY_CIDRS`).
 - [ ] **C-3** IP geolocation with DB-IP Lite, IPv4 + IPv6; `simulated` flag on
       decisions taken with an override.

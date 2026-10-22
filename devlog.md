@@ -4,7 +4,20 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-21 (latest) — RokuSec logo, redrawn as vector
+## 2026-10-21 (latest) — C-1: a cloud deployment cannot start on laptop defaults
+
+Every setting was already read from the environment. The risk was the other
+way round: every default *works*, so a variable forgotten in the cloud values
+would fall back silently to `rba:rba@localhost`, an `http://localhost` WebAuthn
+origin, the mock OTP, or seed passwords printed in the repo. `DEPLOYMENT=cloud`
+(IdP and bank) now validates at startup and lists every such problem in one
+error; the bank's session cookie is `Secure` there. Brokers and databases in the
+other services fail loudly on their own, so they were left alone. From this step
+on, work lands as one branch and PR per repo.
+
+---
+
+## 2026-10-21 — RokuSec logo, redrawn as vector
 
 Start of the final phase (cloud on AWS/EKS, demos built around Martín and Diego,
 product-grade UI); the plan itself is still being written. The logo is the one
