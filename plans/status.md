@@ -52,14 +52,14 @@ Take the prototype to AWS (EKS + RDS + Valkey + CloudFront, ADR-0031), make the
 login signals real (ADR-0032), add multi-tenancy (ADR-0033) and the base policy +
 engine mode (ADR-0034), rebuild the UIs on the RokuSec brand with per-tenant
 login branding (ADR-0036), and stage the demo around Martín and Diego across Roku
-Bank and Kaze Labs (ADR-0035). Tenancy (T-1…T-6) is done; next: **T-7**
-(passkey enrollment, ADR-0037), then the console (U-1/U-2) and the cloud runtime
-(C-1…C-5, I-2).
+Bank and Kaze Labs (ADR-0035). The T workstream is done; next: the
+cloud-readiness changes in code (C-1…C-5) and the runtime stack (I-2), then the
+console and login screens (U-1…U-3).
 
 | Workstream | Stages | Done |
 |---|---|---|
 | B — Brand | B-1…B-5 | B-1 (logo as vector, `docs/brand/`) |
-| T — Tenancy + policy | T-1…T-7 | T-1…T-6 |
+| T — Tenancy + policy | T-1…T-7 | all |
 | C — Cloud-readiness in code | C-1…C-5 | — |
 | I — AWS infrastructure | I-1…I-6 | I-1 (foundation applied) |
 | U — Interfaces | U-1…U-5 | — |

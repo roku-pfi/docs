@@ -55,7 +55,7 @@ everything else can run in parallel.
       scoped by tenant). *(after T-1)*
 - [x] **T-5** Console authorization: tenant operators scoped server-side;
       platform-operator role; a cross-tenant test per admin endpoint. *(after T-2)*
-- [ ] **T-7** Passkey enrollment only from a trusted context (ADR-0037):
+- [x] **T-7** Passkey enrollment only from a trusted context (ADR-0037):
       post-ALLOW offer, operator activation codes, step-up without a passkey
       denied. *(after T-2)*
 - [x] **T-6** Seed: Roku Bank and Kaze Labs with users, groups, roles,

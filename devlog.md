@@ -105,6 +105,28 @@ the hosted login shows the tenant's name but not its branding yet (U-3); the
 `05-idp-er` figure predates `tenants`; the first step-up still offers passkey
 enrollment (T-7).
 
+**T-7: passkeys only from a trusted context (ADR-0037).** A step-up for a user
+with no passkey is now refused (`SECOND_FACTOR_MISSING`, "contactá a soporte"),
+with `no_second_factor` on the challenge row and the verdict still recorded by
+the PDP. Two doors remain. After a login the engine itself judged usual (verdict
+ALLOW, not a fallback, not a monitor-mode ALLOW of a risky verdict, not an
+engine that is off), the session may add one passkey within 10 minutes. Or with
+an activation code an operator issues from the console: 12 characters, 15
+minutes, hash only, single use, a new one voids the old, and it needs the
+user's password too (a wrong password and a wrong code answer the same).
+
+Found while doing it, and worse than the hole T-7 was for: `POST /mfa/verify`
+accepted the fixed code `000000` in every deployment. Anyone with a password
+could pass any step-up with one request, no browser needed. It is now off
+unless `MOCK_OTP_ENABLED` and answers 404; only the test suite enables it.
+
+Consequence for the cloud: on fresh databases nobody has a passkey, and the
+platform tenant asks for one on every login. The first code therefore comes
+from the cluster, `python -m rba_idp.activation juan@rokusec.example --tenant
+rokusec`; from there codes are issued in the console. IdP 167 tests (18 new in
+`test_enrollment.py`, run with the mock OTP off); disabling the refusal fails
+two of them.
+
 ---
 
 ## 2026-08-21 — Data model for the informe
