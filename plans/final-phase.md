@@ -125,7 +125,7 @@ everything else can run in parallel.
 
 - [ ] **D-1** Presenter panel: attacker scenarios (Lambdas), simulated travel,
       load test, reset demo; shared-secret protected. *(after I-6)*
-- [ ] **D-2** Policy comparison: offline replay of the held-out split under
+- [x] **D-2** Policy comparison (finding 2026-10-22; console page pending): offline replay of the held-out split under
       password-only / always-MFA / adaptive, with confidence intervals →
       finding + JSON → the console's Efectividad page.
 - [ ] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
