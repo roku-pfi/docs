@@ -31,6 +31,7 @@ At 0/38 and 38/38 the bootstrap degenerates to a point; cite Wilson there.
 | MFA always | 100.00 % | [99.99, 100] | 38/38 (100 %) | [90.8, 100] | 0.00 % |
 | **Adaptive (engine, starter policy)** | **38.06 %** | [37.54, 38.57] | **32/38 (84.2 %)** | [69.6, 92.6] | **6.21 %** |
 | **Adaptive, critical steps up instead of blocking** | **38.06 %** | [37.54, 38.57] | **32/38 (84.2 %)** | [69.6, 92.6] | **0.02 %** |
+| **Adaptive, new default (ADR-0040): LOW ≤ 0.40, critical steps up** | **36.02 %** | [35.51, 36.53] | **32/38 (84.2 %)** | [69.6, 92.6] | **0.02 %** |
 | Freeman only (ablation) | 36.72 % | [36.21, 37.23] | 31/38 (81.6 %) | [66.6, 90.8] | 6.19 % |
 
 ## Findings
@@ -67,6 +68,13 @@ At 0/38 and 38/38 the bootstrap degenerates to a point; cite Wilson there.
    | 0.30 | 38.1 % | 84.2 % |
    | 0.40 | 36.0 % | 84.2 % |
    | 0.50 | 15.3 % | 63.2 % |
+
+## Outcome
+
+Adopted as the default in every seeded policy and in the starter policy
+([ADR-0040](../decisions/0040-scores-step-up-rules-block.md)): the same detection
+as before, 2 points less friction, and 0.02 % of legitimate logins blocked instead
+of 6.21 %.
 
 ## Caveats
 
