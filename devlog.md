@@ -4,6 +4,26 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — Decisiones on Carbon: from where, and why
+
+The product owner approved the Carbon direction on Usuarios. Decisiones was
+rebuilt next. A row now answers who (avatar, email, application), from where
+(country with a "Nuevo" tag if the user never logged in from it, network and
+IP), on what (browser on OS, device type), how risky (severity tag, score) and
+what happened (outcome; under MONITOR also what the engine would have done).
+Expanding a row explains it: the reasons strongest first (up/down arrows and a
+weight bar for model signals; rules in plain Spanish, e.g. "De Argentina a Japón:
+18.400 km a unos 9.200 km/h"), next to the login's signals each marked
+Habitual / Nuevo, and technical details folded away. Every decision has its own
+URL (`/admin/decisiones/<event>`). Filters by outcome and application, search by
+user, IP or country, auto-refresh every 15 s while visible.
+
+For that the decision record (`rba-contracts` 0.13.0) gained `login` (IP,
+country, ASN, device, OS, browser) and `features` (which of them were familiar).
+No schema change: the audit service already stored the full event payload.
+Both OpenAPI specs were behind (no tenant/enforcement fields) and were brought
+up to date.
+
 ## 2026-10-22 (latest) — The console moves to Carbon (ADR-0038)
 
 The product owner found the console, and three restyled directions of it, "too
