@@ -96,7 +96,9 @@ everything else can run in parallel.
       new ALB; first end-to-end login over HTTPS with a passkey.
 - [ ] **I-5** GitHub Actions: reusable test → build → push workflow in every
       service repo; deploy step when a cluster is up.
-- [ ] **I-6** Attacker Lambdas in `ap-northeast-1`, `eu-central-1`, `sa-east-1`.
+- [x] **I-6** Attacker Lambdas in `ap-northeast-1`, `eu-central-1`, `sa-east-1`
+      (`rba-infra/attacker/`, `tofu/foundation/attackers.tf`; function URLs +
+      shared secret, ADR-0041). Written and tested against a stub; not yet applied.
 
 ### U: Interfaces
 
@@ -123,8 +125,10 @@ everything else can run in parallel.
 
 ### D: Demos
 
-- [ ] **D-1** Presenter panel: attacker scenarios (Lambdas), simulated travel,
-      load test, reset demo; shared-secret protected. *(after I-6)*
+- [x] **D-1** Presenter panel at the bank's `/presenter` (replaces `/walkthrough`):
+      Tokyo login, stuffing burst / lockout from three regions, simulated travel
+      (signed ticket), PDP load, reset failures / forget profile; `PRESENTER_SECRET`.
+      Verified on k3d with local stand-ins (ADR-0041). *(after I-6)*
 - [x] **D-2** Policy comparison (finding 2026-10-22, ADR-0040, console Efectividad page): offline replay of the held-out split under
       password-only / always-MFA / adaptive, with confidence intervals →
       finding + JSON → the console's Efectividad page.
@@ -133,7 +137,7 @@ everything else can run in parallel.
 
 ### Found on the first cloud session (2026-10-22)
 
-- [ ] Don't seed the fake TEST-NET home history in the cloud: it never matches a
+- [x] Don't seed the fake TEST-NET home history in the cloud (ADR-0041): it never matches a
       real login, so Martín's first real phone login scored CRITICAL (verdict
       BLOCK, enforced passkey in MONITOR). Let real logins build the profile.
 - [ ] Onboarding UX: activation inside the login flow and an activation link

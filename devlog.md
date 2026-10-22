@@ -4,7 +4,32 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-22 (latest) — D-2: how effective is it, and what that changed
+## 2026-10-22 (latest) — I-6 / D-1: attackers in three regions and the presenter panel
+
+**Attackers (I-6).** One stdlib Python Lambda (`rba-infra/attacker/handler.py`),
+deployed in Tokyo, Frankfurt and São Paulo from the permanent stack. Given a client
+id, an email and a list of passwords, it runs the ordinary `POST /login` against the
+IdP's CloudFront host; the IdP sees its real AWS egress address, so a real foreign
+country and Amazon's hosting ASN. Reached through a function URL with a shared
+secret (404 otherwise), at most 20 attempts per call (ADR-0041). Tested against a
+stub IdP; the stack is written but not yet applied.
+
+**Presenter panel (D-1).** `/walkthrough` and its scenario list are gone. The bank
+now carries `/presenter`, behind `PRESENTER_SECRET`, with: Martín's real password
+from Tokyo (stops at the passkey); stuffing from all three regions, 3 failures
+(burst → REAUTHENTICATE) or 12 (lockout → BLOCK); impossible travel through a signed
+simulation ticket (JP / KDDI, marked simulado); a 90 s load of 32 concurrent clients
+on `/risk/evaluate`; and two resets (empty the failure window, or forget the
+profile). On k3d, with local stand-ins in place of the Lambdas: every attempt was
+recorded, the lockout put 12 failures in Martín's window, and the load took the PDP
+from 2 to 5 replicas (p95 ≈ 800 ms on the laptop at 197 % CPU, which is k3d, not a
+cloud figure). One thing worth knowing for the run sheet: under load, profile
+updates queue behind the load's events, so failures reach the window seconds late.
+
+**No TEST-NET seed in the cloud.** The profile init Job no longer seeds the fake home
+history there; real logins build Martín's profile.
+
+: how effective is it, and what that changed
 
 Replayed the 34,231 successful held-out logins (38 account takeovers, all with the
 right password) through the production decision code. The engine as configured

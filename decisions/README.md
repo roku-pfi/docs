@@ -52,6 +52,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0038](0038-console-on-carbon.md) | The console is built on IBM's Carbon (g100) with the logo's blues, IBM Plex self-hosted, Carbon's UI shell | Accepted (amends 0030, 0036 for the console) |
 | [0039](0039-public-client-ids.md) | Login URLs name applications by an opaque public client ID (`rk_…`); the internal application ID never reaches the browser | Accepted |
 | [0040](0040-scores-step-up-rules-block.md) | A risk score steps up and never blocks; only rules block. Default bands 0.40 / 0.60 / 0.80 (from D-2) | Accepted (amends 0034) |
+| [0041](0041-stage-machinery-wiring.md) | Attackers via function URLs + shared secret; presenter panel inside the bank; load hits the PDP; reset touches only profiles; no TEST-NET seed in the cloud | Accepted |
 
 ## Template
 

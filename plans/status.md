@@ -58,12 +58,12 @@ console and login screens (U-1…U-3).
 
 | Workstream | Stages | Done |
 |---|---|---|
-| B — Brand | B-1…B-5 | B-1 (logo as vector, `docs/brand/`) |
+| B — Brand | B-1…B-5 | B-1…B-4 |
 | T — Tenancy + policy | T-1…T-7 | all |
-| C — Cloud-readiness in code | C-1…C-5 | — |
-| I — AWS infrastructure | I-1…I-6 | I-1 (foundation applied) |
-| U — Interfaces | U-1…U-5 | — |
-| D — Demos | D-1…D-4 | — |
+| C — Cloud-readiness in code | C-1…C-5 | all |
+| I — AWS infrastructure | I-1…I-6 | I-1…I-4, I-6 (written, not applied) |
+| U — Interfaces | U-1…U-5 | all |
+| D — Demos | D-1…D-4 | D-1, D-2 |
 
 Checkboxes for each stage live in `final-phase.md`.
 
