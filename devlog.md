@@ -4,6 +4,26 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
+## 2026-10-22 (latest) — Client IDs, a real k3d pass, and Roku Bank's own identity
+
+**Opaque client IDs (ADR-0039).** Login URLs carried `application_id=roku-bank-web`.
+They now carry a public, opaque `client_id` (`rk_` + 16 base62); the internal id
+never reaches the browser.
+
+**k3d with the real services.** Activation codes from the CLI, passkeys through a
+virtual authenticator, the bank's login, the console, a real policy save: all
+worked. It found two bugs the stub tests could not: `static/brand/` was not in the
+IdP's package data (logos 404 in every image, AWS included; a test now checks every
+web file ships), and the PDP's decision rows lacked the login context the console
+reads (new nullable column, added in place).
+
+**B-3 / U-4: Roku Bank.** References: Revolut's layout (balance as the hero number,
+round actions, a clean movements list), Ualá/Brubank's tone. Its own: pine green and
+lime, Plus Jakarta Sans, a coin-under-a-slot mark. Home, transfer (confirm, then
+done) and the not-available page are Spanish with es-AR money; the presenter kit
+stays deliberately plain. The bank's login on the IdP shows its mark (served by the
+bank) and typeface, pill buttons, and the "Protegido por RokuSec" seal.
+
 ## 2026-10-22 (latest) — U-3: one login, three looks
 
 The product owner's rule: the look depends on where the person is going. The

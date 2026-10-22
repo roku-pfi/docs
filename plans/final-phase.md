@@ -34,7 +34,8 @@ everything else can run in parallel.
       (`design/brand/build.py` → `docs/brand/`).
 - [x] **B-2** RokuSec tokens move to the logo blues; favicon and logo wired into
       the IdP and console.
-- [ ] **B-3** Roku Bank identity (name, logo, palette, type).
+- [x] **B-3** Roku Bank identity: pine green + lime, Plus Jakarta Sans, coin-and-slot
+      mark (`rba-demo-banking/web/static/brand/`).
 - [ ] **B-4** Kaze Labs identity.
 - [ ] **B-5** Brand rationale + short guide for the informe (Spanish).
 
@@ -111,7 +112,9 @@ everything else can run in parallel.
       own (Roku Bank) → tenant layout and colours + "Protegido por RokuSec".
       Spanish, terse, scanning-ring check step; step-up, blocked, no-factor,
       offer and activation pages included. *(after T-2)*
-- [ ] **U-4** Roku Bank rebuilt on its own identity. *(after B-3)*
+- [x] **U-4** Roku Bank rebuilt on its own identity: Revolut-style home (balance, round
+      actions, movements, accounts), transfer flow, Spanish; its login wears the mark
+      and typeface. *(after B-3)*
 - [ ] **U-5** Kaze Labs app (`rba-demo-kaze`): portal home, a page only
       `admin` can reach, a page `viewer` cannot change. *(after B-4, T-6)*
 
