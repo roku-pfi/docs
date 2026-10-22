@@ -21,6 +21,7 @@ Wiefling is a privacy-preserving synthesis of real SSO logins
 | [2026-08-16-k8s2-hpa-load.md](2026-08-16-k8s2-hpa-load.md) | PDP HPA 2→5 under load; p95/p99; Grafana | `rba-infra/scripts/load-hpa.sh` |
 | [2026-08-19-supervised-escalation-and-failed-logins.md](2026-08-19-supervised-escalation-and-failed-logins.md) | Supervised escalate (0.395 vs Freeman 0.105); profile-poisoning fix and its cost; what LogReg learned | `python -m ml.train --model all` + `ml.export_logreg` |
 | [2026-08-20-step5-rerun.md](2026-08-20-step5-rerun.md) | **Citable model numbers.** Full regenerated Step 5 table matching the deployed artifacts; why the two depth tables differ | `python -m ml.train --model all` |
+| [2026-10-22-e2e-scenario-map.md](2026-10-22-e2e-scenario-map.md) | Every scene of the scenario map end to end on k3d; publisher lag and policy-cache findings | `make e2e` in `rba-infra` |
 
 > **Which numbers to cite:** `2026-08-20-step5-rerun.md`. It carries the full
 > regenerated table and matches the operating point baked into the deployed

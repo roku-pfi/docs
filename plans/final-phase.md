@@ -158,7 +158,8 @@ everything else can run in parallel.
 
 ### After the system is complete (informe chapter 3: pruebas)
 
-- [ ] End-to-end tests of the scenario map (Playwright), also in CI.
+- [~] End-to-end tests of the scenario map (Playwright): `rba-infra/e2e`, green on
+      k3d (finding 2026-10-22). Still to do: run against AWS (D-3) and in CI.
 - [ ] Load test against AWS; p95 against RNF-07.
 - [ ] Usability sessions with real users on the cloud deployment.
 

@@ -4,7 +4,26 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-22 (latest) — I-6 / D-1: attackers in three regions and the presenter panel
+## 2026-10-22 (latest) — End-to-end tests of the scenario map, and what they found
+
+`rba-infra/e2e`: every row of ADR-0035's scenario map as a Playwright test, in the
+order of the live script, against the running cluster (`make e2e`). Real browsers
+through the hosted login, passkeys on Chrome's virtual authenticator enrolled with
+activation codes, Diego's view read from the console API with his own session, the
+attackers and travel driven through the presenter panel. Monitor → active → travel
+→ Tokyo → burst → lockout → engine down → Kaze roles → isolation, plus the load
+scene on demand. Green on k3d, three runs in a row; the same suite takes the cloud
+URLs for D-3.
+
+It found two things. **The event publisher capped the relay at ~50 events/s** (it
+slept after every batch), so after the load scene profiles lagged about four minutes
+and a stuffing burst reached the failure window too late to matter. Fixed: a full
+batch is followed at once by the next; failures now land seconds after the load
+ends. **A policy change takes up to 5 s** to reach every PDP replica (each caches the
+policy); left as is, and noted for the run sheet. Numbers in
+`findings/2026-10-22-e2e-scenario-map.md`.
+
+: attackers in three regions and the presenter panel
 
 **Attackers (I-6).** One stdlib Python Lambda (`rba-infra/attacker/handler.py`),
 deployed in Tokyo, Frankfurt and São Paulo from the permanent stack. Given a client
