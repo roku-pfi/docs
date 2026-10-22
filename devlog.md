@@ -4,7 +4,28 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-21 (latest) — C-2: the scored address is the client's
+## 2026-10-22 (latest) — C-3: real addresses get a country and a network
+
+DB-IP Lite (country + ASN, IPv4 and IPv6, CC BY 4.0) is fetched at image build
+by `scripts/fetch_geoip.py` and read in memory with `maxminddb`; the TEST-NET
+table still answers first, for tests and the local walkthrough. Checked against
+the real files: a Telecentro address resolves to AR / AS27747 over IPv4 and
+IPv6, an AWS one to AS16509. The two files are ~18 MB, not the ~10 MB ADR-0032
+estimated. DB-IP returns 403 to Python's default User-Agent; the script sends
+its own. Attribution is on the login page and the console.
+
+The override needed the same treatment as the address in C-2: taken from the
+request, `country=AR` would let anyone look like home. Where client signals are
+not trusted, an override now counts only inside a signed ticket (HMAC, 10
+minutes) minted by `POST /simulation/ticket` for a caller holding
+`SIMULATION_SECRET`; the presenter panel (D-1) will mint them. Any login whose
+override changed what the address says is sent to the PDP as `simulated`, which
+the decision record and the console already show. Locally, overrides behave as
+before. IdP 222 tests.
+
+---
+
+## 2026-10-21 — C-2: the scored address is the client's
 
 ADR-0032 asked for the client IP from trusted proxy headers. Reading the code
 turned up a larger hole: the hosted page posts the `ip_address` it was given,

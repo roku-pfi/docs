@@ -70,8 +70,9 @@ everything else can run in parallel.
 - [x] **C-2** Client IP from trusted proxy headers (`TRUSTED_PROXY_CIDRS`).
       Also: the login body's `ip_address` is no longer believed in the cloud,
       private addresses stop scoring as home there, IPv6 is routable.
-- [ ] **C-3** IP geolocation with DB-IP Lite, IPv4 + IPv6; `simulated` flag on
-      decisions taken with an override.
+- [x] **C-3** IP geolocation with DB-IP Lite, IPv4 + IPv6; `simulated` flag on
+      decisions taken with an override. In the cloud an override needs a signed
+      simulation ticket (`POST /simulation/ticket`, presenter secret).
 - [ ] **C-4** Schema creation and seed as Kubernetes Jobs (not on pod start,
       so replicas do not race).
 - [ ] **C-5** Multi-arch images (arm64 + amd64) for every service.
