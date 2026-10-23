@@ -20,3 +20,5 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [11-data-provenance.md](11-data-provenance.md) | data section, limitations, method, AI-assistance note | open |
 | [12-latency-and-simulated-logins.md](12-latency-and-simulated-logins.md) | RNF-07 results, decision-path architecture (ADR-0044), Valkey limitation, sizing, learning rule | open |
 | [13-lockout-source-not-account.md](13-lockout-source-not-account.md) | decision policy, threat model (stuffing / lockout abuse), demo script, limitations | open |
+| [14-marca-rokusec.md](14-marca-rokusec.md) | diseño / identidad: fundamento de la marca, paleta, temas, login por organización, Carbon, guía de uso (B-5) | open |
+| [15-sesiones-de-usabilidad.md](15-sesiones-de-usabilidad.md) | capítulo 3: protocolo de sesiones de usabilidad, tareas, SUS, plantilla de resultados (sesiones pendientes) | open |

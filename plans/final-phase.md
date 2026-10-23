@@ -38,7 +38,7 @@ everything else can run in parallel.
       mark (`rba-demo-banking/web/static/brand/`).
 - [x] **B-4** Kaze Labs identity: warm off-white, ink and coral, Manrope, a three-stroke
       wind mark (*kaze*).
-- [ ] **B-5** Brand rationale + short guide for the informe (Spanish).
+- [x] **B-5** Brand rationale + short guide for the informe (Spanish): `informe_updates/14-marca-rokusec.md`.
 
 ### T: Tenancy and policy (the core code change)
 
@@ -169,7 +169,8 @@ everything else can run in parallel.
       and a k3d run of the ADR-0044 decision path.
 - [x] Load test against AWS; p95 against RNF-07: 24 ms at ~165 decisions/s
       (finding 2026-10-23-cloud-decision-latency).
-- [ ] Usability sessions with real users on the cloud deployment.
+- [~] Usability sessions with real users on the cloud deployment: protocol and
+      results template in `informe_updates/15-sesiones-de-usabilidad.md`; sessions to run.
 
 ## Order of work
 
