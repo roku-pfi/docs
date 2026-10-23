@@ -138,7 +138,7 @@ everything else can run in parallel.
       ADR-0042 (finding 2026-10-23); model replaced by the hybrid freeman-0.4.0
       (ADR-0043). Re-run on the new images pending (k3d / AWS: run
       `python -m rba_profile_service.rebuild` once on an existing database).
-- [ ] **D-4** Rewrite `defense-runbook.html` around the new script.
+- [x] **D-4** Rewrite `defense-runbook.html` around the new script (AWS, 12 scenes, 2026-10-23).
 
 ### Found on the first cloud session (2026-10-22)
 
