@@ -4,7 +4,21 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-23 (latest) — freeman-0.4.0: Freeman's hierarchy for the network
+## 2026-10-23 (latest) — first cloud e2e: RNF-07 met by taking Postgres off the decision path
+
+EKS 1.33 had left standard support (6× control-plane rate), so the runtime
+stack moved to 1.35. First full e2e on AWS. Fixed on the way: a test that lost
+the login answer to navigation over CloudFront; simulated logins teaching the
+profile (the trip to Japan made the Tokyo attack look familiar); Roku Bank's
+CRITICAL band now steps up (D-2); the engine-down scene restored a fixed
+replica count. The load scene missed RNF-07 by far (p95 0.5–2.5 s). A per-step
+histogram put the whole tail on the Postgres save; pool sizing, one
+transaction and async commit were not enough. ADR-0044: the PDP decides and
+records on Valkey only (journal key + stream); the event-publisher fills the
+decisions read model and RabbitMQ. Result: p95 23 ms at ~165 decisions/s,
+0 errors. Finding: 2026-10-23-cloud-decision-latency.
+
+## 2026-10-23 — freeman-0.4.0: Freeman's hierarchy for the network
 
 Read Freeman et al. (NDSS 2016) and the dataset's own paper (Wiefling et al.,
 ACM TOPS 2022). The paper scores IP and user agent as nested hierarchies; we had
