@@ -4,7 +4,27 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-23 (latest) — First AWS rehearsal: the model scored every login LOW; fixed
+## 2026-10-23 (latest) — freeman-0.4.0: Freeman's hierarchy for the network
+
+Read Freeman et al. (NDSS 2016) and the dataset's own paper (Wiefling et al.,
+ACM TOPS 2022). The paper scores IP and user agent as nested hierarchies; we had
+seven flat features, so a new network counted three times. Implemented as
+published, the paper's model caught 0/38 takeovers at 1% FPR: it smooths a user
+within their own counts, so a value new to the user and rare in the population
+looks safe. Rooting the user's hierarchy at the population fixed it (22/38).
+Against Wiefling's simulated attackers (naive, VPN, targeted) it led in the
+5–30% operating range. A projection of the cloud demo then showed the rooted
+agent hierarchy rating a common Windows + Chrome attacker LOW: the dataset
+pseudonymizes values, so browser popularity by name is meaningless. Adopted the
+hybrid (ADR-0043): rooted network hierarchy, flat device/OS/browser, no hour.
+ROC-AUC 0.807 → 0.889; friction 35.9% → 21.4% at 31/38 stopped; returning users
+2–3%. Online equals offline exactly (tests). Profiles rebuild from
+profile_history. Also fixed `aws-down`, which never uninstalled the Kaze release
+and so left the ALB (and the stack) up.
+
+---
+
+## 2026-10-23 — First AWS rehearsal: the model scored every login LOW; fixed
 
 `make aws-up` with the attacker Lambdas (I-6 applied; two cloud-only bugs in
 `aws-up.sh` and the demo ingress template fixed on the way). The presenter

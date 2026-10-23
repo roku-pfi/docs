@@ -134,7 +134,9 @@ everything else can run in parallel.
       finding + JSON → the console's Efectividad page.
 - [~] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
       First run 2026-10-23 found the model scoring every login LOW; fixed in
-      ADR-0042 (finding 2026-10-23). Re-run on the new images pending.
+      ADR-0042 (finding 2026-10-23); model replaced by the hybrid freeman-0.4.0
+      (ADR-0043). Re-run on the new images pending (k3d / AWS: run
+      `python -m rba_profile_service.rebuild` once on an existing database).
 - [ ] **D-4** Rewrite `defense-runbook.html` around the new script.
 
 ### Found on the first cloud session (2026-10-22)

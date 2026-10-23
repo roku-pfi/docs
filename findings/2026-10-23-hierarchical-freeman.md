@@ -108,11 +108,41 @@ values new to the user, the rooted hierarchy rates those common in the
 population (shared attack IPs, popular user agents) as more attacker-like, and
 that is what separates the targeted attacker in the victim's own country.
 
-**Adopted: the rooted hierarchy with uniform λ** (freeman-0.4.0, ADR-0043).
-Consequence for the demo: an attacker with a rare user agent (the Tokyo Lambda's
-desktop Linux) looks less like the population's attacker than one with a
-popular agent; Wiefling's VPN attacker and real credential-stuffing tools use
-popular agents, so the Lambda does too.
+## What was adopted: the hybrid (freeman-0.4.0, ADR-0043)
+
+Projected on the cloud's situation (Martín alone in a fresh deployment), the
+fully rooted model rated a common Windows + Chrome attacker from Tokyo LOW
+(0.07 → 0.50 over 1 → 15 logins): the agent hierarchy compares a new browser
+with its popularity in the population, and **this dataset pseudonymizes values
+per unique value** (Zenodo record; Wiefling et al. Sect. 11), so the training
+data's "Windows" is a placeholder with 31 logins and popularity by name has no
+real-world meaning. The network part does not have that problem in the demo (a
+new country costs the full log 4 whatever the population says).
+
+**Hybrid: rooted hierarchy for the network, flat Freeman for device / OS /
+browser.**
+
+| | ROC-AUC | recall@1%FPR | TPR@10%FPR |
+|---|---|---|---|
+| flat freeman-0.3.0 | 0.807 | 0.132 | 0.474 |
+| rooted hierarchy (both) | 0.887 | 0.579 | 0.579 |
+| **hybrid (freeman-0.4.0)** | **0.889** | **0.526** | **0.526** |
+
+Attackers caught at 5% / 10% / 20% / 30% challenged, hybrid: naive random
+0.99 / 1.00 / 1.00 / 1.00; resourced 0.96 / 0.99 / 1.00 / 1.00; VPN
+0.68 / 0.81 / 0.92 / 0.96; targeted 0.40 / 0.66 / 0.80 / 0.86; takeovers
+0.84 / 0.84 / 0.92 / 0.92.
+
+Policy comparison (starter defaults, ADR-0040), freeman-0.3.0 → 0.4.0:
+legitimate friction **35.9% → 21.4%**, takeovers stopped 32/38 → 31/38,
+legitimate blocks 0.02%; friction for users with 1–2 / 3–9 / 10+ prior logins
+25.9 / 21.3 / 15.5% → **2.7 / 2.1 / 3.0%**. First logins stay challenged.
+
+Demo projection (Roku Bank bands), Martín with 1 / 3 / 7 / 15 prior logins:
+Tokyo with Windows + Chrome **0.76 / 0.75 / 0.78 / 0.85 (CRITICAL)**; Tokyo
+spoofing his macOS browser 0.64 / 0.47 / 0.37 / 0.35; usual login ≤ 0.02;
+new wifi ≤ 0.03; his phone 0.03 → 0.94 as history grows. The demo attackers now
+claim Windows + Chrome, as real kits and Wiefling's VPN attacker do.
 
 ## Limits
 
