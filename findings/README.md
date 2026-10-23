@@ -23,6 +23,7 @@ Wiefling is a privacy-preserving synthesis of real SSO logins
 | [2026-08-20-step5-rerun.md](2026-08-20-step5-rerun.md) | **Citable model numbers.** Full regenerated Step 5 table matching the deployed artifacts; why the two depth tables differ | `python -m ml.train --model all` |
 | [2026-10-22-e2e-scenario-map.md](2026-10-22-e2e-scenario-map.md) | Every scene of the scenario map end to end on k3d; publisher lag and policy-cache findings | `make e2e` in `rba-infra` |
 | [2026-10-23-freeman-in-the-cloud.md](2026-10-23-freeman-in-the-cloud.md) | Why the cloud scored every login LOW (poisoning, browser/OS skew, population shift) and the measured fix | `python -m ml.population_shift` in `rba-ml-training` |
+| [2026-10-23-hierarchical-freeman.md](2026-10-23-hierarchical-freeman.md) | The paper's hierarchical smoothing, why it fails as published on rare attacker IPs, and the global-rooted variant (recall@1%FPR 0.13 → 0.58) | `python -m ml.hierarchical_eval` in `rba-ml-training` |
 
 > **Which numbers to cite:** `2026-08-20-step5-rerun.md`. It carries the full
 > regenerated table and matches the operating point baked into the deployed
