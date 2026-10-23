@@ -133,6 +133,8 @@ everything else can run in parallel.
       password-only / always-MFA / adaptive, with confidence intervals →
       finding + JSON → the console's Efectividad page.
 - [~] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
+      First run 2026-10-23 found the model scoring every login LOW; fixed in
+      ADR-0042 (finding 2026-10-23). Re-run on the new images pending.
 - [ ] **D-4** Rewrite `defense-runbook.html` around the new script.
 
 ### Found on the first cloud session (2026-10-22)

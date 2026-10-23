@@ -53,6 +53,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0039](0039-public-client-ids.md) | Login URLs name applications by an opaque public client ID (`rk_…`); the internal application ID never reaches the browser | Accepted |
 | [0040](0040-scores-step-up-rules-block.md) | A risk score steps up and never blocks; only rules block. Default bands 0.40 / 0.60 / 0.80 (from D-2) | Accepted (amends 0034) |
 | [0041](0041-stage-machinery-wiring.md) | Attackers via function URLs + shared secret; presenter panel inside the bank; load hits the PDP; reset touches only profiles; no TEST-NET seed in the cloud | Accepted |
+| [0042](0042-learn-from-completed-logins-and-deployment-population.md) | Profile learns only completed logins (`/risk/confirm` after a passed step-up); browser/OS scored as families; Freeman population learned by the deployment (κ = 100); freeman-0.3.0, logreg-0.2.0 | Accepted |
 
 ## Template
 

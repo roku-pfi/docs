@@ -4,7 +4,36 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-22 (latest) — End-to-end tests of the scenario map, and what they found
+## 2026-10-23 (latest) — First AWS rehearsal: the model scored every login LOW; fixed
+
+`make aws-up` with the attacker Lambdas (I-6 applied; two cloud-only bugs in
+`aws-up.sh` and the demo ingress template fixed on the way). The presenter
+scenes ended correctly, but Diego's console showed score 0.00 for the Tokyo
+attacker and "blocked, LOW" for the stuffing scenes. The decision store showed
+three defects (finding 2026-10-23, ADR-0042):
+
+- **Profile poisoning**: a login that stopped at the passkey was learned, so one
+  Tokyo attempt made Japan familiar. Now the profile learns an ALLOW at once and
+  a step-up only when passed (`POST /risk/confirm` → `rba.login.confirmed.v1`,
+  contracts 0.15.0); BLOCK never.
+- **Browser/OS train/serve skew**: `Chrome` vs `Chrome 73.0.3654`; every live
+  value was out of vocabulary (−11.7 per familiar signal). Both sides now score
+  families (`rba_features.canonical`); offline Freeman ROC-AUC 0.779 → 0.807,
+  recall@1%FPR 0.105 → 0.132.
+- **Population shift**: `p_global` came from a 2020 Norwegian service. The
+  deployment now learns its own population with the training data as a prior
+  (κ = 100); under a simulated shift it removes a ~14-nat offset that silenced
+  fixed bands.
+
+freeman-0.3.0 and logreg-0.2.0 replace the old artifacts. The console marks a
+verdict set by a rule ("Por regla"). The e2e Tokyo scene now requires HIGH or
+CRITICAL from the score itself, and a new scene checks an abandoned step-up
+teaches nothing. My earlier e2e assertion (rule *or* score) was what let the
+skew through.
+
+---
+
+## 2026-10-22 — End-to-end tests of the scenario map, and what they found
 
 `rba-infra/e2e`: every row of ADR-0035's scenario map as a Playwright test, in the
 order of the live script, against the running cluster (`make e2e`). Real browsers
