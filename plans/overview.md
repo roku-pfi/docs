@@ -71,12 +71,8 @@ One page to decide what to work on next. Details live in `status.md`,
 ## 5. Suggested order
 
 1. **Demo** (tomorrow): follow `defense-runbook.html`.
-2. **Informe, highest points first:**
-   1. functional diagrams, user flows, methodology;
-   2. business model and financial analysis;
-   3. apply notes 01–16;
-   4. proofreading.
-3. **Usability sessions** as soon as people are available; they feed two
-   rubric items.
-4. **System:** one `aws-up` + e2e to validate today's undeployed work; the rest
-   only if time remains.
+2. **Testing chapter**: system tests now (e2e, load, unit/CI); user tests as soon
+   as there are people.
+3. **Apply notes 01–16** to the E90, then proofread.
+4. **System, if time allows:** one `aws-up` + e2e to validate today's
+   undeployed work, then the device identifier and/or LDAP (~3–4 days each).
