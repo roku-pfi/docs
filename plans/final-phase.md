@@ -98,7 +98,7 @@ everything else can run in parallel.
       service repo; deploy step when a cluster is up.
 - [x] **I-6** Attacker Lambdas in `ap-northeast-1`, `eu-central-1`, `sa-east-1`
       (`rba-infra/attacker/`, `tofu/foundation/attackers.tf`; function URLs +
-      shared secret, ADR-0041). Written and tested against a stub; not yet applied.
+      shared secret, ADR-0041). Applied 2026-10-23; a São Paulo call reached the IdP from 15.228.252.194.
 
 ### U: Interfaces
 
@@ -132,7 +132,7 @@ everything else can run in parallel.
 - [x] **D-2** Policy comparison (finding 2026-10-22, ADR-0040, console Efectividad page): offline replay of the held-out split under
       password-only / always-MFA / adaptive, with confidence intervals →
       finding + JSON → the console's Efectividad page.
-- [ ] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
+- [~] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
 - [ ] **D-4** Rewrite `defense-runbook.html` around the new script.
 
 ### Found on the first cloud session (2026-10-22)

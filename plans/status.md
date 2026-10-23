@@ -61,7 +61,7 @@ console and login screens (U-1…U-3).
 | B — Brand | B-1…B-5 | B-1…B-4 |
 | T — Tenancy + policy | T-1…T-7 | all |
 | C — Cloud-readiness in code | C-1…C-5 | all |
-| I — AWS infrastructure | I-1…I-6 | I-1…I-4, I-6 (written, not applied) |
+| I — AWS infrastructure | I-1…I-6 | I-1…I-4, I-6 |
 | U — Interfaces | U-1…U-5 | all |
 | D — Demos | D-1…D-4 | D-1, D-2 |
 
