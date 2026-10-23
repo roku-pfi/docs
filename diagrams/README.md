@@ -1,7 +1,9 @@
 # Diagrams
 
-Six figures: the login flow in two panels, the deployed architecture, and
-three relational schemas (IdP directory, IdP session, decision/profile/audit).
+Seven figures: the login flow in two panels, the deployed architecture on AWS,
+three relational schemas (IdP directory, IdP session, decision/profile/audit)
+and the key layout in Valkey. Redrawn 2026-10-23 for the system as it is now
+(multi-tenancy, the Valkey decision path, the lockout guard, AWS).
 Nothing here is drawn by hand — every figure is laid out by a script in
 [`design/diagrams/`](../../design/diagrams), so keeping them true to the system
 costs a re-run rather than an afternoon in a vector editor.
@@ -46,7 +48,7 @@ zoom, from a ~110 KB file.
 The caveat is Word and Google Docs. They render SVG through their own engines,
 which do not reliably honour an embedded `@font-face`. If type in a placed SVG
 does not match the corresponding PNG, that is what happened — use the PNG. The
-PNGs are exported at 2×, so `01-login-sequence.png` is 2800 × 5302; placed at any
+PNGs are exported at 2×, so `01-login-sequence.png` is 2800 × 5720; placed at any
 size that fits an A4 page it is well past 300 dpi.
 
 ## The PlantUML copies
@@ -58,6 +60,9 @@ the UML source rather than a picture:
 plantuml -tsvg docs/diagrams/puml/01-login-sequence.puml
 ```
 
+**Out of date since 2026-10-23.** The `.puml` files still describe the August
+system (k3d, outbox, no tenants); only the SVG/PNG were redrawn. Use the PNGs.
+
 Two things to know before using one. They are **hand-written equivalents, not
 generated from the Python** — `build.py` only copies them across, so a change to
 a figure has to be made in both places or they drift apart. And they lay out
@@ -66,27 +71,27 @@ looser and less legible than the drawn version. **The figures in the informe
 should be the PNGs.** The `.puml` files are there so that "can we see the UML
 source?" has an answer.
 
-The step numbers do match: `01` runs 1 → 32 and `02` picks up at 33, the same as
-the drawings, and `autonumber` keeps them in step as messages are added.
+In the drawings `01` runs 1 → 37 and `02` picks up at 38.
 
 ## The figures
 
 | File | What it shows | Evidence for |
 |---|---|---|
-| `01-login-sequence` | Figure 1a — password, application access, the risk decision, and the three ways the IdP enforces it | RF-01, RF-04, RF-05, RF-09, RF-10, RF-12, RF-14, RF-18, RNF-03, RNF-08 |
+| `01-login-sequence` | Figure 1a — password, application access, the tenant's policy, the risk decision on Valkey, and the three ways the IdP enforces it | RF-01, RF-04, RF-05, RF-09, RF-10, RF-12, RF-14, RF-18, RNF-03, RNF-08 |
 | `02-session-authorization` | Figure 1b — the one-time code becomes a session; permissions are resolved on every request | RF-13, RF-21, HU-10 |
-| `03-architecture` | Figure 2 — what runs in the cluster and what it talks to | the *Arquitectura* / *Tecnologías* sections — no single requirement |
-| `04-schema-idp-dir` | Figure 3 — relational schema of `rba_idp` (users, groups, roles, permissions, apps) | the *Modelo de datos* section |
-| `05-schema-idp-runtime` | Figure 4 — relational schema of `rba_idp` (sessions, MFA, passkeys, auth codes) | the *Modelo de datos* section |
+| `03-architecture` | Figure 2 — what runs on AWS (CloudFront, ALB, EKS, RDS, Valkey, Lambdas, ECR/CI) and what it talks to | the *Arquitectura* / *Tecnologías* sections — no single requirement |
+| `04-schema-idp-dir` | Figure 3 — relational schema of `rba_idp` (tenants, users, groups, roles, permissions, apps) | the *Modelo de datos* section |
+| `05-schema-idp-runtime` | Figure 4 — relational schema of `rba_idp` (sessions, challenges, passkeys, activation and auth codes) | the *Modelo de datos* section |
 | `06-schema-ops` | Figure 5 — relational schemas of `rba_decision`, `rba_profile`, `rba_audit` | the *Modelo de datos* section |
+| `07-valkey-keys` | Figure 6 — keys in Valkey: profile, population, decision journal, failed-login counters | the *Perfil en Redis* section |
 
 The two sequence panels are one flow. Steps are numbered continuously — 1a runs
-1 → 32, 1b picks up at 33 — so prose can say "step 19" and mean exactly one
+1 → 37, 1b picks up at 38 — so prose can say "step 19" and mean exactly one
 message.
 
 ## A note on size
 
-Figure 1a is 32 steps tall, and on an A4 text block it is limited by its height
+Figure 1a is 37 steps tall, and on an A4 text block it is limited by its height
 rather than its width: it places about 130 mm wide, which puts the message
 labels near 3.5 pt. Comfortable on screen at any zoom; small on paper.
 
@@ -107,13 +112,13 @@ figure does not exist yet; it is a small change to `figures.py` if you want it.
 Both sequence panels follow the same conventions:
 
 - **Solid arrow, filled head** — a call. **Dashed arrow, open head** — its reply.
-- **Indigo** marks the risk decision itself: the call to the PDP and its answer.
+- **Blue** (RokuSec blue-600) marks the risk decision itself: the call to the PDP and its answer.
 - **Green / plum** mark terminal outcomes — a session created, or an attempt
   refused. Severity never uses red or orange anywhere in this project; it
   escalates by moving away from green, so the ramp survives greyscale printing
   and red-green colour vision deficiency.
 - **A loop on a lifeline** is work a service does inside itself. When it carries
-  a small cylinder chip (`rba_idp`, `redis`, `rba_decision`), that work touches
+  a small cylinder chip (`rba_idp`, `valkey`), that work touches
   the named store. Datastores are deliberately not lifelines: a round trip to
   Postgres costs two rows and says nothing the reader had not assumed. The
   topology is in figure 2 instead.
@@ -127,10 +132,9 @@ sequences:
   every table and is omitted from the drawing.
 - **Solid arrow, filled head** — a foreign key, pointing at the referenced
   table. **Dashed arrow** — an identifier stored without a `FOREIGN KEY`
-  constraint (`auth_codes.user_id`, `outbox.event_id`, `application_id` on
-  sessions). No crow's-foot marks.
-- Redis is not drawn: it is a JSON document, not a schema. Its fields are in
-  the informe's field table, not in a figure.
+  constraint (`auth_codes.user_id`, `event_id` across bases, `application_id`
+  on sessions). No crow's-foot marks.
+- Valkey is drawn separately (figure 6): keys, not tables.
 
 ## What is drawn ahead of the code
 

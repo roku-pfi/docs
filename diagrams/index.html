@@ -51,24 +51,38 @@
       <a class="shot" href="svg/02-session-authorization.svg"><img src="svg/02-session-authorization.svg" alt="Figura 1b — Entrega de la sesión y autorización"></a>
     </figure>
     <figure>
-      <figcaption><h2>Figura 2 — Arquitectura desplegada</h2><p>Componentes. Qué corre en el clúster k3d y con qué habla.</p>
+      <figcaption><h2>Figura 2 — Arquitectura desplegada</h2><p>Componentes. Qué corre en AWS y con qué habla.</p>
         <p class="links"><a href="svg/03-architecture.svg">SVG</a> ·
            <a href="png/03-architecture.png">PNG @2x</a> ·
            <a href="puml/03-architecture.puml">PlantUML</a></p></figcaption>
       <a class="shot" href="svg/03-architecture.svg"><img src="svg/03-architecture.svg" alt="Figura 2 — Arquitectura desplegada"></a>
     </figure>
     <figure>
-      <figcaption><h2>Figura 3 — Almacenes</h2><p>Un PostgreSQL, cuatro bases, más el documento de Redis. Qué vive en cada uno.</p>
-        <p class="links"><a href="svg/04-datastores.svg">SVG</a> ·
-           <a href="png/04-datastores.png">PNG @2x</a> ·
-           <a href="puml/04-datastores.puml">PlantUML</a></p></figcaption>
-      <a class="shot" href="svg/04-datastores.svg"><img src="svg/04-datastores.svg" alt="Figura 3 — Almacenes"></a>
+      <figcaption><h2>Figura 3 — Esquema relacional de rba_idp (directorio)</h2><p>Tablas. Organizaciones, usuarios, grupos, roles, permisos y aplicaciones.</p>
+        <p class="links"><a href="svg/04-schema-idp-dir.svg">SVG</a> ·
+           <a href="png/04-schema-idp-dir.png">PNG @2x</a> ·
+           <a href="puml/04-schema-idp-dir.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/04-schema-idp-dir.svg"><img src="svg/04-schema-idp-dir.svg" alt="Figura 3 — Esquema relacional de rba_idp (directorio)"></a>
     </figure>
     <figure>
-      <figcaption><h2>Figura 4 — Esquema relacional de rba_idp</h2><p>Entidad-relación. Cadena usuario → grupo → rol → permiso, más sesión y factores.</p>
-        <p class="links"><a href="svg/05-idp-er.svg">SVG</a> ·
-           <a href="png/05-idp-er.png">PNG @2x</a> ·
-           <a href="puml/05-idp-er.puml">PlantUML</a></p></figcaption>
-      <a class="shot" href="svg/05-idp-er.svg"><img src="svg/05-idp-er.svg" alt="Figura 4 — Esquema relacional de rba_idp"></a>
+      <figcaption><h2>Figura 4 — Esquema relacional de rba_idp (sesión)</h2><p>Tablas. Sesiones, desafíos, passkeys, códigos de activación y de callback.</p>
+        <p class="links"><a href="svg/05-schema-idp-runtime.svg">SVG</a> ·
+           <a href="png/05-schema-idp-runtime.png">PNG @2x</a> ·
+           <a href="puml/05-schema-idp-runtime.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/05-schema-idp-runtime.svg"><img src="svg/05-schema-idp-runtime.svg" alt="Figura 4 — Esquema relacional de rba_idp (sesión)"></a>
+    </figure>
+    <figure>
+      <figcaption><h2>Figura 5 — Esquemas de rba_decision, rba_profile y rba_audit</h2><p>Tablas. Las tres bases que se llenan detrás de cada decisión.</p>
+        <p class="links"><a href="svg/06-schema-ops.svg">SVG</a> ·
+           <a href="png/06-schema-ops.png">PNG @2x</a> ·
+           <a href="puml/06-schema-ops.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/06-schema-ops.svg"><img src="svg/06-schema-ops.svg" alt="Figura 5 — Esquemas de rba_decision, rba_profile y rba_audit"></a>
+    </figure>
+    <figure>
+      <figcaption><h2>Figura 6 — Claves en Valkey</h2><p>Claves. Perfil, población, diario de decisiones y contadores de fallos: lo que el login lee y escribe.</p>
+        <p class="links"><a href="svg/07-valkey-keys.svg">SVG</a> ·
+           <a href="png/07-valkey-keys.png">PNG @2x</a> ·
+           <a href="puml/07-valkey-keys.puml">PlantUML</a></p></figcaption>
+      <a class="shot" href="svg/07-valkey-keys.svg"><img src="svg/07-valkey-keys.svg" alt="Figura 6 — Claves en Valkey"></a>
     </figure>
 </html>
