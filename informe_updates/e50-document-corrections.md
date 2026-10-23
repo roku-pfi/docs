@@ -179,9 +179,9 @@ No son problemas de redacción y no se resuelven reescribiendo:
 |---|---|---|
 | Roles y permisos | RF-13, RF-21, §1.2 | **Resuelto en código (ADR-0029).** Se implementó `usuario → grupo → rol → permiso(recurso, operación)`, con roles acotados a una aplicación. La consola de administración gestiona roles y permisos, `GET /session` devuelve los permisos efectivos, y el banco de demostración exige `transfer:create` para transferir. `is_admin` dejó de ser entrada de autorización. **Nada que corregir en el documento: ahora el texto es cierto.** |
 | Identificador de dispositivo | RF-02 | Se recolecta la *clase* de dispositivo (device_type / os / browser del User-Agent), no un identificador estable. «Dispositivo conocido» significa hoy «tipo de dispositivo conocido». |
-| Retardo progresivo | RF-07 | Las bandas de fallos escalan la acción, pero nada se retarda: no hay backoff ni `Retry-After`. |
-| Alarmas | RF-17 | No hay reglas de alerta. Prometheus/Grafana ya están desplegados y el PDP ya exporta `rba_decisions_total` — es configuración, no código. |
-| Métricas de autenticación | RF-20, RNF-04 | El PDP exporta puntaje y decisión; **el IdP no expone métricas** y el resultado del desafío MFA no se persiste en ningún lado. |
+| Retardo progresivo | RF-07 | **Resuelto de otra forma (ADR-0045).** No hay retardo por intento: se bloquea la IP de origen (10 fallos en 15 min → 30 min), la cuenta atacada pide passkey y solo los errores propios del dueño la pausan 15 min. Un retardo sostenido por intento retiene recursos del servidor y sería en sí mismo una palanca de denegación de servicio; además frenaría al atacante antes de que su IP llegue al umbral de bloqueo. Reescribir RF-07 en esos términos (ver nota 13). |
+| Alarmas | RF-17 | **Resuelto (nota 16).** Ocho reglas de Prometheus (riesgo y plataforma); se ven en Grafana y, filtradas por organización, en el Resumen de la consola. |
+| Métricas de autenticación | RF-20, RNF-04 | **Resuelto (nota 16).** El IdP exporta inicios por resultado, verificaciones por resultado y caídas del motor; el registro de cada decisión guarda si la passkey se completó (`step_up_passed_at`). |
 | MFA permanente | RF-08 | No hay interruptor de MFA siempre, ni por usuario ni por aplicación. Viene de la encuesta. |
 | Modo de sólo monitoreo | RF-09, RNF-08 | **Resuelto (ADR-0028).** `monitor_only` en el bundle de política, por aplicación, editable con `PUT /policy`. |
 | Degradación a MFA | RF-10, RNF-03 | **Resuelto (ADR-0028).** El IdP deja de devolver 503 y exige un segundo factor cuando el PDP no responde. |

@@ -8,6 +8,9 @@
   next login needs the passkey, never a block; only the owner's own failures
   from a familiar network (5 in 15 min) pause the account for 15 min. All
   per-tenant policy values.
+- **RF-07 (retardo progresivo) se cubre así**, sin retardo por intento: un
+  retardo sostenido retiene un hilo del servidor por intento (palanca de DoS)
+  y frenaría al atacante antes de que su IP llegue al umbral de bloqueo.
 - **Review:** the decision-policy chapter (the failed-login rules and their
   table of actions), RF/threat sections on credential stuffing and lockout
   abuse (cite OWASP / NIST SP 800-63B throttling), the demo script (sustained

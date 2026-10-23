@@ -94,8 +94,9 @@ everything else can run in parallel.
       Secrets from Terraform. *(after I-2, C-1)*
 - [x] **I-4** `make aws-up` / `make aws-down` verified end to end 2026-10-22, including re-runs and a real phone. `make up` / `make down`, including re-pointing CloudFront to the
       new ALB; first end-to-end login over HTTPS with a passkey.
-- [ ] **I-5** GitHub Actions: reusable test → build → push workflow in every
-      service repo; deploy step when a cluster is up.
+- [x] **I-5** GitHub Actions: reusable test → build → push workflow in every
+      service repo (rba-infra/.github/workflows/service.yml); deploy stays
+      `make aws-up` (per-session stack).
 - [x] **I-6** Attacker Lambdas in `ap-northeast-1`, `eu-central-1`, `sa-east-1`
       (`rba-infra/attacker/`, `tofu/foundation/attackers.tf`; function URLs +
       shared secret, ADR-0041). Applied 2026-10-23; a São Paulo call reached the IdP from 15.228.252.194.
@@ -153,12 +154,13 @@ everything else can run in parallel.
 
 ### Parked (come back after the main work)
 
-- [ ] Alarms on risk events (RF-16).
-- [ ] IdP metrics and MFA outcome in the record (RF-11 / RF-18).
+- [x] Alarms on risk events (RF-16): Prometheus rules, Grafana table, console Resumen (note 16).
+- [x] IdP metrics and MFA outcome in the record (RF-11 / RF-18): `step_up_passed_at`, IdP metrics port (note 16).
 - [ ] Stable device identifier (RF-02 device part). Until then, "new device"
       relies on browser / OS / ASN familiarity.
-- [~] Progressive delay on repeated failures (RF-07): ADR-0045 blocks the
-      source IP and pauses the owner's account; no per-attempt delay yet.
+- [x] Progressive delay on repeated failures (RF-07): answered by ADR-0045
+      (source IP block, step-up, owner cooldown); no per-attempt delay, by
+      decision (2026-10-23).
 - [ ] Real impossible travel from abroad, as an asynchronous demo.
 - [ ] Per-tenant model; custom domains per tenant.
 
