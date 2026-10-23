@@ -71,6 +71,49 @@ By history depth, at each model's own 1%-FPR threshold:
 The "logins-to-protection" ceiling of the calibration finding was a property of
 the flat model: a new country now weighs about +5 from the second login.
 
+## Against Wiefling et al.'s attacker models (the dataset's own paper)
+
+The dataset (Wiefling, Jørgensen, Thunem, Lo Iacono, Zenodo 6782156; ACM TOPS
+2022) was synthesized to preserve Freeman's results with exactly the paper's
+hierarchies (IP: address, ASN, country; UA: string, OS, browser, device), with
+IP ⊂ ASN ⊂ country by construction. Its paper evaluates RBA against simulated
+attackers, all with the password: naive (random or most frequent attack IPs and
+UAs), VPN (attack IP in the victim's country, popular UA), targeted (frequent
+attack IP in the victim's country, the victim's UA). `python -m ml.attacker_eval`
+replays 4,000 probes per type against each victim's state at a test-period
+login (scored, never learned), using the dataset's `is_attack_ip` attempts.
+
+Attackers caught at 5% / 10% / 20% / 30% of legitimate logins challenged:
+
+| attacker | flat freeman-0.3.0 | rooted hierarchy, uniform λ | chain rule, β per level fitted |
+|---|---|---|---|
+| naive (random) | 0.65 / 0.80 / 0.95 / 0.99 | 0.97 / 0.99 / 0.99 / 0.99 | 0.99 / 0.99 / 1.00 / 1.00 |
+| naive (resourced) | 0.52 / 0.66 / 0.80 / 0.88 | **0.95 / 0.98 / 0.99 / 1.00** | 0.86 / 0.91 / 0.97 / 0.99 |
+| VPN | 0.29 / 0.42 / 0.62 / 0.76 | **0.72 / 0.83 / 0.91 / 0.95** | 0.51 / 0.70 / 0.88 / 0.95 |
+| targeted | 0.05 / 0.11 / 0.25 / 0.47 | **0.52 / 0.68 / 0.80 / 0.86** | 0.06 / 0.18 / 0.49 / 0.73 |
+| labelled takeovers | 0.32 / 0.42 / 0.79 / 0.84 | **0.87 / 0.87 / 0.97 / 0.97** | 0.58 / 0.61 / 0.82 / 0.82 |
+
+Adding `hour` lowers every row (it is dropped from the score; `hour_seen_before`
+stays for the supervised second opinion). λ fitted by likelihood is never
+better than uniform.
+
+**Chain-rule Freeman** (p(country)·p(ASN|country)·p(IP|ASN), flat Freeman's
+Dirichlet at each level, β per level fitted on held-out legitimate logins:
+country 0.046, ASN 0.83, IP 1.78; device 1.0, OS 0.38, browser 0.46) counts each
+novelty once and makes it independent of the new value's rarity. It wins only
+in the extreme tail (blocking 99% of targeted attackers: 44% of legitimate
+logins challenged, against 85% for the rooted hierarchy). Rejected: making a
+novelty independent of rarity throws away Freeman's attacker model. Among
+values new to the user, the rooted hierarchy rates those common in the
+population (shared attack IPs, popular user agents) as more attacker-like, and
+that is what separates the targeted attacker in the victim's own country.
+
+**Adopted: the rooted hierarchy with uniform λ** (freeman-0.4.0, ADR-0043).
+Consequence for the demo: an attacker with a rare user agent (the Tokyo Lambda's
+desktop Linux) looks less like the population's attacker than one with a
+popular agent; Wiefling's VPN attacker and real credential-stuffing tools use
+popular agents, so the Lambda does too.
+
 ## Limits
 
 - 38 positives; the interval above is wide even though it excludes zero.
@@ -80,6 +123,9 @@ the flat model: a new country now weighs about +5 from the second login.
   studies (Sect. V-E) and are not in these labels.
 - λ fitted by likelihood optimises density estimation, not detection; uniform λ
   ranked better. Choosing between them is a modelling decision, not settled here.
-- Offline only. Online it needs per-user prefix counts (country, country+ASN,
-  …) and distinct-leaf counts, the deployment-population blend of ADR-0042 at
-  each level, and new score bands (the log-risk scale changes).
+- With uniform λ, each hierarchy contributes at most log 4 (+1.39), so the
+  score's range is narrower than flat Freeman's; bands are recalibrated on the
+  policy comparison, not carried over.
+- The simulated attackers reuse the dataset's attack IPs, which are frequent in
+  the population by construction (the synthesis kept attack IPs as attack IPs);
+  an attacker on a fresh, unique IP gets less from the population term.
