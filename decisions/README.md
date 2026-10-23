@@ -55,6 +55,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0041](0041-stage-machinery-wiring.md) | Attackers via function URLs + shared secret; presenter panel inside the bank; load hits the PDP; reset touches only profiles; no TEST-NET seed in the cloud | Accepted |
 | [0042](0042-learn-from-completed-logins-and-deployment-population.md) | Profile learns only completed logins (`/risk/confirm` after a passed step-up); browser/OS scored as families; Freeman population learned by the deployment (κ = 100); freeman-0.3.0, logreg-0.2.0 | Accepted |
 | [0043](0043-hybrid-freeman.md) | freeman-0.4.0: network as Freeman's hierarchy rooted at the population, flat device/OS/browser; hour out of the score; profile rebuild | Accepted |
+| [0044](0044-decision-path-in-valkey.md) | Decision path touches Valkey only: journal key + stream; publisher fills the Postgres read model; policies refreshed in the background | Accepted |
 
 ## Template
 

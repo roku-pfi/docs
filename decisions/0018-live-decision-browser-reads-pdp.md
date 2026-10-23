@@ -1,6 +1,6 @@
 # ADR-0018: Live decision browser reads the PDP `decisions` table
 
-- Status: Accepted
+- Status: Accepted; amended by [ADR-0044](0044-decision-path-in-valkey.md)
 - Date: 2026-08-15
 - Amends [ADR-0017](0017-admin-console-colocated-on-idp.md) §3 (audit as the
   admin read model). Audit ownership of `rba_audit` is unchanged.

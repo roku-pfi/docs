@@ -1,6 +1,6 @@
 # ADR-0011: Phase 4 async plane — outbox → RabbitMQ → profile/audit
 
-- Status: Accepted
+- Status: Accepted; amended by [ADR-0044](0044-decision-path-in-valkey.md)
 - Date: 2026-08-11
 
 ## Context
