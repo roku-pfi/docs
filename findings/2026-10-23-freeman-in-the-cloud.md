@@ -90,6 +90,29 @@ Simulated with the exported artifact: Martín with 10 logins in a deployment of
 | his phone (new device and ISP) | — | CRITICAL |
 | new wifi in the same city | — | LOW (0.17) |
 
+## Verified on AWS (after the redeploy)
+
+Martín: 7 passkey logins, then the presenter's Tokyo, burst and lockout scenes
+(25 decisions). Every decision was replayed through freeman-0.3.0 offline
+(`rba-decision-service/scripts/replay_decisions.py`, decisions from the audit
+API): **largest difference from production 0.00e+00**, per signal and per
+score. The profile grew 0 → 7 with the confirmed passkey logins and stayed at 7
+through 18 attacker attempts; Japan and AS16509 stayed new (+0.88 each).
+
+Tokyo scored 0.647 (HIGH in Roku Bank's bands, 0.20 / 0.45 / 0.70). Projected
+from the same state:
+
+| Martín's prior logins | Tokyo, Linux UA | Tokyo, his macOS UA | usual login |
+|---|---|---|---|
+| 7 | 0.647 | 0.235 | 0.00003 |
+| 10 | 0.826 | 0.383 | 0.00005 |
+| 15 | 0.946 | 0.636 | 0.0001 |
+| 20 | 0.980 | 0.806 | 0.0003 |
+| 30 | 0.996 | 0.943 | 0.0008 |
+
+A new value adds log((t+β)/β) whatever its rarity (Freeman's formula), so
+protection grows with history: the logins-to-protection ceiling, measured live.
+
 ## Limits
 
 - 38 test positives (16 in the shifted target): recall differences of one or
