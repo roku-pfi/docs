@@ -4,7 +4,18 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-23 (latest) — first cloud e2e: RNF-07 met by taking Postgres off the decision path
+## 2026-10-23 (latest) — failed logins block the attacker's IP, not the account (ADR-0045)
+
+The sustained stuffing scene locked Martín out of his own account: failures
+were counted per account from anywhere, a denial of service any attacker could
+trigger. Now the PDP keeps Valkey counters per source IP (10 in 15 min → IP
+blocked 30 min, right password included), per user from unfamiliar contexts
+(3 → passkey, never a block) and per user from their own network (5 in 15 min
+→ 15 min pause). Thresholds are per-tenant policy (contracts 0.16.0). Cloud
+e2e 13/13: each attacker IP is refused even with the real password, Martín
+passes with his passkey, his own typos pause him; PDP p95 24 ms under load.
+
+## 2026-10-23 — first cloud e2e: RNF-07 met by taking Postgres off the decision path
 
 EKS 1.33 had left standard support (6× control-plane rate), so the runtime
 stack moved to 1.35. First full e2e on AWS. Fixed on the way: a test that lost
