@@ -109,8 +109,8 @@ everything else can run in parallel.
       per event), Política (form, score bar, impact estimate), Usuarios, Grupos,
       Roles, Aplicaciones, Organizaciones (platform operator, branding preview),
       Mi cuenta. *(after T-3, T-5)*
-- [ ] Resumen and the policy estimate read the latest 200 events client-side;
-      a server-side summary endpoint if a tenant ever exceeds that in a week.
+- [~] Resumen reads a server-side summary (`GET /decisions/summary`, 2026-10-23);
+      the policy estimate still reads the latest 200 events client-side.
 - [x] **U-3** Hosted login in three looks, chosen by destination: console →
       RokuSec dark; app with RokuSec's page (Kaze) → RokuSec light; app with its
       own (Roku Bank) → tenant layout and colours + "Protegido por RokuSec".
