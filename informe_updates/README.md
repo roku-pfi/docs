@@ -17,3 +17,4 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [08-brand-and-ui.md](08-brand-and-ui.md) | UI / design | open |
 | [09-model-fix-2026-10-23.md](09-model-fix-2026-10-23.md) | model chapter, results, limitations | open |
 | [10-hybrid-freeman.md](10-hybrid-freeman.md) | model chapter, results, limitations, references | open |
+| [11-data-provenance.md](11-data-provenance.md) | data section, limitations, method, AI-assistance note | open |
