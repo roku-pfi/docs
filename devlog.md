@@ -868,7 +868,7 @@ demonstrable. What is thin is the IAM shell: no roles (RF-13/RF-21 —
 alarms, no IdP metrics, no always-MFA switch, no stable device identifier.
 
 Wrote up the document-side corrections separately in
-[`plans/e50-document-corrections.md`](plans/e50-document-corrections.md): four
+[`informe_updates/e50-document-corrections.md`](informe_updates/e50-document-corrections.md): four
 requirements where the implementation is the better answer and the text should
 move to meet it (RF-06 passkeys over TOTP, RF-18 opaque copy over a disclosed
 reason, RF-03 four risk levels, RF-04 `REAUTHENTICATE` over "limitar la tasa"),

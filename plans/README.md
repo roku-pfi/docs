@@ -10,7 +10,7 @@ checklist.
 | [`status.md`](status.md) | **Start here.** Where we are: phase/step checkboxes + current focus. Update whenever a step completes. |
 | [`development_plan.md`](development_plan.md) | Opinionated full plan: architecture, phases (§8), what is in/out of scope. Distinct from the exploratory chat in `../../material_sources/rba_architecture_conversation.md`. |
 | [`defense-runbook.html`](defense-runbook.html) | **The stage document.** Cold machine to live demo: bring-up, five checkpoints, the eight-minute script, the authorization and failure demos, and the traps that have bitten in rehearsal. Open it in a browser. |
-| [`e50-document-corrections.md`](e50-document-corrections.md) | Requirements the code got right and E50 got wrong, plus the internal inconsistencies. Applied by hand to the document, not by code. |
+| [`e50-document-corrections.md`](../informe_updates/e50-document-corrections.md) | Requirements the code got right and E50 got wrong, plus the internal inconsistencies. Applied by hand to the document, not by code. |
 
 Narrative of *what happened this session* goes in [`../devlog.md`](../devlog.md).
 *Why we chose X* goes in [`../decisions/`](../decisions/). *Numbers* go in

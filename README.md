@@ -21,6 +21,7 @@ where we are. Workspace map: [`../README.md`](../README.md).
 | [`diagrams/`](diagrams/) | Login-flow sequence + architecture figures (SVG/PNG, generated) |
 | [`mockups/`](mockups/) | Twelve UI screens for the report (PNG/HTML, generated) |
 | [`findings/`](findings/) | Experiment write-ups with the numbers the thesis will cite |
+| [`informe_updates/`](informe_updates/) | Short notes on where the informe drifted from the code; applied to the informe by hand, never edited from here |
 | [`rules/`](rules/) | Versioned mirror of Cursor agent rules (active copies in `../.cursor/rules/`) |
 | [`AGENTS.md`](AGENTS.md) | Portable orientation for AI coding tools |
 

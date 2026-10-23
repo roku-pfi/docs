@@ -70,7 +70,7 @@ Checkboxes for each stage live in `final-phase.md`.
 **Previous focus (50% delivery):** Phase 8 — report & defense, driven by the **requirements
 audit** against E50 §3.2: 29 requirements, 11 built / 12 partial / 4 not started
 / 2 conflicting with a shipped ADR. Document-side corrections are collected in
-[`e50-document-corrections.md`](e50-document-corrections.md) (not code work).
+[`e50-document-corrections.md`](../informe_updates/e50-document-corrections.md) (not code work).
 RF-09 / RF-10 / RNF-03 / RNF-08 closed in code by
 [ADR-0028](../decisions/0028-degrade-to-step-up-and-monitor-mode.md).
 
