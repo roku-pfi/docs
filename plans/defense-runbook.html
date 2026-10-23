@@ -363,7 +363,7 @@ for o in seed_password_suffix presenter_secret grafana_admin_password; do
     <p><strong>Log in to AWS SSO first.</strong> The engine-down scene and every checkpoint use <code>kubectl</code>, which authenticates through the SSO session. An expired session fails mid-scene: <code>aws sso login --profile rokusec</code> before you start.</p>
     <p><strong>Present from the CloudFront hosts above.</strong> The passkeys are bound to the auth host. They fail from any other name, a local URL or a custom domain.</p>
     <p><strong>Press &ldquo;Limpiar fallos&rdquo; before the run and after each attack scene.</strong> An attacker IP stays blocked for 30 min and Martín's own failures pause him for 15 min; a leftover counter changes the next scene's action.</p>
-    <p><strong>Run the load scene last.</strong> It adds ~16,000 decisions from <code>load-user-*</code>, which push Martín's rows off Diego's Decisiones page.</p>
+    <p><strong>Run the load scene last.</strong> It adds ~16,000 decisions from <code>load-user-*</code>, which push Martín's rows off Diego's Eventos page.</p>
     <p><strong>After engine-down, scale back to 3, not 2.</strong> The autoscaler's minimum on AWS is 3; restoring 2 makes it add a pod during whatever comes next.</p>
   </div>
 
@@ -402,12 +402,15 @@ kubectl --context rokusec -n demo get pods</code></pre>
 
     <div class="check">
       <div class="eyebrow">Checkpoint 4 &mdash; the starting policy</div>
-      <p>Console as Diego &rarr; Política: <strong>Base: passkey siempre &middot; Motor: monitor</strong>, version 2.1.0. If the engine is on Activo from a rehearsal, switch it back to Monitor.</p>
+      <p>Console as Diego &rarr; Política: <strong>Contraseña y passkey siempre &middot; Motor: Monitoreo</strong>, version 2.1.0. If the engine is on Activo from a rehearsal, switch it back to Monitoreo.</p>
     </div>
 
     <div class="check">
       <div class="eyebrow">Checkpoint 5 &mdash; one real login</div>
-      <p>Presenter &rarr; <strong>Limpiar fallos</strong>. Then log in to Roku Bank as Martín from the demo machine: the passkey is asked and he lands on the home. Diego's Decisiones shows it within a second.</p>
+      <p>Presenter &rarr; <strong>Limpiar fallos</strong>. Then log in to Roku Bank as Martín in browser 2: the passkey is asked and he lands on the home. Diego's Eventos shows it within a second.</p>
+      <p><strong>No passkey for Martín in that browser?</strong> Issue a code and enroll at <code>/activate</code> on the auth host:</p>
+<pre><code>kubectl --context rokusec -n rba exec deploy/idp -c idp -- \
+  python -m rba_idp.activation martin@correo.example --tenant roku-bank</code></pre>
     </div>
   </section>
 
@@ -417,91 +420,172 @@ kubectl --context rokusec -n demo get pods</code></pre>
   <section class="phase">
     <div class="phase-head">
       <span class="phase-num">PHASE 2</span>
-      <h2>The script</h2>
-      <span class="phase-time">~20 min</span>
+      <h2>The demo, click by click</h2>
+      <span class="phase-time">~25 min</span>
     </div>
-    <p>Two windows side by side: Martín's browser (light, the bank) and Diego's console (dark). The presenter panel lives in a third tab and is never shown as product.</p>
+
+    <div class="podium">
+      <div class="eyebrow">Set up the screens first (before the audience)</div>
+      <ul>
+        <li><strong>Browser 1 — the operator</strong> (e.g. Chrome): the RokuSec console. Juan and Diego log in here, one after the other.</li>
+        <li><strong>Browser 2 — the customer</strong> (e.g. Safari, or a second Chrome profile): Roku Bank as Martín, and Kaze Labs. Martín's passkey must live in this browser or on the phone you scan with.</li>
+        <li><strong>Browser 2, a hidden tab — the presenter panel.</strong> It must be the same browser as Martín: the impossible-travel link opens Martín's login there. Never show this tab.</li>
+        <li><strong>A terminal</strong> in <code>rba-infra</code>, logged in to SSO, for the engine-down act.</li>
+        <li><strong>Grafana</strong> in a second tab of browser 1, already on <em>Dashboards &rarr; RBA &rarr; RBA PDP</em>.</li>
+      </ul>
+      <p>To log in again as Martín at any point: bank &rarr; <em>Cerrar sesión</em>. If the login page shows &ldquo;Sesión iniciada&rdquo;, press its <em>Cerrar sesión</em> too.</p>
+    </div>
 
     <div class="steps">
 
-      <div class="step"><div class="step-idx">1</div><div class="step-body">
-        <div class="step-title"><h3>Monitor mode</h3><span class="pill mfa">REQUIRE_MFA</span></div>
-        <div class="step-do">Martín logs in to Roku Bank.</div>
-        <p><strong>Martín:</strong> passkey, as every bank login today. <strong>Diego:</strong> the decision shows enforced <em>REQUIRE_MFA</em> (the base policy) and the engine's own verdict <em>ALLOW</em>, low risk. Resumen counts it as a prompt the engine would have saved.</p>
-        <p class="say">The engine watches before it acts: the bank sees what it would decide without changing anything for its customers.</p>
+      <!-- ACT 1 -->
+      <div class="step"><div class="step-idx">A1</div><div class="step-body">
+        <div class="step-title"><h3>Act 1 — The platform, as Juan</h3></div>
+        <ol>
+          <li><strong>Browser 1</strong> &rarr; open the console (<code>&hellip;cloudfront.net/admin</code> on the auth host).</li>
+          <li>Email <code>juan@rokusec.example</code>, password, <em>Continuar</em> &rarr; <em>Usar passkey</em>.</li>
+          <li>Sidebar <em>Plataforma &rarr; Organizaciones</em>: Roku Bank and Kaze Labs, each with its own logo and login style.</li>
+          <li>Top of the sidebar, <em>Organización</em>: open the switcher and show both tenants. Leave it on Roku Bank.</li>
+          <li>Top right &rarr; <em>Mi cuenta &rarr; Cerrar sesión</em>.</li>
+        </ol>
+        <p class="say">RokuSec is a platform: each organization has its own users, policy and login, and only the platform operator sees them all.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">2</div><div class="step-body">
-        <div class="step-title"><h3>Switch to active</h3><span class="pill allow">ALLOW</span></div>
-        <div class="step-do">Diego: Política &rarr; Motor &rarr; Activo &rarr; Guardar. Wait ~6 s, then Martín logs in.</div>
-        <p><strong>Martín:</strong> straight in, no passkey. <strong>Diego:</strong> engine ACTIVE, ALLOW, LOW; the reasons say familiar network, device and browser.</p>
+      <!-- ACT 2 -->
+      <div class="step"><div class="step-idx">A2</div><div class="step-body">
+        <div class="step-title"><h3>Act 2 — Roku Bank watches before it acts</h3><span class="pill mfa">REQUIRE_MFA</span></div>
+        <ol>
+          <li><strong>Browser 1</strong>: log in as <code>diego@rokubank.example</code> (password, <em>Usar passkey</em>). He lands on <em>Resumen</em>.</li>
+          <li><em>Acceso &rarr; Política</em>: point at <strong>Contraseña y passkey siempre</strong> and <strong>Motor: Monitoreo</strong>. That's how the bank works today.</li>
+          <li><strong>Browser 2</strong>: open Roku Bank. The login wears the bank's brand with &ldquo;Protegido por RokuSec&rdquo;.</li>
+          <li><code>martin@correo.example</code>, password, <em>Continuar</em> &rarr; <em>Usar passkey</em> &rarr; the bank's home.</li>
+          <li><strong>Browser 1</strong>: <em>Actividad &rarr; Eventos</em>. Top row, Martín: <strong>Pidió passkey</strong>, and under it <strong>El motor: permitido</strong>.</li>
+          <li>Click the row: the reasons (familiar network, device, browser), the score bar, the login's origin.</li>
+          <li><em>Actividad &rarr; Resumen</em>: the prompts the engine would have saved.</li>
+        </ol>
+        <p class="say">In monitor mode the engine decides and records, but the bank's usual rule still applies. Diego sees what would change before changing anything.</p>
+      </div></div>
+
+      <!-- ACT 3 -->
+      <div class="step"><div class="step-idx">A3</div><div class="step-body">
+        <div class="step-title"><h3>Act 3 — Switch the engine on</h3><span class="pill allow">ALLOW</span></div>
+        <ol>
+          <li><strong>Browser 1</strong>: <em>Política</em> &rarr; Motor: <strong>Activo</strong> &rarr; <em>Guardar</em> &rarr; confirm with <em>Guardar</em>.</li>
+          <li>Count to six (each engine replica picks up the policy within 5 s).</li>
+          <li><strong>Browser 2</strong>: <em>Cerrar sesión</em>, log in again as Martín &rarr; <strong>straight in, no passkey</strong>.</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em> &rarr; the new row: <strong>Permitido</strong>, risk <strong>Bajo</strong>.</li>
+          <li><em>Optional</em> — Martín on his phone, mobile data: the passkey is asked (new network/device). Only if the phone has his passkey.</li>
+        </ol>
         <p class="say">The usual login stops paying for the attacks it is not.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">3</div><div class="step-body">
-        <div class="step-title"><h3>New device or network</h3><span class="pill mfa">REQUIRE_MFA</span></div>
-        <div class="step-do">Martín logs in from the phone on mobile data (only if the phone has its passkey).</div>
-        <p><strong>Martín:</strong> passkey. <strong>Diego:</strong> the network or device is new for him; the score rises and the step-up is asked. Passing it teaches the profile the new context (ADR-0042).</p>
+      <!-- ACT 4 -->
+      <div class="step"><div class="step-idx">A4</div><div class="step-body">
+        <div class="step-title"><h3>Act 4 — A stolen password from Tokyo</h3><span class="pill reauth">REAUTHENTICATE</span></div>
+        <ol>
+          <li><strong>Presenter tab</strong>: <em>Limpiar fallos</em>, then <em>Login desde Tokio &rarr; Lanzar</em>. A Lambda in Tokyo logs in with Martín's real password.</li>
+          <li>The panel shows the attempt stopped at the step-up (<code>REAUTH_REQUIRED</code>).</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em> &rarr; the JP row: <strong>Reautenticación</strong>, risk <strong>Crítico</strong>. Open it: hosting network, new country, an OS Martín never uses.</li>
+        </ol>
+        <p class="say">The password was right and it still wasn't enough: the attacker would need Martín's passkey. And since the step-up was never passed, Japan does not become familiar for Martín.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">4</div><div class="step-body">
-        <div class="step-title"><h3>Login from Tokyo</h3><span class="pill reauth">REAUTHENTICATE</span></div>
-        <div class="step-do">Presenter &rarr; Login desde Tokio. A Lambda in ap-northeast-1 uses Martín's real password.</div>
-        <p><strong>Diego:</strong> JP, a hosting network, a new OS: CRITICAL. Roku Bank steps CRITICAL up instead of blocking (policy 2.1.0), so the attacker is asked for a passkey they do not have; the step-up is never completed and teaches the profile nothing.</p>
-        <p class="say">A stolen password is not enough: the answer is the passkey, and the attempt leaves no trace in Martín's profile.</p>
+      <!-- ACT 5 -->
+      <div class="step"><div class="step-idx">A5</div><div class="step-body">
+        <div class="step-title"><h3>Act 5 — Credential stuffing</h3><span class="pill reauth">REAUTHENTICATE</span><span class="pill block">BLOCK the IP</span></div>
+        <ol>
+          <li><strong>Presenter</strong>: <em>Limpiar fallos</em> &rarr; <em>Stuffing · ráfaga &rarr; Lanzar</em> (one wrong password from Tokyo, Frankfurt and São Paulo).</li>
+          <li><strong>Browser 2</strong>: Martín logs in &rarr; asked to re-enter his credentials and use the passkey.</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em> &rarr; Martín's row: <strong>Reautenticación</strong>, &ldquo;contraseñas incorrectas desde lugares desconocidos&rdquo;.</li>
+          <li><strong>Presenter</strong>: <em>Limpiar fallos</em> &rarr; <em>Stuffing · sostenido &rarr; Lanzar</em>. Wait ~5 s: each region tries 10 wrong passwords, then the real one.</li>
+          <li>The panel: every region's last attempt is <code>BLOCKED</code>: <strong>the right password, refused</strong>, because that IP is blocked.</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em>: the rows from the three IPs, &ldquo;IP bloqueada por intentos fallidos&rdquo;.</li>
+          <li><strong>Browser 2</strong>: Martín logs in &rarr; <strong>passkey, and he's in</strong>.</li>
+          <li><strong>Presenter</strong>: <em>Limpiar fallos</em>.</li>
+        </ol>
+        <p class="say">An attacker who knows Martín's address can't lock him out. What gets blocked is the attacker's machine; Martín just confirms with his passkey.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">5</div><div class="step-body">
-        <div class="step-title"><h3>Stuffing burst</h3><span class="pill reauth">REAUTHENTICATE</span></div>
-        <div class="step-do">Presenter &rarr; Limpiar fallos, then Stuffing &middot; ráfaga (one wrong password from each of three regions). Then Martín logs in.</div>
-        <p><strong>Martín:</strong> asked to re-enter his credentials and pass the passkey. <strong>Diego:</strong> <code>failed_login_burst</code>: 3 wrong passwords from places Martín never uses.</p>
+      <!-- ACT 6 -->
+      <div class="step"><div class="step-idx">A6</div><div class="step-body">
+        <div class="step-title"><h3>Act 6 — Martín's own typos</h3><span class="pill block">BLOCK 15 min</span></div>
+        <ol>
+          <li><em>Optional.</em> <strong>Browser 2</strong>: Martín types a wrong password five times, then the right one &rarr; &ldquo;No pudimos iniciar tu sesión&rdquo;.</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em> &rarr; <strong>Bloqueado</strong>, &ldquo;cuenta en pausa por contraseñas incorrectas propias&rdquo;: 15 minutes, from his own network.</li>
+          <li><strong>Presenter</strong>: <em>Limpiar fallos</em> before going on.</li>
+        </ol>
       </div></div>
 
-      <div class="step"><div class="step-idx">6</div><div class="step-body">
-        <div class="step-title"><h3>Sustained stuffing</h3><span class="pill block">BLOCK the IP</span></div>
-        <div class="step-do">Presenter &rarr; Limpiar fallos, then Stuffing &middot; sostenido. Each region tries 10 wrong passwords and then Martín's real one. Then Martín logs in.</div>
-        <p><strong>Panel:</strong> every region ends in <code>BLOCKED</code>: the IP passed its threshold, so even the right password is refused (<code>source_blocked</code>). <strong>Martín:</strong> asked for his passkey, and gets in. <strong>Diego:</strong> REAUTHENTICATE on Martín's login, never a block.</p>
-        <p class="say">An attacker who knows Martín's address cannot lock him out. What gets stopped is the attacker's machine (ADR-0045).</p>
+      <!-- ACT 7 -->
+      <div class="step"><div class="step-idx">A7</div><div class="step-body">
+        <div class="step-title"><h3>Act 7 — Impossible travel</h3><span class="pill mfa">REQUIRE_MFA</span></div>
+        <ol>
+          <li><strong>Presenter</strong> (browser 2): <em>Viaje imposible &rarr; Abrir login</em>. Martín's login opens &ldquo;from Japan&rdquo;.</li>
+          <li>Log in as Martín &rarr; passkey &rarr; in.</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em> &rarr; open the row: it is marked <strong>Simulado</strong>, and the reason is <em>viaje imposible desde el último inicio</em>.</li>
+        </ol>
+        <p class="say">Real impossible travel needs a login from abroad; here the country is injected and the console says so. A simulated login never teaches the profile.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">7</div><div class="step-body">
-        <div class="step-title"><h3>Martín's own typos</h3><span class="pill block">BLOCK 15 min</span></div>
-        <div class="step-do">Optional. Martín types a wrong password five times from his laptop, then the right one.</div>
-        <p><strong>Martín:</strong> &ldquo;No pudimos iniciar tu sesión&rdquo;. <strong>Diego:</strong> <code>account_cooldown</code>: five failures from a network he uses pause the account for 15 minutes, like a phone's PIN delay. Press Limpiar fallos to go on.</p>
+      <!-- ACT 8 -->
+      <div class="step"><div class="step-idx">A8</div><div class="step-body">
+        <div class="step-title"><h3>Act 8 — The engine goes down</h3><span class="pill mfa">REQUIRE_MFA</span></div>
+        <ol>
+          <li><strong>Terminal</strong>: <code>kubectl --context rokusec -n rba scale deploy/decision-service --replicas=0</code></li>
+          <li>Wait ~10 s. <strong>Browser 2</strong>: Martín logs in &rarr; <strong>passkey, never a lockout</strong>.</li>
+          <li><strong>Browser 1</strong>: <em>Eventos</em> can't load while the engine is down; that is the point.</li>
+          <li><strong>Terminal</strong>: <code>kubectl --context rokusec -n rba scale deploy/decision-service --replicas=3</code>, then <code>kubectl --context rokusec -n rba rollout status deploy/decision-service</code>.</li>
+        </ol>
+        <p class="say">If the engine fails, nobody is locked out and nobody gets in on a password alone: everyone is asked for the passkey.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">8</div><div class="step-body">
-        <div class="step-title"><h3>Impossible travel</h3><span class="pill mfa">REQUIRE_MFA</span></div>
-        <div class="step-do">Presenter &rarr; Viaje imposible, in Martín's browser. Log in as Martín.</div>
-        <p><strong>Martín:</strong> passkey. <strong>Diego:</strong> <code>impossible_travel</code>, marked <em>simulado</em>; the presenter overrides the country, so the login never teaches the profile Japan.</p>
-        <p class="say">Real impossible travel needs a login from abroad; here the country is injected, and the console says so.</p>
+      <!-- ACT 9 -->
+      <div class="step"><div class="step-idx">A9</div><div class="step-body">
+        <div class="step-title"><h3>Act 9 — Does it work? Efectividad</h3></div>
+        <ol>
+          <li><strong>Browser 1</strong>: <em>Actividad &rarr; Efectividad</em>: password only vs. passkey always vs. adaptive, on the held-out dataset, with confidence intervals.</li>
+        </ol>
+        <p class="say">Adaptive stops close to what passkey-always stops, while asking for it far less often.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">9</div><div class="step-body">
-        <div class="step-title"><h3>Engine down</h3><span class="pill mfa">REQUIRE_MFA</span></div>
-<pre><code>kubectl --context rokusec -n rba scale deploy/decision-service --replicas=0</code></pre>
-        <p>Martín logs in: <strong>passkey, never a lockout</strong> (the IdP's fallback, ADR-0028). Diego's Decisiones cannot list while the engine is down, which is the point of the scene. Restore:</p>
-<pre><code>kubectl --context rokusec -n rba scale deploy/decision-service --replicas=3
-kubectl --context rokusec -n rba rollout status deploy/decision-service</code></pre>
+      <!-- ACT 10 -->
+      <div class="step"><div class="step-idx">A10</div><div class="step-body">
+        <div class="step-title"><h3>Act 10 — Kaze Labs: another customer, roles</h3></div>
+        <ol>
+          <li><strong>Browser 2</strong>: open Kaze Labs. The login is RokuSec's own, &ldquo;Continuá a Kaze Labs&rdquo;.</li>
+          <li><code>lucas@kazelabs.example</code> (admin), password &rarr; <em>Inicio</em>, <em>Proyectos</em>, <em>Configuración</em>: all reachable. <em>Cerrar sesión</em>.</li>
+          <li><code>valen@kazelabs.example</code> (viewer) &rarr; <em>Proyectos</em>: no &ldquo;Crear proyecto&rdquo;; <em>Configuración</em>: refused.</li>
+        </ol>
+        <p class="say">Same platform, a different kind of customer: a company's internal portal, password only with the engine active, and roles that decide what each person can do.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">10</div><div class="step-body">
-        <div class="step-title"><h3>Roles at Kaze Labs</h3></div>
-        <div class="step-do">Lucas logs in to Kaze Labs, then Valen.</div>
-        <p><strong>Lucas</strong> (admin) reaches Inicio, Proyectos and Configuración. <strong>Valen</strong> (viewer) reads projects, has no form to create one, and gets 403 on Configuración. Kaze's own policy: password only, engine active.</p>
+      <!-- ACT 11 -->
+      <div class="step"><div class="step-idx">A11</div><div class="step-body">
+        <div class="step-title"><h3>Act 11 — Isolation</h3></div>
+        <ol>
+          <li><strong>Browser 1</strong>, still Diego: <em>Directorio &rarr; Usuarios</em>: only Roku Bank's people, no Kaze user.</li>
+          <li><em>Cerrar sesión</em>; log in as Juan &rarr; switcher <em>Organización &rarr; Kaze Labs</em> &rarr; <em>Usuarios</em>: Kaze's people. Martín exists in both, as two separate accounts.</li>
+        </ol>
       </div></div>
 
-      <div class="step"><div class="step-idx">11</div><div class="step-body">
-        <div class="step-title"><h3>Isolation</h3></div>
-        <div class="step-do">Juan in the console switches between organizations; Diego cannot.</div>
-        <p>Diego sees only Roku Bank's users and decisions; asking for Kaze Labs as Diego is refused. Martín has an account in each tenant (<code>martin@correo.example</code> at the bank, <code>martin@kazelabs.example</code> at Kaze), two separate users.</p>
+      <!-- ACT 12 -->
+      <div class="step"><div class="step-idx">A12</div><div class="step-body">
+        <div class="step-title"><h3>Act 12 — Load (last)</h3></div>
+        <ol>
+          <li><strong>Browser 1</strong>: switch to the Grafana tab (<em>RBA PDP</em> dashboard).</li>
+          <li><strong>Presenter</strong>: <em>Carga &rarr; Iniciar</em> (32 clients, 90 s).</li>
+          <li>Grafana: requests climb to ~160/s, p95 stays around 24 ms against the 200 ms line, replicas go from 3 to 5.</li>
+        </ol>
+        <p class="say">The login waits on memory only; the database is filled behind the answer.</p>
       </div></div>
 
-      <div class="step"><div class="step-idx">12</div><div class="step-body">
-        <div class="step-title"><h3>Load</h3></div>
-        <div class="step-do">Presenter &rarr; Carga (32 clients, 90 s). Watch Grafana and Resumen.</div>
-        <p>About 160 decisions per second, no errors, p95 around 24 ms against the 200 ms target; the decision service grows from 3 to 5 replicas. Last, because it floods Decisiones.</p>
-        <p class="say">The login waits on memory only: the database is filled behind the answer (ADR-0044).</p>
+      <!-- AFTER -->
+      <div class="step"><div class="step-idx">&#10003;</div><div class="step-body">
+        <div class="step-title"><h3>After the last act</h3></div>
+        <ol>
+          <li><strong>Presenter</strong>: <em>Limpiar fallos</em>.</li>
+          <li><strong>Browser 1</strong> as Diego: <em>Política &rarr; Motor: Monitoreo &rarr; Guardar</em>, ready for another run.</li>
+        </ol>
       </div></div>
 
     </div>
@@ -542,8 +626,8 @@ kubectl --context rokusec -n rba rollout status deploy/decision-service</code></
         <tr><td><code>kubectl</code> asks for credentials or fails</td><td>SSO session expired</td><td><code>aws sso login --profile rokusec</code></td></tr>
         <tr><td>Passkey prompt fails at once</td><td>Wrong host</td><td>Use the CloudFront hosts above</td></tr>
         <tr><td>A scene shows a stricter action than scripted</td><td>Leftover failures or IP block</td><td>Presenter &rarr; Limpiar fallos, repeat</td></tr>
-        <tr><td>Martín goes straight in when monitor was expected</td><td>Engine left on Activo</td><td>Política &rarr; Monitor</td></tr>
-        <tr><td>Decisiones does not update</td><td>Publisher stalled</td><td>Checkpoint 3; <code>kubectl -n rba rollout restart deploy/event-publisher</code></td></tr>
+        <tr><td>Martín goes straight in when monitor was expected</td><td>Engine left on Activo</td><td>Política &rarr; Monitoreo</td></tr>
+        <tr><td>Eventos does not update</td><td>Publisher stalled</td><td>Checkpoint 3; <code>kubectl -n rba rollout restart deploy/event-publisher</code></td></tr>
         <tr><td>Every login asks for the passkey after engine-down</td><td>Decision service still at 0</td><td>Scale to 3 (scene 9)</td></tr>
         <tr><td>Martín is blocked</td><td>His own cooldown (scene 7)</td><td>Limpiar fallos</td></tr>
       </tbody>
