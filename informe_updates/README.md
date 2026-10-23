@@ -19,3 +19,4 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [10-hybrid-freeman.md](10-hybrid-freeman.md) | model chapter, results, limitations, references | open |
 | [11-data-provenance.md](11-data-provenance.md) | data section, limitations, method, AI-assistance note | open |
 | [12-latency-and-simulated-logins.md](12-latency-and-simulated-logins.md) | RNF-07 results, decision-path architecture (ADR-0044), Valkey limitation, sizing, learning rule | open |
+| [13-lockout-source-not-account.md](13-lockout-source-not-account.md) | decision policy, threat model (stuffing / lockout abuse), demo script, limitations | open |

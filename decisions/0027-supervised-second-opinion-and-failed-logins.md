@@ -1,6 +1,6 @@
 # ADR-0027: Supervised second opinion, failed-login bands, and success-only familiarity
 
-- Status: Accepted
+- Status: Accepted; failed-login bands superseded by [ADR-0045](0045-block-the-source-not-the-account.md)
 - Date: 2026-08-19
 - Refines [ADR-0004](0004-modelling-and-label-strategy.md) (Freeman stays the
   primary scorer; the supervised baseline stops being *only* a reference number)

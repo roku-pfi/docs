@@ -56,6 +56,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0042](0042-learn-from-completed-logins-and-deployment-population.md) | Profile learns only completed logins (`/risk/confirm` after a passed step-up); browser/OS scored as families; Freeman population learned by the deployment (κ = 100); freeman-0.3.0, logreg-0.2.0 | Accepted |
 | [0043](0043-hybrid-freeman.md) | freeman-0.4.0: network as Freeman's hierarchy rooted at the population, flat device/OS/browser; hour out of the score; profile rebuild | Accepted |
 | [0044](0044-decision-path-in-valkey.md) | Decision path touches Valkey only: journal key + stream; publisher fills the Postgres read model; policies refreshed in the background | Accepted |
+| [0045](0045-block-the-source-not-the-account.md) | Repeated wrong passwords: block the source IP, step the account up after an attack, pause it only for the owner's own failures | Accepted |
 
 ## Template
 
