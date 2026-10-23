@@ -1,4 +1,8 @@
-# Sesiones de usabilidad: protocolo y plantilla (capítulo 3, pruebas)
+# Sesiones de usabilidad: protocolo y plantilla (opcional; capítulo 3, pruebas)
+
+> **Opcional.** La rúbrica pide al menos una técnica (unitario, funcional,
+> usabilidad o navegabilidad). Las pruebas unitarias, e2e y de carga ya la
+> cubren; esto suma una técnica más si se quiere.
 
 Nota para el capítulo de pruebas. Las sesiones **no se hicieron todavía**: esto
 es el protocolo para hacerlas sobre el despliegue en AWS y la plantilla de

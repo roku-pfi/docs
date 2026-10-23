@@ -14,8 +14,11 @@ One page to decide what to work on next. Details live in `status.md`,
   flow diagrams, the architecture and the data model. The scores in
   `PFI - Rubrica final.xlsx` predate it.
 - **The one missing chapter is testing.** The E90 has no "pruebas" section. The
-  rubric asks for user tests and their results; we have the system tests (e2e,
-  load), and the user tests are still to run.
+  rubric asks for at least one technique (unit, functional, usability or
+  navigability testing) and for conclusions and decisions taken from the
+  results. Unit tests (CI), the e2e (13/13 on AWS) and the load test cover the
+  technique; the decisions they led to (ADR-0044, ADR-0045, Roku Bank's policy
+  2.1.0) are the results. It only needs writing.
 
 ## 2. Done
 
@@ -39,7 +42,7 @@ One page to decide what to work on next. Details live in `status.md`,
 
 | Rubric item | What it asks | Status |
 |---|---|---|
-| **Pruebas funcionales** + **Resultados** | Tests with users, valid techniques, conclusions | **Missing chapter.** We have the system tests (e2e 13/13 on AWS, load p95 24 ms, unit tests in CI); the tests with people (note 15) are still to run. |
+| **Pruebas funcionales** + **Resultados** | At least one technique (unit, functional, usability, navigability); conclusions and decisions from the results | **Chapter to write; the material exists.** Unit tests in CI, e2e 13/13 on AWS, load test (finding 2026-10-23-cloud-decision-latency). Decisions from results: ADR-0044, ADR-0045, policy 2.1.0. Usability sessions (note 15) are optional. |
 | Producto entregado | The product meets objectives and scope | Apply notes 01–16: the E90 describes the August prototype (k3d, outbox, old lockout). |
 | Branding | Logo with rationale | Apply note 14. |
 | Diagramas funcionales / UX | Use cases, flows, mockups | E90 has wireframes and login flows; a use-case diagram could be added if the tutor wants one. |
@@ -58,21 +61,21 @@ One page to decide what to work on next. Details live in `status.md`,
 
 | Item | What it means today | What doing it would change | Value | Effort |
 |---|---|---|---|---|
-| **Stable device identifier** (RF-02) | "Device" is the *class* of device read from the browser (desktop, macOS, Chrome). Every Mac with Chrome looks the same to the model. | A long-lived random device token (HttpOnly cookie set by the IdP, hashed per tenant): "known device" means *this* laptop. It is learned like the rest of the profile (only from completed logins). It also feeds the ADR-0045 owner-vs-attacker split, which today relies on the network only. | **Medium–high**: RF-02 asks for it explicitly; it is the model's weakest signal today. | **~3 days**: cookie + contracts (½), profile + feature (½), scoring term + rules (1), console (¼), e2e on AWS + ADR + legal note (¾). The dataset has no device ids, so the term cannot be validated offline: justified by design, verified in the e2e. |
+| **Stable device identifier** (RF-02) | "Device" is the *class* of device read from the browser (desktop, macOS, Chrome). Every Mac with Chrome looks the same to the model. | A long-lived random device token (HttpOnly cookie set by the IdP, hashed per tenant): "known device" means *this* laptop. It is learned like the rest of the profile (only from completed logins). It also feeds the ADR-0045 owner-vs-attacker split, which today relies on the network only. | **Medium–high**: RF-02 asks for it explicitly; it is the model's weakest signal today. | **~2–3 hours** + one deploy and e2e: cookie and contracts, profile and feature, scoring term and rules, console, ADR and legal note. The dataset has no device ids, so the term cannot be validated offline: justified by design, verified in the e2e. |
 | **Activation inside the login flow** | New users and operators enroll their passkey on a separate `/activate` page with a code we generate by command or from the console. | An invite link from the console; the person sets the password and passkey in one flow. | **Low–medium**: onboarding polish. Usability tests might flag it. | **Medium**: IdP flow and console invite. |
 | **Real impossible travel** | The demo injects the country (marked *simulado*). A VPN abroad doesn't work: hosting networks switch the travel rule off on purpose. | A real second login from a residential network abroad, recorded as an asynchronous demo. | **Low**: realism only; the rule itself is tested. | Needs someone abroad (or a residential proxy). |
 | **Per-tenant model** | One Freeman model for every tenant; each tenant has its own thresholds and policy. | A model trained per tenant on its own logins. | **Low** for the thesis: no tenant has enough real data. | **High**. |
 | **Custom domains per tenant** | Roku Bank's branded login runs on RokuSec's `*.cloudfront.net` host. | `login.rokubank.com`: DNS, certificates, a WebAuthn relying party per tenant. | **Low–medium**: completes the white-label illusion. | **Medium–high**, plus a real domain. |
 | **Always-MFA per user or app** (RF-08) | "Passkey siempre" exists per tenant (base policy). | A per-user or per-application switch. | **Low–medium**: closes RF-08 fully. | **Low–medium**. |
-| **LDAP integration** (E90 §1.2.2, out of scope; asked for in the interviews) | Every tenant uses RokuSec's own user directory. | A tenant can point RokuSec at its existing LDAP / Active Directory. The password is checked against the directory (bind), and the user and their groups are created or updated on each login (just-in-time provisioning, LDAP groups mapped to roles). Passkeys, risk engine and RBAC stay as they are. Kaze Labs (workforce) would be the demo tenant, with an OpenLDAP in the cluster. | **Medium–high**: the interviews' main ask ("a layer next to an existing LDAP"), and it moves an exclusion into scope. | **~3–4 days**: per-tenant directory config + console form (1), LDAP bind + search in the login (½), JIT provisioning + group mapping (½), OpenLDAP in the chart with seed users (½), tests + e2e + ADR (1). |
+| **LDAP integration** (E90 §1.2.2, out of scope; asked for in the interviews) | Every tenant uses RokuSec's own user directory. | A tenant can point RokuSec at its existing LDAP / Active Directory. The password is checked against the directory (bind), and the user and their groups are created or updated on each login (just-in-time provisioning, LDAP groups mapped to roles). Passkeys, risk engine and RBAC stay as they are. Kaze Labs (workforce) would be the demo tenant, with an OpenLDAP in the cluster. | **Medium–high**: the interviews' main ask ("a layer next to an existing LDAP"), and it moves an exclusion into scope. | **~3–4 hours** + one deploy and e2e: per-tenant directory config and console form, LDAP bind and search in the login, provisioning and group mapping, OpenLDAP in the chart with seed users, tests and ADR. |
 | **Phase 6: ML lifecycle + data generator** | The model is trained offline by a script; there is no retraining pipeline or synthetic data generator. | Scheduled retraining from the audit store, model registry, drift checks. | **Low–medium**: "future work" material. | **High**. |
 | **GitOps** (K8s-3) | Deploys are `make aws-up`. | Argo CD / Flux watching the repos. | **Low**: CI already builds and pushes images. | Medium. |
 
 ## 5. Suggested order
 
 1. **Demo** (tomorrow): follow `defense-runbook.html`.
-2. **Testing chapter**: system tests now (e2e, load, unit/CI); user tests as soon
-   as there are people.
+2. **Testing chapter**: unit (CI), e2e and load tests, and the decisions they
+   led to.
 3. **Apply notes 01–16** to the E90, then proofread.
 4. **System, if time allows:** one `aws-up` + e2e to validate today's
-   undeployed work, then the device identifier and/or LDAP (~3–4 days each).
+   undeployed work, then the device identifier (~2–3 h) and LDAP (~3–4 h).
