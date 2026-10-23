@@ -13,6 +13,11 @@
   override (ADR-0032) is scored and shown as *simulado*, but never updates the
   profile or the population prior. Before, the simulated trip to Japan made
   Japan familiar and the Tokyo attack after it scored MEDIUM.
+- **Roku Bank's CRITICAL band steps up instead of blocking** (policy 2.1.0,
+  as D-2 already set for new tenants). With the fix above, the Tokyo attacker
+  (new country, network, OS, hosting ASN) scores CRITICAL (0.88); a passkey
+  stops it as well as a block, and a real customer abroad can still get in.
+  Blocks come only from the failed-login rules.
 - **Review:** non-functional requirements / results (how RNF-07 is measured,
-  with the cloud numbers once the rerun passes), deployment sizing, and the
-  learning rule next to ADR-0042's "only completed logins".
+  with the cloud numbers once the rerun passes), deployment sizing, Roku Bank's
+  policy table, and the learning rule next to ADR-0042's "only completed logins".
