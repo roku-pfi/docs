@@ -132,7 +132,8 @@ everything else can run in parallel.
 - [x] **D-2** Policy comparison (finding 2026-10-22, ADR-0040, console Efectividad page): offline replay of the held-out split under
       password-only / always-MFA / adaptive, with confidence intervals →
       finding + JSON → the console's Efectividad page.
-- [~] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
+- [x] **D-3** Rehearse the scenario map (ADR-0035) end to end on AWS.
+      Done 2026-10-23: full e2e 13/13 on AWS after ADR-0044 / ADR-0045.
       First run 2026-10-23 found the model scoring every login LOW; fixed in
       ADR-0042 (finding 2026-10-23); model replaced by the hybrid freeman-0.4.0
       (ADR-0043). Re-run on the new images pending (k3d / AWS: run
@@ -156,15 +157,18 @@ everything else can run in parallel.
 - [ ] IdP metrics and MFA outcome in the record (RF-11 / RF-18).
 - [ ] Stable device identifier (RF-02 device part). Until then, "new device"
       relies on browser / OS / ASN familiarity.
-- [ ] Progressive delay on repeated failures (RF-07).
+- [~] Progressive delay on repeated failures (RF-07): ADR-0045 blocks the
+      source IP and pauses the owner's account; no per-attempt delay yet.
 - [ ] Real impossible travel from abroad, as an asynchronous demo.
 - [ ] Per-tenant model; custom domains per tenant.
 
 ### After the system is complete (informe chapter 3: pruebas)
 
 - [~] End-to-end tests of the scenario map (Playwright): `rba-infra/e2e`, green on
-      k3d (finding 2026-10-22). Still to do: run against AWS (D-3) and in CI.
-- [ ] Load test against AWS; p95 against RNF-07.
+      k3d (finding 2026-10-22) and on AWS (13/13, 2026-10-23). Still to do: CI,
+      and a k3d run of the ADR-0044 decision path.
+- [x] Load test against AWS; p95 against RNF-07: 24 ms at ~165 decisions/s
+      (finding 2026-10-23-cloud-decision-latency).
 - [ ] Usability sessions with real users on the cloud deployment.
 
 ## Order of work
