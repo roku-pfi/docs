@@ -14,6 +14,8 @@ one adds nothing. A wrong password on a known device counts as the owner's
 (ADR-0045). Console: "Este dispositivo" in the event detail. The e2e now keeps
 the device cookie between logins, as a browser does, and checks Martín's usual
 login carries the term. Tests: features 31, PDP 58, profile 10, IdP 252.
+On AWS: e2e 13/13 (6.5 min, load scene included); each persona's profile
+holds one known device, Martín's after 11 logins.
 
 ## 2026-11-03 — AWS e2e 13/13 with today's fixes
 
