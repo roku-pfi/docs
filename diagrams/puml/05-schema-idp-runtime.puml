@@ -50,7 +50,7 @@ entity "webauthn_credentials" as wa {
 entity "auth_codes" as codes {
   * code_hash : varchar(64) <<PK>>
   --
-  session_token : varchar(128)
+  session_hash : varchar(64)
   user_id : varchar(128)
   application_id : varchar(128)
   redirect_uri : varchar(512)

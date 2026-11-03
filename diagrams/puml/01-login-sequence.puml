@@ -54,7 +54,7 @@ se verifica incluso si el e-mail no existe, para que el tiempo
 de respuesta no revele qué cuentas existen
 end note
 
-opt la contraseña no coincide
+break la contraseña no coincide
   IDP -> PDP : POST /risk/evaluate {login_successful: false}
   note right of IDP
   la decisión devuelta se descarta: el objetivo es dejar
@@ -69,7 +69,7 @@ end
 
 IDP -> IDP : ¿algún rol en esta aplicación? usuario → grupo → rol  <font color=#8A93A8><size:10>rba_idp</size></font>
 
-opt sin rol en esta aplicación
+break sin rol en esta aplicación
   IDP -[#8A3A93]-> B : ACCESS_DENIED
   note right of B
   tener un rol es el permiso; no hay un flag aparte de

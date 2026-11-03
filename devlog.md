@@ -4,7 +4,18 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-10-23 (latest) — failed logins block the attacker's IP, not the account (ADR-0045)
+## 2026-11-03 (latest) — callback codes no longer hold the session token (C2)
+
+The reviewer's C2 was right: `auth_codes.session_token` kept the raw bearer
+token, and the row outlives the 2-minute code, so anyone who could read the
+table had live sessions for up to 8 h. The code now holds the session's hash,
+and redeeming it rotates the session to a fresh token: the app's copy is the
+only valid one, and it carries no passkey-enrollment window (that happens on
+the hosted page before the redirect). A kept database drops the old
+`auth_codes` table on init (its rows live two minutes). rba-idp 247 tests
+pass. Informe note 18.
+
+## 2026-10-23 — failed logins block the attacker's IP, not the account (ADR-0045)
 
 The sustained stuffing scene locked Martín out of his own account: failures
 were counted per account from anywhere, a denial of service any attacker could

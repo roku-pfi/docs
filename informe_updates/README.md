@@ -24,3 +24,4 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [15-sesiones-de-usabilidad.md](15-sesiones-de-usabilidad.md) | capítulo 3: protocolo de sesiones de usabilidad, tareas, SUS, plantilla de resultados (sesiones pendientes) | open |
 | [16-alarmas-y-metricas.md](16-alarmas-y-metricas.md) | requisitos RF-11/16/17/20, observabilidad, consola | open |
 | [17-figuras-actualizadas.md](17-figuras-actualizadas.md) | figuras 3.8–3.21 y §3.6.4: diagramas y capturas nuevos | open |
+| [18-token-en-auth-codes.md](18-token-en-auth-codes.md) | RF-14, esquema de sesión, figura 3.17: el token ya no se guarda en claro (C2) | open |
