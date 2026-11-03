@@ -185,11 +185,11 @@
 <rect x="20.0" y="1275.5" width="30.0" height="19.0" rx="9.5" fill="#EDF0F8" stroke="#DDE3F0" stroke-width="1"/>
 <text x="35.0" y="1289.0" font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="11" font-weight="400" fill="#59627A" text-anchor="middle">15</text>
 <path d="M1207.0,1329.0 L1155.0,1329.0 L1155.0,1347.0 L1202.0,1347.0" fill="none" stroke="#141824" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#a-ink)"/>
-<rect x="684.8" y="1329.5" width="71.8" height="18.0" rx="5" fill="#EDF0F8" stroke="#DDE3F0" stroke-width="1"/>
-<path d="M692.8,1334.5 a5,2.2 0 0 1 10,0 v7.6 a5,2.2 0 0 1 -10,0 z" fill="none" stroke="#59627A" stroke-width="1.1"/><path d="M692.8,1334.5 a5,2.2 0 0 0 10,0" fill="none" stroke="#59627A" stroke-width="1.1"/>
-<text x="708.8" y="1343.5" font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="10.5" font-weight="400" fill="#59627A" text-anchor="start">valkey</text>
-<rect x="761.6" y="1330.0" width="384.4" height="17.0" rx="4" fill="#F3F5FB" stroke="none"/>
-<text x="766.6" y="1342.5" font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13.0" font-weight="400" fill="#141824" text-anchor="start">GET rba:profile:{user_id} · HMGET rba:population</text>
+<rect x="591.2" y="1329.5" width="71.8" height="18.0" rx="5" fill="#EDF0F8" stroke="#DDE3F0" stroke-width="1"/>
+<path d="M599.2,1334.5 a5,2.2 0 0 1 10,0 v7.6 a5,2.2 0 0 1 -10,0 z" fill="none" stroke="#59627A" stroke-width="1.1"/><path d="M599.2,1334.5 a5,2.2 0 0 0 10,0" fill="none" stroke="#59627A" stroke-width="1.1"/>
+<text x="615.2" y="1343.5" font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="10.5" font-weight="400" fill="#59627A" text-anchor="start">valkey</text>
+<rect x="668.0" y="1330.0" width="478.0" height="17.0" rx="4" fill="#F3F5FB" stroke="none"/>
+<text x="673.0" y="1342.5" font-family="'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-size="13.0" font-weight="400" fill="#141824" text-anchor="start">GET rba:profile:{user_id} · HMGET rba:population:{tenant_id}</text>
 <rect x="691.0" y="1314.0" width="455.0" height="15.0" rx="4" fill="#F3F5FB" stroke="none"/>
 <text x="696.0" y="1326.0" font-family="'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif" font-size="11.5" font-weight="400" fill="#59627A" text-anchor="start">el historial del usuario y la frecuencia de cada valor en el despliegue</text>
 <rect x="20.0" y="1332.5" width="30.0" height="19.0" rx="9.5" fill="#EDF0F8" stroke="#DDE3F0" stroke-width="1"/>

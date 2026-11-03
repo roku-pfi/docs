@@ -4,7 +4,17 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — callback codes no longer hold the session token (C2)
+## 2026-11-03 (latest) — one population per tenant (C3, ADR-0046)
+
+Freeman's population (ADR-0042) was one Redis hash for every tenant, so Roku
+Bank's logins moved Kaze Labs' scores: learning across organizations, which
+the interviews ruled out. Now it is `rba:population:<tenant_id>` in the PDP
+(read and sync learn) and in profile-service (learn, seed, rebuild). Seeds
+name their tenant (`roku-bank:usr_rb_martin`). Cost: a new tenant scores
+against the training prior alone until it learns ~100 logins. Tests: PDP 56,
+profile-service 9, features 27. Informe note 19.
+
+## 2026-11-03 — callback codes no longer hold the session token (C2)
 
 The reviewer's C2 was right: `auth_codes.session_token` kept the raw bearer
 token, and the row outlives the 2-minute code, so anyone who could read the
