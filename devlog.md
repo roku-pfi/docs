@@ -4,7 +4,15 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — RF-17: the challenge says the login looked unusual
+## 2026-11-03 (latest) — AWS e2e 13/13 with today's fixes
+
+`make aws-up` (images 796e1bedb19a) and the full e2e with the load scene:
+13 passed in 7 min. On the cluster: Valkey holds `rba:population:roku-bank`
+and `rba:population:kaze-labs`, no global hash; `auth_codes` has
+`session_hash`, no token column. This also validates the undeployed work of
+2026-10-23 (alarms, IdP metrics, server-side summary, passkey outcome).
+
+## 2026-11-03 — RF-17: the challenge says the login looked unusual
 
 The traceability table had RF-17 as partial: the challenge never told the user
 why. It now shows an "Inicio poco habitual" tag (why on hover) when the engine
