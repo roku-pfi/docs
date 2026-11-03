@@ -14,3 +14,7 @@
   token de la sesión". Figura nueva: `docs/diagrams/png/02-session-authorization.png`.
 - **"Sesión y factores":** si se quiere, una frase: el código es de un solo uso
   y su canje entrega un token nuevo a la aplicación.
+- **Cookie de la aplicación (contrato de sesión):** puede decirse tal cual lo
+  hace el código: `HttpOnly`, `SameSite=Lax` y `Secure` (obligatorio en la
+  nube; en local, sin HTTPS, no). El panel del presentador usa `SameSite=Strict`
+  y sólo vale bajo `/presenter`.
