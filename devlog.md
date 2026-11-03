@@ -4,7 +4,18 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — AWS e2e 13/13 with today's fixes
+## 2026-11-03 (latest) — stable device identifier (RF-02, ADR-0047)
+
+"Device" was the browser's class, so every Mac with Chrome looked alike. The
+IdP now sets a long-lived random cookie and sends the PDP a per-tenant hash of
+it (contracts 0.20.0). The profile keeps the last 20 devices with a completed
+login; a known one adds −ln 10 to the log-risk as its own reason, an unknown
+one adds nothing. A wrong password on a known device counts as the owner's
+(ADR-0045). Console: "Este dispositivo" in the event detail. The e2e now keeps
+the device cookie between logins, as a browser does, and checks Martín's usual
+login carries the term. Tests: features 31, PDP 58, profile 10, IdP 252.
+
+## 2026-11-03 — AWS e2e 13/13 with today's fixes
 
 `make aws-up` (images 796e1bedb19a) and the full e2e with the load scene:
 13 passed in 7 min. On the cluster: Valkey holds `rba:population:roku-bank`

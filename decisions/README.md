@@ -58,6 +58,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0044](0044-decision-path-in-valkey.md) | Decision path touches Valkey only: journal key + stream; publisher fills the Postgres read model; policies refreshed in the background | Accepted |
 | [0045](0045-block-the-source-not-the-account.md) | Repeated wrong passwords: block the source IP, step the account up after an attack, pause it only for the owner's own failures | Accepted |
 | [0046](0046-population-per-tenant.md) | Each tenant has its own login population (no learning across organizations) | Accepted |
+| [0047](0047-stable-device-identifier.md) | A stable device identifier (IdP cookie, per-tenant hash), scored as a designed known-device term | Accepted |
 
 ## Template
 
