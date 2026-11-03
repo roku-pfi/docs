@@ -59,6 +59,7 @@ we chose this shape*. Numbering is chronological. Next unused number: **0038**.
 | [0045](0045-block-the-source-not-the-account.md) | Repeated wrong passwords: block the source IP, step the account up after an attack, pause it only for the owner's own failures | Accepted |
 | [0046](0046-population-per-tenant.md) | Each tenant has its own login population (no learning across organizations) | Accepted |
 | [0047](0047-stable-device-identifier.md) | A stable device identifier (IdP cookie, per-tenant hash), scored as a designed known-device term | Accepted |
+| [0048](0048-always-passkey-per-user-and-application.md) | "Passkey always" per user and per application, enforced by the IdP, recorded by the PDP | Accepted |
 
 ## Template
 

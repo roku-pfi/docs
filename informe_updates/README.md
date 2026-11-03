@@ -28,3 +28,5 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [19-poblacion-por-organizacion.md](19-poblacion-por-organizacion.md) | aprendizaje en línea, RF-20, entrevistas, trabajo futuro: población por organización (C3) | open |
 | [20-aviso-de-inicio-inusual.md](20-aviso-de-inicio-inusual.md) | RF-17 cumplido, tabla de trazabilidad, respuestas sin señales | open |
 | [21-identificador-de-dispositivo.md](21-identificador-de-dispositivo.md) | RF-02 cumplido: dispositivo concreto además de la clase, privacidad, consola | open |
+| [22-passkey-siempre-por-usuario-y-aplicacion.md](22-passkey-siempre-por-usuario-y-aplicacion.md) | RF-08 cumplido en los tres niveles, política, trazabilidad | open |
+| [23-backtest-del-modelo.md](23-backtest-del-modelo.md) | Cap. 5 protocolo y resultados: evaluación sobre ataques no usados para elegir (C1) | open |

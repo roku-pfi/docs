@@ -4,7 +4,20 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — k3d runs the current decision path: 12/12
+## 2026-11-03 (latest) — "Passkey siempre" per user and app (RF-08); backtest for C1
+
+RF-08: users and applications get `always_passkey`, toggled in the console.
+The IdP enforces it (engine on, off or down); the PDP floors the enforced
+action and records `always_passkey` without touching its verdict (ADR-0048,
+contracts 0.21.0). k3d e2e 12/12 with it deployed.
+
+C1: `ml/backtest.py` replays the frozen freeman-0.4.0 on the 103 takeovers
+before the test split, which no choice was made on: 40–44% at 1% FPR (AUC
+≈ 0.81) vs 53% (0.889) on the test split. The flat model loses the same, so
+much of the gap is the period; the model ranking holds. A 1% threshold from
+one period flags 18–25% in the next. Finding 2026-11-03-backtest; note 23.
+
+## 2026-11-03 — k3d runs the current decision path: 12/12
 
 First local run since ADR-0044. Three things on the way:
 - The profile rebuild loaded all ~10⁵ history rows (old load tests) and did
