@@ -4,7 +4,21 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — stable device identifier (RF-02, ADR-0047)
+## 2026-11-03 (latest) — k3d runs the current decision path: 12/12
+
+First local run since ADR-0044. Three things on the way:
+- The profile rebuild loaded all ~10⁵ history rows (old load tests) and did
+  one Valkey call per counter: OOM-killed at 128 MiB. It now streams one user
+  at a time and writes each tenant's population once (21 s).
+- The local history still had 525 attacker logins taught to Martín on
+  2026-10-22, before ADR-0042; the rebuild replayed them, so the attack
+  scenes failed. Rows before 2026-10-23 were deleted locally, then rebuilt.
+- The burst scene waited on the profile's failure list, which never sees a
+  simulated attack (the local stand-in); it now waits on the guard's counter,
+  which the step-up actually reads (ADR-0045).
+Result: e2e 12 passed, load skipped (it passed on AWS today).
+
+## 2026-11-03 — stable device identifier (RF-02, ADR-0047)
 
 "Device" was the browser's class, so every Mac with Chrome looked alike. The
 IdP now sets a long-lived random cookie and sends the PDP a per-tenant hash of
