@@ -4,7 +4,18 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — one population per tenant (C3, ADR-0046)
+## 2026-11-03 (latest) — RF-17: the challenge says the login looked unusual
+
+The traceability table had RF-17 as partial: the challenge never told the user
+why. It now shows an "Inicio poco habitual" tag (why on hover) when the engine
+itself asked for the step-up, not under "passkey always" or with the engine
+down. Found on the way: `/login` and the verify endpoints returned the score,
+level, verdict and reasons to the browser, readable in devtools, against
+RF-17 and ADR-0023. The public endpoints now strip them (only the owner's
+cooldown reason stays, for its message); contracts 0.19.0 adds
+`LoginResponse.unusual`. rba-idp 247 tests pass. Informe note 20.
+
+## 2026-11-03 — one population per tenant (C3, ADR-0046)
 
 Freeman's population (ADR-0042) was one Redis hash for every tenant, so Roku
 Bank's logins moved Kaze Labs' scores: learning across organizations, which
