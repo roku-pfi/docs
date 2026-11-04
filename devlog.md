@@ -4,7 +4,15 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-03 (latest) — "Passkey siempre" per user and app (RF-08); backtest for C1
+## 2026-11-04 (latest) — Logistic threshold backtested; status brought up to date
+
+`ml/backtest.py` section C: logreg-0.2.0 refitted on each earlier window's
+labels catches 44–55% of the untouched takeovers (47% declared), and its
+shipped 0.869 fires on 0.4–1.3% of legitimate logins in every window. Unlike
+Freeman's, its cut-off carries over in time. Finding 2026-11-03-backtest §C;
+note 23. `plans/status.md` and `final-phase.md` no longer list RF-02 / RF-08.
+
+## 2026-11-03 — "Passkey siempre" per user and app (RF-08); backtest for C1
 
 RF-08: users and applications get `always_passkey`, toggled in the console.
 The IdP enforces it (engine on, off or down); the PDP floors the enforced

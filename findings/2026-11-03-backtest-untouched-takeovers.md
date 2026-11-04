@@ -52,5 +52,30 @@ unchanged to the next window: **18–25% of legitimate logins** cross it (recall
   fifth of the next period's logins. That is the same order as the policy
   comparison's 21.4% challenge rate, and the reason the deployment learns its
   own population (ADR-0042) and starts tenants in monitor mode (ADR-0034).
-  The supervised threshold 0.869 was not backtested (it needs labels in the
-  training window); it stays declared as measured on the test split.
+  The supervised second opinion behaves differently (section C below).
+
+## C. The supervised second opinion (logreg-0.2.0) and its 0.869 (added 2026-11-04)
+
+Refitted on each training window's labels (the 103 earlier takeovers; same
+estimator, no tuning was ever done on it beyond the threshold), measured on
+the next window. Then the shipped threshold, 0.869, read off the test split,
+applied unchanged to each refitted model.
+
+| training → evaluated | takeovers | AUC | recall@1%FPR of the window | shipped 0.869: FPR | shipped 0.869: recall |
+|---|---|---|---|---|---|
+| 30% → 50% | 30 | 0.836 | 16/30 (0.53; 0.34–0.71) | 0.40% | 14/30 (0.47) |
+| 40% → 70% | 48 | 0.848 | 21/48 (0.44; 0.30–0.59) | 1.33% | 21/48 (0.44) |
+| 50% → 70% | 29 | 0.892 | 16/29 (0.55; 0.37–0.72) | 1.01% | 16/29 (0.55) |
+| 70% → 100% (test, threshold read here) | 38 | 0.865 | 18/38 (0.47; 0.32–0.63) | 0.78% | 18/38 (0.47) |
+
+- **No optimism to correct.** On untouched takeovers the logistic model catches
+  44–55%, around the 47% (18/38) it was declared at.
+- **Its cut-off is portable.** 0.869 fires on 0.4–1.3% of legitimate logins in
+  every window, close to the 1% it was set for. A Freeman cut-off does not
+  carry over (section B: 18–25%). The likely reason: the logistic model reads
+  ten per-user novelty features whose distribution barely moves with the
+  calendar, while a Freeman score is a sum of likelihood ratios whose scale
+  depends on how much population and history exist at that point.
+- So the shipped escalation threshold (ADR-0027) needs no recalibration per
+  period, while Freeman's role stays a ranking with policy bands learned per
+  deployment and monitor mode first.

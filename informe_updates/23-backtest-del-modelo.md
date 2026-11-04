@@ -21,8 +21,15 @@ Finding: `findings/2026-11-03-backtest-untouched-takeovers.md`.
   inicios legítimos del siguiente. Coincide con el 21,4 % de desafíos de la
   comparación de políticas y justifica aprender la población del despliegue y
   arrancar en modo monitor. Puede ir como una oración en la misma sección.
-- **No cubierto:** el umbral 0,869 de la regresión logística sigue declarado como
-  medido sobre el conjunto de prueba.
+- **Segunda opinión supervisada (agregado 04/11):** la regresión logística,
+  reentrenada en cada ventana con los ataques anteriores, detecta 44–55 % en las
+  ventanas no usadas (16/30, 21/48, 16/29), contra 47 % (18/38) declarado: no
+  hay optimismo que corregir. Su umbral 0,869, aplicado sin cambios, marca entre
+  0,4 % y 1,3 % de los inicios legítimos en cada ventana: a diferencia del de
+  Freeman, se sostiene en el tiempo. Una oración en la sección de la segunda
+  opinión alcanza: "El umbral, fijado sobre el conjunto de prueba, se verificó
+  en tres ventanas anteriores: 0,4–1,3 % de falsos positivos, 44–55 % de
+  detección".
 - **Para la defensa:** "¿Cómo sabés que el 20/38 no está inflado?" → "Lo
   medimos sobre 103 ataques que no usamos para decidir nada: da 40–44 %. Está
   algo inflado, el orden de los modelos se mantiene."
