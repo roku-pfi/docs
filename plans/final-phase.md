@@ -146,8 +146,8 @@ everything else can run in parallel.
 - [x] Don't seed the fake TEST-NET home history in the cloud (ADR-0041): it never matches a
       real login, so Martín's first real phone login scored CRITICAL (verdict
       BLOCK, enforced passkey in MONITOR). Let real logins build the profile.
-- [ ] Onboarding UX: activation inside the login flow and an activation link
-      from the console (discussed; current standalone `/activate` accepted for now).
+- [x] Onboarding UX: activation inside the login flow and an activation link
+      from the console (`/activate#code`), 2026-11-04 (note 24).
 
 - [x] Local in-memory IdP (`USE_MEMORY_DB`) shared one SQLite connection across
       threads; sessions now take turns there.
@@ -167,9 +167,9 @@ everything else can run in parallel.
 
 ### After the system is complete (informe chapter 3: pruebas)
 
-- [~] End-to-end tests of the scenario map (Playwright): `rba-infra/e2e`, green on
+- [x] End-to-end tests of the scenario map (Playwright): `rba-infra/e2e`, green on
       k3d (finding 2026-10-22) and on AWS (13/13, 2026-10-23; again 2026-11-03). k3d run of the ADR-0044
-      decision path: 12/12 (2026-11-03). Still to do: CI.
+      decision path: 12/12 (2026-11-03). CI: nightly on k3d (`e2e.yml`, 2026-11-04).
 - [x] Load test against AWS; p95 against RNF-07: 24 ms at ~165 decisions/s
       (finding 2026-10-23-cloud-decision-latency).
 - [~] Usability sessions with real users on the cloud deployment: protocol and

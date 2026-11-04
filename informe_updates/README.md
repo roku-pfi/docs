@@ -30,3 +30,5 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [21-identificador-de-dispositivo.md](21-identificador-de-dispositivo.md) | RF-02 cumplido: dispositivo concreto además de la clase, privacidad, consola | open |
 | [22-passkey-siempre-por-usuario-y-aplicacion.md](22-passkey-siempre-por-usuario-y-aplicacion.md) | RF-08 cumplido en los tres niveles, política, trazabilidad | open |
 | [23-backtest-del-modelo.md](23-backtest-del-modelo.md) | Cap. 5 protocolo y resultados: evaluación sobre ataques no usados para elegir (C1) | open |
+| [24-activacion-dentro-del-inicio.md](24-activacion-dentro-del-inicio.md) | Cap. 3 alta de passkeys: código dentro del inicio, enlace desde la consola; nueva prueba e2e | open |
+| [25-cola-de-eventos-fallidos-y-atraso.md](25-cola-de-eventos-fallidos-y-atraso.md) | Cap. 3 arquitectura asíncrona (DLQ), métricas y alarmas de atraso, e2e en CI | open |

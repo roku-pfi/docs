@@ -47,9 +47,10 @@ profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done). **Tenant demo:** `rba-demo-banking`
 (Demo-2 + Demo-3 walkthrough). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus (2026-11-04): closing the final phase** — loose ends after the
-demo: threshold backtest, activation in the login flow, e2e in CI, DLQ and
-event lag. Then the informe (Phase 8).
+**Current focus (2026-11-04): Phase 8 (informe & defense).** The post-demo
+loose ends are closed: threshold backtest, activation in the login flow, e2e
+in CI, DLQ and event lag. Left by choice: impossible travel from abroad as an
+async demo; per-tenant model and custom domains (future work).
 
 **Final phase (2026-10-21)** — [`final-phase.md`](final-phase.md).
 Take the prototype to AWS (EKS + RDS + Valkey + CloudFront, ADR-0031), make the
@@ -101,10 +102,11 @@ diagrams and the data model are in the informe.
 - [x] **Phase 2 — Freeze contracts** (`rba-contracts` v0.1.0; ADR-0008)
 - [x] **Phase 3 — Request path** (`rba-decision-service`; ADR-0009/0010). Local k8s
       via k3d/Helm (ADR-0020 / K8s-1).
-- [~] **Phase 4 — Async services** ← thin slice + k8s Deployments done
-      (ADR-0011). Remaining: DLQ / worker metrics.
-- [~] **Phase 5 — Observability & load/scenario testing** ← Prometheus/Grafana
-      + HPA load done (ADR-0021 / K8s-2). Remaining: event lag.
+- [x] **Phase 4 — Async services** ← thin slice + k8s Deployments
+      (ADR-0011); dead-letter queues + replay, worker metrics (2026-11-04).
+- [x] **Phase 5 — Observability & load/scenario testing** ← Prometheus/Grafana
+      + HPA load (ADR-0021 / K8s-2); event lag + alarms, nightly e2e on k3d in
+      CI (2026-11-04).
 - [ ] **Phase 6 — ML lifecycle + generator**
 - [~] **Phase 7 — Thin IdP platform + admin + k8s** (ADR-0012/0013/0014/0017/0019/0020;
       IdP-7 + K8s-1 done; K8s-2 done). **Demo-1…4 done**

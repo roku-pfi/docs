@@ -4,7 +4,30 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-04 (latest) — Logistic threshold backtested; status brought up to date
+## 2026-11-04 (latest) — Activation in the login, e2e in CI, dead letters and event lag
+
+- **Activation inside the login (note 24).** "Necesitás una passkey" now takes
+  the activation code in place: the passkey is created with the password just
+  typed (same `/activate/*` endpoints, ADR-0037 unchanged), then the login is
+  sent again and decided as any other. The console shows a copyable
+  `/activate#CODE` link; the fragment never reaches a server or CDN log.
+  New e2e scene: a new customer with "passkey siempre" activates and gets in.
+- **e2e in CI.** `rba-infra/.github/workflows/e2e.yml`: fresh k3d on the
+  runner, every service built from main, the scenario map in Chromium.
+  Nightly and on demand. First run: 13 passed in ~6 min.
+- **Dead letters and lag (Phases 4/5 closed, note 25).** Profile and audit
+  consumers dead-letter to `<queue>.dlq` instead of dropping;
+  `python -m rba_event_publisher.dlq status|replay`. The profile consumer
+  reads the event kind from `type` so a replayed message is still told apart.
+  Metrics: journal backlog and oldest age (publisher), consumed by outcome and
+  decision→effect lag (consumers), queue depth from RabbitMQ's exporter.
+  Alarms `EventLagHigh`, `EventsDeadLettered`; three Grafana panels. Checked
+  on k3d: a malformed event lands in both DLQs and fires the alarm; a real
+  event put in the DLQ replays and is applied. Prometheus never reloaded a
+  changed ConfigMap; its Deployment (and Grafana's) now carry a checksum.
+- k3d e2e 13/13 with all of it deployed.
+
+## 2026-11-04 — Logistic threshold backtested; status brought up to date
 
 `ml/backtest.py` section C: logreg-0.2.0 refitted on each earlier window's
 labels catches 44–55% of the untouched takeovers (47% declared), and its
