@@ -47,7 +47,11 @@ profile/audit, `rba-infra` (compose + k3d/Helm + Prometheus/Grafana).
 **Product shell:** `rba-idp` (IdP-1…7 done). **Tenant demo:** `rba-demo-banking`
 (Demo-2 + Demo-3 walkthrough). **Ops story:** K8s-1 + K8s-2 done.
 
-**Current focus (2026-10-21): final phase** — [`final-phase.md`](final-phase.md).
+**Current focus (2026-11-04): closing the final phase** — loose ends after the
+demo: threshold backtest, activation in the login flow, e2e in CI, DLQ and
+event lag. Then the informe (Phase 8).
+
+**Final phase (2026-10-21)** — [`final-phase.md`](final-phase.md).
 Take the prototype to AWS (EKS + RDS + Valkey + CloudFront, ADR-0031), make the
 login signals real (ADR-0032), add multi-tenancy (ADR-0033) and the base policy +
 engine mode (ADR-0034), rebuild the UIs on the RokuSec brand with per-tenant
@@ -83,10 +87,11 @@ from the canvas at `design/rba-screens/`. The running software now uses the same
 palette and type ([ADR-0030](../decisions/0030-two-themes-one-palette.md)), so a
 mockup and a screenshot of the same screen agree.
 
-**Known requirement gaps (code, not text):** alarms (RF-17), IdP metrics + MFA
-outcome (RF-11/RF-20/RNF-04), always-MFA (RF-08), stable device identifier
-(RF-02), progressive delay (RF-07), LDAP (RF-19 — recommend demoting to
-optional).
+**Known requirement gaps (code, not text):** LDAP (RF-19 — excluded, to be
+demoted to optional). Closed since: alarms (RF-16/17, note 16), IdP metrics +
+MFA outcome (RF-11/RF-20/RNF-04, note 16), progressive delay (RF-07, ADR-0045),
+stable device identifier (RF-02, ADR-0047), always-passkey per user/app
+(RF-08, ADR-0048).
 **Rubric gaps (document):** demo captures. Tecnologías, mockups, architecture
 diagrams and the data model are in the informe.
 

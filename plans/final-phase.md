@@ -156,8 +156,9 @@ everything else can run in parallel.
 
 - [x] Alarms on risk events (RF-16): Prometheus rules, Grafana table, console Resumen (note 16).
 - [x] IdP metrics and MFA outcome in the record (RF-11 / RF-18): `step_up_passed_at`, IdP metrics port (note 16).
-- [ ] Stable device identifier (RF-02 device part). Until then, "new device"
-      relies on browser / OS / ASN familiarity.
+- [x] Stable device identifier (RF-02 device part): first-party device cookie
+      + known-device term (ADR-0047, note 21).
+- [x] Always-passkey per user and application (RF-08): ADR-0048, note 22.
 - [x] Progressive delay on repeated failures (RF-07): answered by ADR-0045
       (source IP block, step-up, owner cooldown); no per-attempt delay, by
       decision (2026-10-23).
@@ -167,8 +168,8 @@ everything else can run in parallel.
 ### After the system is complete (informe chapter 3: pruebas)
 
 - [~] End-to-end tests of the scenario map (Playwright): `rba-infra/e2e`, green on
-      k3d (finding 2026-10-22) and on AWS (13/13, 2026-10-23). Still to do: CI,
-      and a k3d run of the ADR-0044 decision path.
+      k3d (finding 2026-10-22) and on AWS (13/13, 2026-10-23; again 2026-11-03). k3d run of the ADR-0044
+      decision path: 12/12 (2026-11-03). Still to do: CI.
 - [x] Load test against AWS; p95 against RNF-07: 24 ms at ~165 decisions/s
       (finding 2026-10-23-cloud-decision-latency).
 - [~] Usability sessions with real users on the cloud deployment: protocol and
