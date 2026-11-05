@@ -4,7 +4,19 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-04 (latest) — Activation in the login, e2e in CI, dead letters and event lag
+## 2026-11-05 (latest) — Retries before the dead-letter queue
+
+Profile and audit consumers retry a failed handler in place after 0.5, 2 and
+8 s (`RETRY_DELAYS`) before dead-lettering; a ValueError (malformed message)
+is not retried. In place, holding the message, so the decision/confirmation
+order holds. Waits use `connection.sleep` to keep heartbeats. Counted as
+`rba_events_consumed_total{outcome="retried"}`. Checked on k3d by refusing
+connections to `rba_audit`/`rba_profile` during a login: 3 retries each,
+applied on the 4th, DLQs empty. Known edge: a retry after the Valkey write
+but before the Postgres commit counts that login twice in the profile (same
+as a replay). Note 25 updated.
+
+## 2026-11-04 — Activation in the login, e2e in CI, dead letters and event lag
 
 - **Activation inside the login (note 24).** "Necesitás una passkey" now takes
   the activation code in place: the passkey is created with the password just

@@ -5,6 +5,13 @@
   (`<cola>.dlq`) y se puede reprocesar una vez corregida la causa
   (`python -m rba_event_publisher.dlq replay <cola>`). Los consumidores son
   idempotentes por `event_id`, así que reprocesar es seguro.
+- **Reintentos (agregado 05/11):** antes de mandar un evento a la cola de
+  fallidos, el consumidor lo reintenta en el lugar tras 0,5, 2 y 8 segundos.
+  Un corte breve de la base de datos o de Valkey ya no deja eventos para
+  reprocesar a mano; un evento mal formado no se reintenta. Al reintentar en
+  el lugar se conserva el orden de llegada (una decisión y su confirmación).
+  Probado en k3d cortando la base durante un inicio de sesión: tres
+  reintentos, aplicado al cuarto, cola de fallidos vacía.
 - **Métricas nuevas (Grafana, panel "RBA PDP"):** eventos del diario sin
   publicar y antigüedad del más viejo; profundidad de cada cola, incluidas las
   de fallidos; atraso p95 entre la decisión y su efecto en el perfil.
