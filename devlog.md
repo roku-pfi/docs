@@ -4,7 +4,34 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-09 (latest) — AWS runs the newest build: 14/14
+## 2026-11-09 (latest) — Fixes from the manual run on AWS
+
+The user walked every scene by hand. What changed (note 26):
+
+- **Password oracle closed (ADR-0045).** Wrong passwords said "incorrect" and
+  only the right one, during a pause, said "Demasiados intentos". The PDP now
+  counts a failure before reading the guard, and the IdP answers a wrong
+  password with the guard's block too: from the attempt that reaches the
+  threshold on, every attempt reads the same. Same for the IP block.
+- **Stopped attempts told to the owner (contracts 0.22.0).** Right password,
+  stopped by the engine (step-up never passed, or a block that is not the
+  owner's pause): on the owner's next sign-in, "Alguien intentó ingresar a tu
+  cuenta", once, with a password change (asks the current one, ends other
+  sessions). Not recorded: passed step-ups, "passkey siempre", a first
+  sign-in with no passkey (a false positive the e2e caught).
+- **Level follows the rules.** A rule's floor raises `risk_level` (passkey ⇒
+  at least MEDIUM); `risk_score` stays Freeman's.
+- **Console.** Load users out of Eventos/Resumen (switch "Carga"); overflow
+  menus no longer cut; "Intrusiones frenadas"; LOW sweep every 0.05 as steps,
+  first-login step marked, "actual" from the tenant's policy. The sweep showed
+  the whole effect sits in first logins (0.45–0.50). `policy_compare` had a
+  stale import from before ADR-0045; kept the old rule locally (numbers
+  unchanged).
+- **Bank.** Each customer gets their own made-up accounts; Martín keeps his.
+- k3d e2e 13/13 (+ load skipped). One run lost RabbitMQ to OOM (512 Mi,
+  `rabbitmqctl` exec per check); restarted, not a code fault.
+
+## 2026-11-09 — AWS runs the newest build: 14/14
 
 Fresh `make aws-up` from every repo's main (RF-08, activation in the login,
 DLQ + lag metrics, consumer retries). The scenario map with the load scene:

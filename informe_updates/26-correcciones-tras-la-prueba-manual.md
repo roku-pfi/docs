@@ -1,0 +1,36 @@
+# Correcciones tras la prueba manual en AWS (2026-11-09)
+
+Recorrido completo a mano sobre AWS. Lo que cambió:
+
+- **La pausa ya no confirma la contraseña (seguridad, ADR-0045).** Antes,
+  después de varios intentos fallidos, las contraseñas incorrectas decían
+  "incorrecta" y solo la correcta decía "Demasiados intentos". Eso le
+  confirmaba la contraseña a quien estaba probando. Ahora el intento que
+  alcanza el umbral ya responde con la pausa (o con el bloqueo de la IP), y lo
+  mismo cada intento siguiente, correcto o no. Para el capítulo de amenazas:
+  es un oráculo de contraseña cerrado, un caso concreto del principio de no
+  revelar (ADR-0023).
+- **Aviso al dueño de la cuenta (nuevo).** Si alguien usa la contraseña
+  correcta y lo frena el motor (un paso de passkey que nadie completó, o un
+  bloqueo), en el próximo inicio de sesión el dueño ve "Alguien intentó
+  ingresar a tu cuenta", con cuándo y desde dónde, y puede cambiar la
+  contraseña ahí mismo (pide la actual y cierra las demás sesiones). Si el
+  paso de passkey se completa, era el dueño y no hay aviso. "Passkey siempre"
+  no genera avisos. Sin correo electrónico: queda como trabajo futuro.
+- **Nivel de riesgo y reglas.** Cuando una regla (viaje imposible, VPN, IP
+  bloqueada, segunda opinión) sube la acción, el nivel mostrado sube con ella
+  (pedir passkey ⇒ al menos Medio). El puntaje sigue siendo el de Freeman. En
+  la consola un viaje imposible ya no dice "Bajo".
+- **Consola.** "Robos frenados" pasa a "Intrusiones frenadas" (toma de
+  control de cuenta, ATO). El gráfico del límite de Bajo se muestrea cada 0,05
+  y se dibuja en escalones: se ve que todo el efecto está en los primeros
+  inicios de cada usuario (sin historial), que puntúan entre 0,45 y 0,50. La
+  marca "actual" lee el límite de la política del tenant. La prueba de carga
+  del presentador ya no aparece en Resumen ni en Eventos (un interruptor
+  "Carga" la muestra). Los menús de acciones ya no cortan el texto.
+- **Banco de demostración.** Cada cliente ve sus propias cuentas (inventadas,
+  estables entre visitas); Martín conserva las del guion.
+
+**Dónde tocar el informe:** modelo de amenazas (oráculo de contraseña),
+requisitos de notificación al usuario, figuras de la consola si muestran
+"Robos frenados" o el gráfico anterior.
