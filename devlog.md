@@ -19,6 +19,10 @@ The user walked every scene by hand. What changed (note 26):
   cuenta", once, with a password change (asks the current one, ends other
   sessions). Not recorded: passed step-ups, "passkey siempre", a first
   sign-in with no passkey (a false positive the e2e caught).
+- **Told while signed in.** The bank polls `GET /session/attempts` every
+  10 s and shows a banner (change password in the bank at `/clave`, or
+  dismiss). A step-up counts after a 60 s grace; refusals at once. e2e:
+  Martín, in the bank during the sustained stuffing, sees it.
 - **Level follows the rules.** A rule's floor raises `risk_level` (passkey ⇒
   at least MEDIUM); `risk_score` stays Freeman's.
 - **Console.** Load users out of Eventos/Resumen (switch "Carga"); overflow

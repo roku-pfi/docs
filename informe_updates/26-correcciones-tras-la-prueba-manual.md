@@ -17,6 +17,11 @@ Recorrido completo a mano sobre AWS. Lo que cambió:
   contraseña ahí mismo (pide la actual y cierra las demás sesiones). Si el
   paso de passkey se completa, era el dueño y no hay aviso. "Passkey siempre"
   no genera avisos. Sin correo electrónico: queda como trabajo futuro.
+- **Aviso con la sesión abierta (agregado).** Si el dueño está dentro del
+  banco cuando ocurre el intento, lo ve en el momento: un aviso arriba de la
+  página (el banco consulta al IdP cada 10 s) con "Cambiar contraseña" (en el
+  mismo banco) y "Entendido". Un paso de passkey sin completar cuenta como
+  intento después de un minuto; un bloqueo, en el acto.
 - **Nivel de riesgo y reglas.** Cuando una regla (viaje imposible, VPN, IP
   bloqueada, segunda opinión) sube la acción, el nivel mostrado sube con ella
   (pedir passkey ⇒ al menos Medio). El puntaje sigue siendo el de Freeman. En
