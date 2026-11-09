@@ -4,7 +4,15 @@ Reverse-chronological. Newest first. Each entry: what we did, why, and findings.
 
 ---
 
-## 2026-11-05 (latest) — Retries before the dead-letter queue
+## 2026-11-09 (latest) — AWS runs the newest build: 14/14
+
+Fresh `make aws-up` from every repo's main (RF-08, activation in the login,
+DLQ + lag metrics, consumer retries). The scenario map with the load scene:
+14 passed in 7 min, including the new-customer activation. Load: 18,189
+requests, 0 errors, PDP p95 24 ms, replicas 3 → 5. After the run both DLQs
+empty, ~18,250 events applied per consumer, no retries needed.
+
+## 2026-11-05 — Retries before the dead-letter queue
 
 Profile and audit consumers retry a failed handler in place after 0.5, 2 and
 8 s (`RETRY_DELAYS`) before dead-lettering; a ValueError (malformed message)
