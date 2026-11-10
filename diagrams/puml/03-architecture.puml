@@ -38,7 +38,7 @@ node "clúster k3d · un solo nodo" as K3D {
     database "**PostgreSQL 16**\n//una instancia, cuatro bases//\n\n• rba_idp — usuarios, grupos, roles, sesiones\n• rba_decision — decisiones + outbox\n• rba_audit — archivo asincrónico\n• rba_profile — historial de perfil + deduplicación" as PG
     database "**Redis 7**\n//perfiles de comportamiento//\n\n• rba:profile:{user_id}\n• cantidad de logins, dispositivos\n• último país y cuándo" as REDIS
     database "**Prometheus**\n//en el chart · 6 h//\n\n• recolecta del PDP\n• + kube-state" as PROM
-    database "**Grafana**\n//dashboard RBA PDP//\n\n• tasa, p95 / p99\n• mezcla de decisiones\n• réplicas del HPA" as GRAFANA
+    database "**Grafana**\n//dashboard «RokuSec · motor de decisión»//\n\n• tasa, p95 / p99\n• mezcla de decisiones\n• réplicas del HPA" as GRAFANA
 
     ' -- distribución asincrónica --
     rectangle "**rba-event-publisher**\n//relay del outbox//\n\n• consulta el outbox\n• publica decision.made.v1" as PUB

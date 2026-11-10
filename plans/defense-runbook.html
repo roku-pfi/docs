@@ -431,7 +431,7 @@ kubectl --context rokusec -n demo get pods</code></pre>
         <li><strong>Browser 2 — the customer</strong> (e.g. Safari, or a second Chrome profile): Roku Bank as Martín, and Kaze Labs. Martín's passkey must live in this browser or on the phone you scan with.</li>
         <li><strong>Browser 2, a hidden tab — the presenter panel.</strong> It must be the same browser as Martín: the impossible-travel link opens Martín's login there. Never show this tab.</li>
         <li><strong>A terminal</strong> in <code>rba-infra</code>, logged in to SSO, for the engine-down act.</li>
-        <li><strong>Grafana</strong> in a second tab of browser 1, already on <em>Dashboards &rarr; RBA &rarr; RBA PDP</em>.</li>
+        <li><strong>Grafana</strong> in a second tab of browser 1, already on <em>Dashboards &rarr; RBA &rarr; RokuSec · motor de decisión</em>.</li>
       </ul>
       <p>To log in again as Martín at any point: bank &rarr; <em>Cerrar sesión</em>. If the login page shows &ldquo;Sesión iniciada&rdquo;, press its <em>Cerrar sesión</em> too.</p>
     </div>
@@ -572,7 +572,7 @@ kubectl --context rokusec -n demo get pods</code></pre>
       <div class="step"><div class="step-idx">A12</div><div class="step-body">
         <div class="step-title"><h3>Act 12 — Load (last)</h3></div>
         <ol>
-          <li><strong>Browser 1</strong>: switch to the Grafana tab (<em>RBA PDP</em> dashboard).</li>
+          <li><strong>Browser 1</strong>: switch to the Grafana tab (<em>RokuSec · motor de decisión</em> dashboard).</li>
           <li><strong>Presenter</strong>: <em>Carga &rarr; Iniciar</em> (32 clients, 90 s).</li>
           <li>Grafana: requests climb to ~160/s, p95 stays around 24 ms against the 200 ms line, replicas go from 3 to 5.</li>
         </ol>

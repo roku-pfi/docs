@@ -12,7 +12,7 @@
   el lugar se conserva el orden de llegada (una decisión y su confirmación).
   Probado en k3d cortando la base durante un inicio de sesión: tres
   reintentos, aplicado al cuarto, cola de fallidos vacía.
-- **Métricas nuevas (Grafana, panel "RBA PDP"):** eventos del diario sin
+- **Métricas nuevas (Grafana, tablero "RokuSec · motor de decisión"):** eventos del diario sin
   publicar y antigüedad del más viejo; profundidad de cada cola, incluidas las
   de fallidos; atraso p95 entre la decisión y su efecto en el perfil.
 - **Alarmas nuevas:** `EventLagHigh` (hay decisiones de hace más de un minuto
