@@ -31,6 +31,12 @@ The user walked every scene by hand. What changed (note 26):
   the whole effect sits in first logins (0.45–0.50). `policy_compare` had a
   stale import from before ADR-0045; kept the old rule locally (numbers
   unchanged).
+- **Efectividad per organization.** `GET /decisions/impact` (contracts
+  0.23.0): the tenant's right-password logins by verdict, per local day.
+  Public-data evaluation folded below. Eventos went blank with the load
+  switch on AWS: Carbon's DataTable renders last pass's rows once, and those
+  were gone from the list; guarded on every table page. k3d-up's image
+  import (tools node) lost its tarball and still said success; now direct.
 - **Bank.** Each customer gets their own made-up accounts; Martín keeps his.
 - AWS e2e 14/14 with load after all of it (18,603 requests, 0 errors, p95 24 ms).
 - k3d e2e 13/13 (+ load skipped). One run lost RabbitMQ to OOM (512 Mi,

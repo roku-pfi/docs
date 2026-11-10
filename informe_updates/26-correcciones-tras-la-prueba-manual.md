@@ -33,6 +33,14 @@ Recorrido completo a mano sobre AWS. Lo que cambió:
   marca "actual" lee el límite de la política del tenant. La prueba de carga
   del presentador ya no aparece en Resumen ni en Eventos (un interruptor
   "Carga" la muestra). Los menús de acciones ya no cortan el texto.
+- **Efectividad por organización (segunda pasada).** La página ya no muestra
+  los 34 mil inicios del conjunto público como si fueran de la organización:
+  muestra los inicios propios con contraseña correcta en el período (7/30/90
+  días), qué hizo el motor (sin pasos, con passkey, frenados) y una tabla
+  "Con y sin RokuSec" frente a solo contraseña y passkey siempre. La
+  evaluación con datos públicos queda plegada abajo, rotulada como igual para
+  todas. Para el informe: distinguir evidencia offline (capítulo de
+  resultados) de la medición en operación (consola).
 - **Banco de demostración.** Cada cliente ve sus propias cuentas (inventadas,
   estables entre visitas); Martín conserva las del guion.
 
