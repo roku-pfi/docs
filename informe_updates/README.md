@@ -33,3 +33,4 @@ applies it by hand. Delete a note (or tick it) once it is applied.
 | [24-activacion-dentro-del-inicio.md](24-activacion-dentro-del-inicio.md) | Cap. 3 alta de passkeys: código dentro del inicio, enlace desde la consola; nueva prueba e2e | open |
 | [25-cola-de-eventos-fallidos-y-atraso.md](25-cola-de-eventos-fallidos-y-atraso.md) | Cap. 3 arquitectura asíncrona (DLQ), métricas y alarmas de atraso, e2e en CI | open |
 | [26-correcciones-tras-la-prueba-manual.md](26-correcciones-tras-la-prueba-manual.md) | amenazas (oráculo de contraseña), aviso de intento al usuario, nivel de riesgo y reglas, consola (Efectividad, carga), banco | open |
+| [27-numeros-vigentes-para-los-videos.md](27-numeros-vigentes-para-los-videos.md) | lista por página de los números desactualizados (modelo, reglas de fallos, arquitectura, resultados, figuras), alineada con lo que citan los videos | open |
