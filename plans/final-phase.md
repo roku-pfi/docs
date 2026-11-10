@@ -168,7 +168,7 @@ everything else can run in parallel.
 ### After the system is complete (informe chapter 3: pruebas)
 
 - [x] End-to-end tests of the scenario map (Playwright): `rba-infra/e2e`, green on
-      k3d (finding 2026-10-22) and on AWS (13/13, 2026-10-23; again 2026-11-03; 14/14 with load, 2026-11-09). k3d run of the ADR-0044
+      k3d (finding 2026-10-22) and on AWS (13/13, 2026-10-23; again 2026-11-03; 14/14 with load, 2026-11-09; again 14/14 after the manual-run fixes). k3d run of the ADR-0044
       decision path: 12/12 (2026-11-03). CI: nightly on k3d (`e2e.yml`, 2026-11-04).
 - [x] Load test against AWS; p95 against RNF-07: 24 ms at ~165 decisions/s
       (finding 2026-10-23-cloud-decision-latency).

@@ -32,6 +32,7 @@ The user walked every scene by hand. What changed (note 26):
   stale import from before ADR-0045; kept the old rule locally (numbers
   unchanged).
 - **Bank.** Each customer gets their own made-up accounts; Martín keeps his.
+- AWS e2e 14/14 with load after all of it (18,603 requests, 0 errors, p95 24 ms).
 - k3d e2e 13/13 (+ load skipped). One run lost RabbitMQ to OOM (512 Mi,
   `rabbitmqctl` exec per check); restarted, not a code fault.
 
