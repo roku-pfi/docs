@@ -37,6 +37,7 @@ The user walked every scene by hand. What changed (note 26):
   switch on AWS: Carbon's DataTable renders last pass's rows once, and those
   were gone from the list; guarded on every table page. k3d-up's image
   import (tools node) lost its tarball and still said success; now direct.
+- AWS after Efectividad/Eventos: e2e 14/14 with load (19,648 requests, 0 errors, p95 24 ms); Eventos' load switch checked against those load rows.
 - **Bank.** Each customer gets their own made-up accounts; Martín keeps his.
 - AWS e2e 14/14 with load after all of it (18,603 requests, 0 errors, p95 24 ms).
 - k3d e2e 13/13 (+ load skipped). One run lost RabbitMQ to OOM (512 Mi,
